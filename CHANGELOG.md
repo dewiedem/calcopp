@@ -5,11 +5,11 @@ The format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 ### Added
-- Added GUI based on [gtk-fortran](https://github.com/jerryd/gtk-fortran).
+- Add a GUI.
 - Routines to calculate OPP from MEM-reconstructed scatterer density.
 
 ### Changed
-- Switched to GPL v3 to include gtk-fortran.
+- Switch license according to dependency needs.
 
 ### Removed
 - Hard-coded descriptions, menus, and help texts from program parts.
