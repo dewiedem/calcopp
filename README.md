@@ -2,15 +2,15 @@
 A suite for the calculation of one-particle potentials (OPPs)
 
 ## Author and Maintainer
-Dr. Dennis Wiedemann
-Technische Universität Berlin
-Institut für Chemie, Sekr. C 2
-Straße des 17. Juni 135
+Dr. Dennis Wiedemann\
+Technische Universität Berlin\
+Institut für Chemie, Sekr. C 2\
+Straße des 17. Juni 135\
 10623 Berlin, Germany
 
-Phone:	+49 30 314-26178
-Fax:	+49 30 314-79656
-E-mail:	[dennis.wiedemann@chem.tu-berlin.de](mailto:dennis.wiedemann@chem.tu-berlin.de)
+Phone:	+49 30 314-26178\
+Fax:	+49 30 314-79656\
+E-mail:	[dennis.wiedemann@chem.tu-berlin.de](mailto:dennis.wiedemann@chem.tu-berlin.de)\
 Web:	http://dennis.wiedemann.name
 
 ## Purpose and Scope
