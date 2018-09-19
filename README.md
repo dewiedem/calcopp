@@ -1,5 +1,5 @@
 # CalcOPP
-A suite for the calculation of one-particle potentials (OPPs)
+A Suite for the Calculation of One-Particle Potentials (OPPs)
 
 ![GitHub Release](https://img.shields.io/github/release/dewiedem/calcopp.svg)
 ![GitHub Release Date](https://img.shields.io/github/release-date/dewiedem/calcopp.svg)
@@ -20,7 +20,7 @@ Web:	http://dennis.wiedemann.name
 ## Description
 In the OPP approach, every atom is treated as an individual Einstein oscillator subject to Boltzmann statistics in the classical limit. The OPP itself represents the potential as experienced by an atom at a certain position and allows, *e.g.*, to assess the viability and activation barriers of migration pathways (see [K. N. Trueblood, H.-B. Bürgi, H. Burzlaff, J. D. Dunitz, C. M. Gramaccioli, H. H. Schulz, U. Shmueli, S. C. Abrahams, *Acta Crystallogr., Sect. A: Found. Crystallogr.* **1996**, *52*, 770–781](https://doi.org/10.1107/S0108767396005697) and [H. Boysen, *Z. Kristallogr.* **2003**, *218*, 123–131](https://doi.org/10.1524/zkri.218.2.123.20668)).
 
-Depending on the problem, CalcOPP allows to calculate the OPP from a probability-density function (PDF) sampled in 2D or 3D by JANA2006 or from the MEM-reconstructed scatterer density sampled using Dysnomia—under certain additional conditions. It can also reformat 2D PDF input and handle error maps.
+Depending on the problem, CalcOPP allows to calculate the OPP from a probability-density function (PDF) sampled in 2D or 3D by JANA2006 (or, as a planned feature, from the MEM-reconstructed scatterer density sampled using Dysnomia—under certain additional conditions). It can also reformat 2D PDF input and handle error maps.
 
 ## Compiling
 The source code adheres strictly to the specifications of Fortran2003. It has been compiled using GFortran from GCC 4.9.3/4.9.2 (Windows/Linux) or GCC 6.4.0/6.3.0 (Windows/Linux) for CalcOPP and CalcOPP-3D, respectively, with static linking, all symbol table and relocation information removed, and optimization level set to “O3”:
@@ -28,7 +28,7 @@ The source code adheres strictly to the specifications of Fortran2003. It has be
 `gfortran -std=f2003 -pedantic -Wall -Wextra -O3 -static -s -m64 CalcOPP[-D].f03 -o CalcOPP[-3D].exe`
 
 ## Installation
-The executables can be used in a stand-alone fashion in any user-writable directory. No further installation routines are required, although it may be necessary to set the execute permission on Unix-like systems.
+The executables can be used in a stand-alone fashion in any user-writable directory. No further installation is required, although it may be necessary to set the execute permission on Unix-like systems.
 
 ## Usage
 ### Input and Output
