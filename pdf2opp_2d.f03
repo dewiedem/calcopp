@@ -1,27 +1,27 @@
-program CalcOPP
+program pdf2opp_2d
 
-!   CalcOPP 1.6.1 - Calculation of 2D OPP from PDF Data (JANA2000/2006 STF Format)
-!   Copyright (C) 2015  Dr. Dennis Wiedemann (MIT License, see License.txt)
+!   CalcOPP 2.0.0 - Calculation of One-Particle Potentials
+!   Subroutines for Calculation from 2D PDF Data (JANA2006 STF Format)
+!   Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)
 
 implicit none
-character(248)                      :: file_input
-character(256)                      :: file_output, file_error, key, arg, T_string, comment
-character(256)                      :: output_line, output_addition
+character(256)                      :: file_input, file_output, file_error, file_m90, key
+character(256)                      :: arg, T_string, comment, output_line, output_addition
 character(51), parameter            :: separator = ' ======================================='
 integer                             :: i, j, data_x, data_y, ext_dot, io_status
-integer                             :: remain_vals, job, err_data_x, err_data_y
+integer                             :: remain_vals, err_data_x, err_data_y
 integer, dimension(2)               :: xy_0
 real                                :: x_min, x_max, y_min, y_max, T, pdf_0, x_inc, y_inc
 real                                :: err_x_min, err_x_max, err_y_min, err_y_max, err_pdf_0
 real, dimension(:), allocatable     :: z_stack
 real, dimension(:,:), allocatable   :: z, pdf
-logical                             :: exists_input, exists_error, output_pdf, output_pdferr
-logical                             :: output_opp, output_opperr, interactive
+logical                             :: exists_input, exists_error, exists_m90
+logical                             :: output_pdf, output_pdferr, output_opp, output_opperr
 real, parameter                     :: k = 8.6173324E-2     ! Boltzmann constant in meV/K
 
 ! ACQUIRING NECESSARY INPUT
 
-! Parsing command-line arguments
+! Parsing command line arguments
 file_input = ''
 file_output = ''
 file_error = ''
@@ -35,34 +35,34 @@ i = 1
 do while (i <= command_argument_count())
     call get_command_argument(i, arg)
     select case (arg)
-        case ('-i', '--input')
+        case ('-i')
             i = i + 1
             if (i <= command_argument_count()) then
                 call get_command_argument(i, file_input)
             else
-                write(*,*) 'Used -i, but no input-file name provided. Exiting.'
+                write(*,*) 'Used -i, but no input file name provided. Exiting.'
                 stop
             end if
             i = i + 1
-        case ('-o', '--output')
+        case ('-o')
             i = i + 1
             if (i <= command_argument_count()) then
                 call get_command_argument(i, file_output)
             else
-                write(*,*) 'Used -o, but no output-file name provided. Exiting.'
+                write(*,*) 'Used -o, but no output file name provided. Exiting.'
                 stop
             end if
             i = i + 1
-        case ('-e', '--error_map')
+        case ('-e')
             i = i + 1
             if (i <= command_argument_count()) then
                 call get_command_argument(i, file_error)
             else
-                write(*,*) 'Used -e, but no error-map name provided. Exiting.'
+                write(*,*) 'Used -e, but no error map name provided. Exiting.'
                 stop
             end if
             i = i + 1
-        case ('-t', '--temperature')
+        case ('-t')
             i = i + 1
             if (i <= command_argument_count()) then
                 call get_command_argument(i, T_string)
@@ -72,24 +72,24 @@ do while (i <= command_argument_count())
                 stop
             end if
             i = i + 1
-        case ('-pdf', '--pdf')
+        case ('-pdf')
             output_pdf = .true.
             i = i + 1
-        case ('-pdferr', '--pdf_error')
+        case ('-pdferr')
             output_pdferr = .true.
             i = i + 1
-        case ('-opp', '--opp')
+        case ('-opp')
             output_opp = .true.
             i = i + 1
-        case ('-opperr', '--opp_error')
+        case ('-opperr')
             output_opperr = .true.
             i = i + 1
-        case ('-h', '--help')
+        case ('-h')
             call print_help()
             stop
         case default
             if (index(arg, '-') == 1) then
-                write(*,*) 'Unrecognised command-line option: ', arg
+                write(*,*) 'Unrecognized command-line option: ', arg
                 call print_help()
                 stop
             else
@@ -101,7 +101,7 @@ do while (i <= command_argument_count())
     end select
 end do
 
-if ((.not. output_pdf) .and. (.not. output_pdferr) .and. (.not. output_opp) .and. (.not. output_opperr)) then
+if (.not.(output_pdf .or. output_pdferr .or. output_opp .or. output_opperr)) then
     output_pdf = .true.
     output_pdferr = .true.
     output_opp = .true.
@@ -109,26 +109,23 @@ if ((.not. output_pdf) .and. (.not. output_pdferr) .and. (.not. output_opp) .and
 end if
 
 call print_greeting()
-write(*, fmt = '(/,A,/)') separator   ! separates greeting from input part
+write(*, fmt = '(/,A,/)') separator   ! separates greeting from checking
 
-! Check if input-file name is valid, else ask for it and check again
-exists_input = .false.
-interactive = .false.
-if (file_input /= '') then
+! Check if input file name is valid (vital)
+if (file_input == '') then
+    write(*,*) 'No input file name provided. Exiting.'
+    stop
+else
+    exists_input = .false.
     inquire(file = file_input, exist = exists_input)
+    if (.not. exists_input) then
+        write(*,*) 'No valid input file name provided. Exiting.'
+        stop
+    end if
 end if
-do while (.not. exists_input)
-    interactive = .true.
-    write(*, fmt = '(A)', advance = 'no') ' Name of input file (STF format from JANA2006): '
-    read(*, fmt = '(A248)') file_input
-    inquire(file = file_input, exist = exists_input)
-end do
 
-! Ask for name of output file, if not provided, or generate automatically
-if ((interactive) .and. (file_output == '')) then
-    write(*, fmt = '(/,A)', advance = 'no') ' Name of output file (default: <input>_opp.asc): '
-    read(*, fmt = '(A256)') file_output
-end if
+
+! Automatically set output file name, if not provided
 if (file_output == '') then
     file_output = file_input
     ext_dot = index(file_output, '.', .true.)    ! check for file extension
@@ -138,58 +135,7 @@ if (file_output == '') then
     file_output = trim(file_output) // '_opp.asc'
 end if
 
-! Provide menu for interactive mode
-if (interactive) then
-    call print_menu()
-    do
-        write(*, fmt = '(/,A)', advance = 'no') ' Please select the job: '
-        read(*, fmt = '(I2)') job
-        select case (job)
-        case (1)
-            output_pdf = .true.
-            output_pdferr = .false.
-            output_opp = .false.
-            output_opperr = .false.
-            exit
-        case (2)
-            output_pdf = .true.
-            output_pdferr = .true.
-            output_opp = .false.
-            output_opperr = .false.
-            exit
-        case (3)
-            output_pdf = .false.
-            output_pdferr = .false.
-            output_opp = .true.
-            output_opperr = .false.
-            exit
-        case (4)
-            output_pdf = .false.
-            output_pdferr = .false.
-            output_opp = .true.
-            output_opperr = .true.
-            exit
-        case (5)
-            output_pdf = .true.
-            output_pdferr = .false.
-            output_opp = .true.
-            output_opperr = .false.
-            exit
-        case (6)
-            output_pdf = .true.
-            output_pdferr = .true.
-            output_opp = .true.
-            output_opperr = .true.
-            exit
-        case default
-            write(*,*) 'Invalid choice.'
-            cycle
-        end select
-    end do
-end if
-
-! Automatically generate name of error map, if not provided and necessary, and check existence;
-! User input, if not existent
+! Automatically set error map name, if not provided and necessary, and check existence
 if ((output_pdferr) .or. (output_opperr)) then
     if (file_error == '') then
         file_error = file_input
@@ -202,26 +148,29 @@ if ((output_pdferr) .or. (output_opperr)) then
     exists_error = .false.
     inquire(file = file_error, exist = exists_error)
     if (.not. exists_error) then
-        write(*,*); write(*,*) 'Default error map <input>_err.stf not found.'
-        if (.not. interactive) then
-            output_pdferr = .false.
-            output_opperr = .false.
-        end if
+        write(*,*) 'Error map not found. PDF/OPP error will not be included in output.'
+        output_pdferr = .false.
+        output_opperr = .false.
     end if
-    do while ((.not. exists_error) .and. interactive)
-        write(*, fmt = '(A)', advance = 'no') ' Name of error map: '
-        read(*, fmt = '(A256)') file_error
-        inquire(file = file_error, exist = exists_error)
-    end do
 end if
 
-! Ask for temperature, if not provided, and check it
-do while ((T <= 0.) .and. (output_opp .or. output_opperr))
-    write(*, fmt = '(/,A)', advance = 'no') ' Temperature/K: '
-    read(*,*) T
-end do
+! Try automatic extraction of temperature from *.m90, if not provided
+if ((T <= 0.) .and. (output_opp .or. output_opperr)) then
+    write(*,fmt='(A)',advance='no') 'Temperature not given. Probing *.m90 ...'
+    exists_m90 = .false.
+    if (.not. exists_m90) then
+        write(*,*) ' Not found. Exiting.'
+        stop
+    else
+        write(*,fmt='(A)',advance='no') ' Found:'
+        write(*,*) ' invalid value. Exiting.'
+        stop
+        write(*,*) T, 'K'
+    end if
+end if
 
-write(*, fmt = '(/,A,/)') separator    ! separates input part from calculation information
+write(*,*) 'Necessary input data acquired.'
+write(*, fmt = '(/,A,/)') separator    ! separates checking from calculation
 
 ! PARSING INPUT FILE(S)
 
@@ -258,9 +207,9 @@ read(20,*,iostat=io_status) key, x_min, x_max, y_min, y_max
 write(*,*) 'Limits of x (min, max): ', x_min, x_max
 write(*,*) 'Limits of y (min, max): ', y_min, y_max; write(*,*)
 
-! Test conformance of error-map DIMENSIONS
+! Test conformance of error map DIMENSIONS
 if (output_pdferr .or. output_opperr) then
-    write(*, fmt = '(A)', advance = 'no') ' Validating error-map dimensions ...'
+    write(*, fmt = '(A)', advance = 'no') ' Validating error map dimensions ...'
     open(25,file = file_error,status = 'old',action = 'read')
     io_status = 0
     key = ''
@@ -287,7 +236,7 @@ if (output_pdferr .or. output_opperr) then
     end if
 end if
 
-! Test conformance of error-map BOUNDS
+! Test conformance of error map BOUNDS
 if (output_pdferr .or. output_opperr) then
     rewind(25)
     io_status = 0
@@ -354,7 +303,7 @@ if (remain_vals > 0) then              ! Reading remaining incomplete line if pr
     read(20,*,iostat=io_status) z_stack(8 * i - 7:8 * i - 8 + remain_vals)
 end if
 write(*,*) 'done.'
-write(*,*) 'Total of PDF data-points found: ', 8 * i - 8 + remain_vals
+write(*,*) 'Total of PDF data points found: ', 8 * i - 8 + remain_vals
 close(20)
 
 ! Transfer of PDF data from stack to ordered matrix
@@ -364,7 +313,7 @@ deallocate(z_stack)
 
 ! CALCULATION OF OPP
 
-write(*, fmt = '(/,A,/)') separator  ! seperate PDF from OPP part
+write(*, fmt = '(/,A,/)') separator  ! separates PDF from OPP
 
 ! Norm of PDF
 pdf_0 = maxval(pdf)
@@ -386,9 +335,9 @@ if (output_opp) then
                 z(i,j) = 1.0E+9    ! huge OPP for zero or negative PDF
             end if
         end do
-    end do          ! z filled with OPP data    
+    end do          ! z filled with OPP data
     write(*,*) 'done.'
-    
+
     ! Store OPP in temporary file to reduce memory usage
     open(40,status = 'scratch',access = 'sequential',action = 'readwrite')
     write(*, fmt = '(A)', advance = 'no') ' Temporarily storing OPP data ...'
@@ -437,11 +386,11 @@ if (output_pdferr .or. output_opperr) then
         read(25,*,iostat=io_status) z_stack(8 * i - 7:8 * i - 8 + remain_vals)
     end if
     write(*,*) 'done.'
-    write(*,*) 'Total of error data-points found: ', 8 * i - 8 + remain_vals; write(*,*)
+    write(*,*) 'Total of error data points found: ', 8 * i - 8 + remain_vals; write(*,*)
     close(25)
 end if
 
-! Transfer of PDF error-data from stack to ordered matrix
+! Transfer of PDF error data from stack to ordered matrix
 if (output_pdferr .or. output_opperr) then
     allocate(z(1:data_x,1:data_y))
     z = reshape(z_stack, (/ data_x, data_y /))  ! z filled with PDF error data
@@ -451,7 +400,7 @@ end if
 ! Store PDF error in temporary file to reduce memory usage
 if (output_pdferr) then
     open(41,status = 'scratch',access = 'sequential',action = 'readwrite')
-    write(*, fmt = '(A)', advance = 'no') ' Temporarily storing PDF error-data ...'
+    write(*, fmt = '(A)', advance = 'no') ' Temporarily storing PDF error data ...'
     do i = 1, data_x
         do j = 1, data_y
             write(41,fmt = '(ES13.6)') z(i,j)
@@ -468,7 +417,7 @@ end if
 
 ! Calculation of error in OPP for every data point
 if (output_opperr) then
-    write(*, fmt = '(A)', advance = 'no') ' Calculating OPP error-data ...'
+    write(*, fmt = '(A)', advance = 'no') ' Calculating OPP error data ...'
     do i = 1, data_x
         do j = 1, data_y
             if (pdf(i,j) > 0) then
@@ -551,52 +500,33 @@ if (output_pdferr) then
     close(41)
 end if
 
-write(*, fmt = '(/,A,/)') separator ! Separates output from goodbye
+write(*, fmt = '(/,A,/)') separator ! separates output from goodbye
 write(*,*) '"This *does* compute!" - BMO'; write(*,*)
 
-end program CalcOPP
+end program pdf2opp_2d
 
 
 ! Greeting text
 subroutine print_greeting()
-    write(*,*); write(*,*) 'CalcOPP 1.6.1 - Calculation of 2D OPP from PDF Data (JANA2000/2006 STF Format)'
-    write(*,*) 'Copyright ¸ 2015  Dr. Dennis Wiedemann (MIT License, see License.txt)'; write(*,*)
-    write(*,*) 'If you prepare data for publication with CalcOPP, please use the'
-    write(*,*) 'following citation:'
-    write(*,*) 'D. Wiedemann, CalcOPP, Calculation of 2D OPP from PDF Data,'
-    write(*,*) 'Technische Universit„t Berlin, Berlin (Germany), 2015,'
-    write(*,*) 'doi:10.6084/m9.figshare.1461721.'
+    write(*,*); write(*,*) 'pdf2opp_2d 2.0.0 - Calculation of 2D OPP from PDF Data (JANA2006 STF Format)'
+    write(*,*) 'Copyright ¸ 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)'; write(*,*)
 end subroutine print_greeting
-
-
-! Menu text
-subroutine print_menu()
-    write(*,fmt = '(/,/,A)') ' List of Jobs'
-    write(*,*) '------------'; write(*,*)
-    write(*,*) '1 - Write PDF data'
-    write(*,*) '2 - Write PDF data with error map'
-    write(*,*) '3 - Calculate and write OPP data'
-    write(*,*) '4 - Calculate and write OPP data with error map'
-    write(*,*) '5 - Calculate and write PDF and OPP data'
-    write(*,*) '6 - Calculate and write PDF and OPP data with error maps'
-end subroutine print_menu
 
 
 ! Help text
 subroutine print_help()
-    write(*,*); write(*,*) 'Usage: CalcOPP32|CalcOPP64 [OPTIONS]'; write(*,*)
-    write(*,*) 'Without further options, CalcOPP will enter interactive mode and ask the'
-    write(*,*) 'user to provide necessary data.'; write(*,*)
+    write(*,*); write(*,*) 'Usage: pdf2opp_2d<32|64> [OPTIONS]'; write(*,*)
     write(*,*) 'Options:'; write(*,*)
-    write(*,*) '-h, --help                 Prints this usage information and exits.'
-    write(*,*) '-i, --input <file name>    Specifies the input file (key may be omitted).'
-    write(*,*) '-o, --output <file name>   Specifies the output file.'
-    write(*,*) '-e, --error <file name>    Specifies the error-map file.'
-    write(*,*) '-t, --temperature <T/K>    Specifies the temperature in Kelvin.'
-    write(*,*) '-pdf, --pdf                Includes PDF data in output.'
-    write(*,*) '-pdferr, --pdf_error       Includes PDF error-map in output.'
-    write(*,*) '-opp, --opp                Calculates and includes OPP data in output.'
-    write(*,*) '-opperr, --opp_error       Calculates and includes OPP error-map in output.'
+    write(*,*) '-h                Prints this usage information and exits.'
+    write(*,*) '-i <file name>    Specifies the input file (key may be omitted).'
+    write(*,*) '-o <file name>    Specifies the output file.'
+    write(*,*) '-e <file name>    Specifies the error map file.'
+    write(*,*) '-t <T/K>          Specifies the temperature in Kelvin'
+    write(*,*) '                  (if not provided, extraction from *.m90 will be tried).'
+    write(*,*) '-pdf              Includes PDF data in output.'
+    write(*,*) '-pdferr           Includes PDF error map in output.'
+    write(*,*) '-opp              Calculates and includes OPP data in output.'
+    write(*,*) '-opperr           Calculates and includes OPP error map in output.'
     write(*,*); write(*,*) 'If none of the last four options is included, all data will be calculated'
     write(*,*) 'and put out.'
 end subroutine print_help
