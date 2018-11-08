@@ -1,7 +1,7 @@
 program pdf2opp_2d
 
 !   CalcOPP 2.0.0 - Calculation of One-Particle Potentials
-!   Subroutines for Calculation from 2D PDF Data (JANA2006 STF Format)
+!   PDF2OPP_2D - Subroutines for Calculation from 2D PDF Data (JANA2006 STF Format)
 !   Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)
 
 implicit none
@@ -508,7 +508,7 @@ end program pdf2opp_2d
 
 ! Greeting text
 subroutine print_greeting()
-    write(*,*); write(*,*) 'pdf2opp_2d 2.0.0 - Calculation of 2D OPP from PDF Data (JANA2006 STF Format)'
+    write(*,*); write(*,*) 'PDF2OPP_2D 2.0.0 - Calculation of 2D OPP from PDF Data (JANA2006 STF Format)'
     write(*,*) 'Copyright ¸ 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)'; write(*,*)
 end subroutine print_greeting
 

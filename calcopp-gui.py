@@ -1,25 +1,45 @@
 #!/usr/bin/env Python3
 # -*- coding: utf-8 -*-
-"""CalcOPP-GUI – A Graphical User Interface for the Calculation of One-Particle Potentials
+"""A graphical user interface for the calculation of one-particle potentials (OPPs).
 
-This program provides a GUI for the different routines of CalcOPP taking scatter densities,
-two- or three-dimensional probability-density functions as input. It relies on PySimpleGUI.
+CalcOPP – Calculation of One-Particle Potentials
+CalcOPP-GUI – The Graphical User Interface of CalcOPP
 
-Author: Dr. Dennis Wiedemann
-Contact: dennis.wiedemann@chem.tu-berlin.de
-License:
+This program provides a GUI for the different routines of CalcOPP taking scatter densities, two- or three-dimensional
+ probability-density functions as input.
+
+CalcOPP-GUI uses the module PySimpleGUI by MikeTheWatchGuy distributed under the GNU General Public License v3.0 (see
+ LGPL-3.0.txt).
 """
-import PySimpleGUI as sg
-import Annotations as Annot
+
 import os
 import platform
+import PySimpleGUI as sg
+import annotations as annot
+
+__author__ = 'Dennis Wiedemann'
+__copyright__ = 'Copyright 2019, Dennis Wiedemann'
+__credits__ = ['Dennis Wiedemann']
+__license__ = 'MIT'
+__version__ = '2.0.0'
+__maintainer__ = 'Dennis Wiedemann'
+__email__ = 'dennis.wiedemann@chem.tu-berlin.de'
+__status__ = 'Development'
 
 
 def file_exists(file_name):
+    """Checks if a file exists.
+
+    file_name: Name of the file to check for.
+    """
     return os.path.isfile(file_name)
 
 
 def is_float(string_variable):
+    """Checks if a string can be converted to a float.
+
+    string_variable: String to check for convertibility.
+    """
     global window
     try:
         float(string_variable)
@@ -29,6 +49,11 @@ def is_float(string_variable):
 
 
 def os_is_64bit():
+    """Checks if the operating system is of the 64-bit type.
+
+    Note: checks the machine type because other methods return the capability of the CPU
+    or the bitness of the interpreter/compiled executable.
+    """
     return platform.machine().endswith('64')
 
 
@@ -40,7 +65,7 @@ column_left = [
     [sg.Frame('Information and Manual', [[sg.Multiline(size=(61, None), do_not_clear=True, key='manual')]])],
     [sg.Frame('Citation', [
         [sg.Text('If you publish data calculated with CalcOPP, please use the following citation:')],
-        [sg.Text(Annot.CITATION, font=(None, 10, 'italic'))]])]
+        [sg.Text(annot.CITATION, font=(None, 10, 'italic'))]])]
 ]
 
 # ====== Right Column Definition ====== #
@@ -61,7 +86,7 @@ tab_pdf2d = [
          ]
     ])],
     [sg.Frame('Temperature', [[
-        sg.Radio('From JANA2006’s *.m40 file', "TEMP2D", change_submits=True, default=True, key='2d_temp_source_m40'),
+        sg.Radio('From JANA2006’s *.m90 file', "TEMP2D", change_submits=True, default=True, key='2d_temp_source_m90'),
         sg.Radio('Custom value:', "TEMP2D", change_submits=True, key='2d_temp_source_custom'),
         sg.InputText(size=(8, 1), do_not_clear=True, disabled=True, key='2d_temp'),
         sg.Text('K')
@@ -88,7 +113,7 @@ tab_pdf3d = [
          ]
     ])],
     [sg.Frame('Temperature', [[
-        sg.Radio('From JANA2006’s *.m40 file', "TEMP3D", change_submits=True, default=True, key='3d_temp_source_m40'),
+        sg.Radio('From JANA2006’s *.m90 file', "TEMP3D", change_submits=True, default=True, key='3d_temp_source_m90'),
         sg.Radio('Custom value:', "TEMP3D", change_submits=True, key='3d_temp_source_custom'),
         sg.InputText(size=(8, 1), disabled=True, do_not_clear=True, key='3d_temp'),
         sg.Text('K')
@@ -136,8 +161,11 @@ column_right = [
 layout_about = [
     [sg.Image(filename='logo.png')],
     [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=('None', 18))],
-    [sg.Text('Version 2.0.0\n', font=('None', 14))],
-    [sg.Text(Annot.CITATION + '\n')],
+    [sg.Text('Version ' + __version__ + '\n', font=('None', 14))],
+    [sg.Text(annot.CITATION + '\n')],
+    [sg.Text('CalcOPP is distributed under the ' + __license__ +
+             ' license (see LICENSE file). It uses the module \nPySimpleGUI by MikeTheWatchGuy distributed under the'
+             ' GNU General Public \nLicense v3.0 (see LGPL-3.0.txt).\n')],
     [sg.CloseButton('Done')]
 ]
 
@@ -145,7 +173,7 @@ layout_about = [
 layout = [[sg.Menu(menu_def), sg.Column(column_left), sg.Column(column_right)]]
 window = sg.Window('CalcOPP – Calculation of One-Particle Potentials',
                    default_element_size=(40, 1),
-                   icon='logo.ico',
+                   icon='CalcOPP.ico',
                    grab_anywhere=False).Layout(layout)
 
 # ====== Event Loop for Persistent Window (Main Program) ===== #
@@ -157,11 +185,11 @@ while True:
     # ------ Toggle Explanations According to Tab ----- #
     if event == 'data_source':
         if values['data_source'] == '2D PDF':
-            window.FindElement('manual').Update(value=Annot.MANUAL_PDF2D)
+            window.FindElement('manual').Update(value=annot.MANUAL_PDF2D)
         elif values['data_source'] == '3D PDF':
-            window.FindElement('manual').Update(value=Annot.MANUAL_PDF3D)
+            window.FindElement('manual').Update(value=annot.MANUAL_PDF3D)
         else:
-            window.FindElement('manual').Update(value=Annot.MANUAL_SD)
+            window.FindElement('manual').Update(value=annot.MANUAL_SD)
 
     # ------ Toggle Custom Temperature/Extremum Fields ----- #
     elif '_source_' in event:
@@ -198,21 +226,21 @@ while True:
             window.FindElement('2d_file_in').Update('')
             window.FindElement('2d_file_err').Update('')
             window.FindElement('2d_file_out').Update('')
-            window.FindElement('2d_temp_source_m40').Update(value=True)
+            window.FindElement('2d_temp_source_m90').Update(value=True)
             window.FindElement('2d_temp').Update('', disabled=True)
             window.FindElement('2d_output_pdf').Update(value=False)
             window.FindElement('2d_output_pdf_err').Update(value=False)
             window.FindElement('2d_output_opp').Update(value=True)
             window.FindElement('2d_output_opp_err').Update(value=False)
-            window.FindElement('manual').Update(value=Annot.MANUAL_PDF2D)
+            window.FindElement('manual').Update(value=annot.MANUAL_PDF2D)
 
         # ····· Empty 3D PDF Tab on Reset Button ····· #
         elif event == '3d_reset':
             window.FindElement('3d_file_in').Update('')
             window.FindElement('3d_file_out').Update('')
-            window.FindElement('3d_temp_source_m40').Update(value=True)
+            window.FindElement('3d_temp_source_m90').Update(value=True)
             window.FindElement('3d_temp').Update('', disabled=True)
-            window.FindElement('manual').Update(value=Annot.MANUAL_PDF3D)
+            window.FindElement('manual').Update(value=annot.MANUAL_PDF3D)
 
         # ····· Empty Scatterer Density Tab on Reset Button ····· #
         else:
@@ -221,11 +249,11 @@ while True:
             window.FindElement('sd_temp').Update('')
             window.FindElement('sd_extremum_source_minimum').Update(value=True)
             window.FindElement('sd_extremum').Update('', disabled=True)
-            window.FindElement('manual').Update(value=Annot.MANUAL_SD)
+            window.FindElement('manual').Update(value=annot.MANUAL_SD)
 
     # ------ Open "About" Window ----- #
     elif event == 'About …':
-        window_about = sg.Window('About …', grab_anywhere=False, icon='logo.ico').Layout(layout_about)
+        window_about = sg.Window('About …', grab_anywhere=False, icon='CalcOPP.ico').Layout(layout_about)
         window_about.Read()
 
     # ------ Start Calculations ----- #
@@ -240,8 +268,8 @@ while True:
                 error_message += '\nError file does not exist.'
             if values['2d_file_out'] == '':
                 error_message += '\nNo output file is given.'
-            if values['2d_temp_source_m40'] and not file_exists(values['2d_file_in'][:-4] + '.m40'):
-                error_message += '\nFile *.m40 does not exist in the same directory.'
+            if values['2d_temp_source_m90'] and not file_exists(values['2d_file_in'][:-4] + '.m90'):
+                error_message += '\nFile *.m90 does not exist in the same directory.'
             if values['2d_temp_source_custom'] and not is_float(values['2d_temp']):
                 error_message += '\nTemperature has to be a decimal.'
             if not (values['2d_output_opp'] or values['2d_output_pdf']
@@ -254,8 +282,8 @@ while True:
                 error_message += '\nInput file does not exist.'
             if values['3d_file_out'] == '':
                 error_message += '\nNo output file is given.'
-            if values['3d_temp_source_m40'] and not file_exists(values['3d_file_in'][:-8] + '.m40'):
-                error_message += '\nFile *.m40 does not exist in the same directory.'
+            if values['3d_temp_source_m90'] and not file_exists(values['3d_file_in'][:-8] + '.m90'):
+                error_message += '\nFile *.m90 does not exist in the same directory.'
             if values['3d_temp_source_custom'] and not is_float(values['3d_temp']):
                 error_message += '\nTemperature has to be a decimal.'
 
@@ -272,16 +300,16 @@ while True:
 
         if error_message != '':
             # ····· Display Error Message ····· #
-            sg.PopupError('Error', error_message[1:]+'\n', icon='logo.ico')
+            sg.PopupError('Error', error_message[1:]+'\n', icon='CalcOPP.ico')
 
         else:
             # ····· Spawn 2D OPP Calculation Routine ····· #
             if event == '2d_okay':
-                command_line = 'CalcOPP64' if os_is_64bit() else 'CalcOPP32'
+                command_line = 'pdf2opp_2d-x64' if os_is_64bit() else 'pdf2opp_2d-x86'
                 command_line += ' -i ' + values['2d_file_in'] + ' -o ' + values['2d_file_out']
                 if values['2d_output_opp_err'] or values['2d_output_pdf_err']:
                     command_line += ' -e ' + values['2d_file_err']
-                command_line += ' -t ' + values['2d_temp']  # TODO: make CalcOPP read from *.m40
+                command_line += ' -t ' + values['2d_temp']  # TODO: make CalcOPP read from *.m90
                 command_line += ' -pdf' if values['2d_output_pdf'] else ''
                 command_line += ' -pdferr' if values['2d_output_pdf_err'] else ''
                 command_line += ' -opp' if values['2d_output_opp'] else ''
@@ -291,7 +319,7 @@ while True:
 
             # ····· Spawn 3D OPP Calculation Routine ····· #
             elif event == '3d_okay':
-                command_line = 'CalcOPP-3D' if os_is_64bit() else 'CalcOPP-3D_32'  # TODO: compile 32-bit version
+                command_line = 'pdf2opp_3d-x64' if os_is_64bit() else 'pdf2opp_3d-x86'
                 command_line += ' -i ' + values['2d_file_in'] + ' -o ' + values['2d_file_out']
                 # TODO: make CalcOPP-3D accept input and output file names
                 command_line += ' -t ' + values['2d_temp'] if values['3d_temp_source_custom'] else ''
@@ -305,3 +333,4 @@ while True:
 
 # TODO Wishlist: Title of error window, multiline read-only
 # TODO: annotations
+# TODO: error routine
