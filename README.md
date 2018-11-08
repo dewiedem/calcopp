@@ -18,72 +18,61 @@ E-mail:	[dennis.wiedemann@chem.tu-berlin.de](mailto:dennis.wiedemann@chem.tu-ber
 Web:	http://dennis.wiedemann.name
 
 ## Description
-In the OPP approach, every atom is treated as an individual Einstein oscillator subject to Boltzmann statistics in the classical limit. The OPP itself represents the potential as experienced by an atom at a certain position and allows, *e.g.*, to assess the viability and activation barriers of migration pathways (see [K. N. Trueblood, H.-B. Bürgi, H. Burzlaff, J. D. Dunitz, C. M. Gramaccioli, H. H. Schulz, U. Shmueli, S. C. Abrahams, *Acta Crystallogr., Sect. A: Found. Crystallogr.* **1996**, *52*, 770–781](https://doi.org/10.1107/S0108767396005697) and [H. Boysen, *Z. Kristallogr.* **2003**, *218*, 123–131](https://doi.org/10.1524/zkri.218.2.123.20668)).
+In the OPP approach, every atom is treated as an individual Einstein oscillator subject to Boltzmann statistics in the classical limit. The OPP itself represents the potential as experienced by an atom at a certain position and allows, *e.g.*, to assess the viability and activation barriers of migration pathways (see [K. N. Trueblood *et al.*, *Acta Crystallogr., Sect. A: Found. Crystallogr.* **1996**, *52*, 770–781](https://doi.org/10.1107/S0108767396005697) and [H. Boysen, *Z. Kristallogr.* **2003**, *218*, 123–131](https://doi.org/10.1524/zkri.218.2.123.20668)).
 
 Depending on the problem, CalcOPP allows to calculate the OPP from a probability-density function (PDF) sampled in 2D or 3D by [JANA2006](http://jana.fzu.cz/) or from the MEM-reconstructed scatterer density sampled using [Dysnomia](https://jp-minerals.org/dysnomia/en/)—under certain additional conditions. It can also reformat 2D PDF input and handle the associated error maps.
 
 ## Compiling
-The source code of the modules *pdf2opp_2d* and *pdf2opp_3d* adheres strictly to the specifications of Fortran2003. It has been compiled using GFortran from GCC X.X.X/X.X.X (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”:
+### Modules *calcopp-gui* and *sd2opp*
+The source code adheres to the specifications of Python 3.7 and heeds [*PEP 8 – Style Guide for Python Code*](https://www.python.org/dev/peps/pep-0008/). It has been compiled using Python X.X.X/X.X.X (Windows/Linux) and [PyInstaller](https://www.pyinstaller.org/) X.X.X with assert statements, any code conditional on the value of `__debug__`, and docstrings removed.
 
-`gfortran -std=f2003 -pedantic -Wall -Wextra -O3 -static -s -m64 pdf2opp_<2|3>d.f03 -o pdf2opp_<2|3>d.exe`
+`python -OO -m PyInstaller --name="CalcOPP[.exe]" calcopp-gui.py`
+`python -OO -m PyInstaller --name="sd2opp[.exe]" sd2opp.py`
 
-The source code of the modules *calcopp-gui* and *sd2pdf* adheres to the specifications of Python 3.7 heeding *PEP 8 – Style Guide for Python Code*. It has been compiled using the Python interpreter X.X.X/X.X.X (Windows/Linux) and [PyInstaller]https://www.pyinstaller.org/) X.X.X:
+The module *calcopp-gui* further relies on [PySimpleGUI](https://pypi.org/project/PySimpleGUI/), used in version X.X.X for compiling.
 
-`pyinstaller <calcopp-gui.py|sd2pdf.py>`
+### Modules *pdf2opp_2d* and *pdf2opp_3d*
+The source code adheres strictly to the specifications of Fortran2003. It has been compiled using GFortran from GCC X.X.X/X.X.X (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”:
+
+`gfortran -std=f2003 -pedantic -Wall -Wextra -O3 -static -s [-m64] pdf2opp_2d.f03 -o pdf2opp_2d[.exe]`
+`gfortran -std=f2003 -pedantic -Wall -Wextra -O3 -static -s [-m64] pdf2opp_3d.f03 -o pdf2opp_3d[.exe]`
 
 ## Installation
-Unpack the archive into any user-writable directory. The executables have to be in a common directory for the graphical user interface (GUI) to function. The executables *pdf2opp_2d*, *pdf2opp_3d*, and *sd2opp* may be used in a stand-alone fashion. No further installation is required, although it may be necessary to set the execute permission on Unix-like systems.
+Unpack one of the archives (64-/32-bit version for Windows/Linux) into any user-writable directory. For the graphical user interface (GUI) to work correctly, the executables must be in a common directory. You can also use the executables `pdf2opp_2d[.exe]`, `pdf2opp_3d[.exe]`, and `sd2opp[.exe]` in a stand-alone (scriptable) fashion. It may be necessary to set the execute permission on Unix-like systems.
 
 ## Usage
 ### GUI
-Start the application `CalcOPP(.exe)`. Further instructions and are displayed in the box on the left. 
+Start the application `CalcOPP[.exe]` *via* desktop environment or shell. Further instructions are displayed in the box on the left. 
+
+### Drag and Drop
+For `pdf2opp_2d[.exe]`, you can drag and drop the icon of an appropriate `*.stf` file on the icon of the executable. The latter will then try to read the measurement temperature from a JANA2006 `*.m90` file in the working directory and, if the file is found, automatically write the output to `*_opp.asc`. If an error map with the name `*_err.stf` is also present, it will be processed, too.
+
+For `pdf2opp_3d[.exe]`, you can drag and drop the icon of an appropriate `*_tmp.xsf` file on the icon of the executable. The latter will then try to read the measurement temperature from a JANA2006 `*.m90` file in the working directory and, if the file is found, automatically write the output to `*_opp.xsf` and `*_opp.vesta`.
 
 ### Command Line
-If you want to use the modules *pdf2opp_2d*, *pdf2opp_3d*, or *sd2opp* from the command line, please invoke them with the parameter `-h` to display their usage.
+If you want to use the executables `pdf2opp_2d[.exe]`, `pdf2opp_3d[.exe]`, or `sd2opp[.exe]` from the command line, please invoke them with the parameter `-h` (for help) to display their usage.
 
 ### Input and Output
 CalcOPP accepts well-formed STF files as generated by JANA2000 or JANA2006. The input file has to contain probability-density function (PDF) data sampled on a uniform grid. CalcOPP can only use 2D data from a single section. The output is a generic ASCII file of space-separated values giving x, y, PDF, and OPP value (both with errors, if a map has supplied) for every grid point. It is fit for plotting with most modern applications (*e.g.*, QtiPlot or Origin).
 
 CalcOPP-3D accepts well-formed temporary XSF files as generated by JANA2006 (`*_tmp.xsf`). The input file has to contain PDF data sampled on a uniform grid. Only the first 3D data grid stored in the file is taken into account. The output is a file of the same type (`*_opp.xsf`). All lines before and after the first 3D data grid are copied into it verbatim. In addition, a file is provided to be directly opened in VESTA (`*_opp.vesta`).
 
-### Invocation
-#### CalcOPP
-CalcOPP may be run in two different modes: interactively or silently. Its behaviour can be controlled with command-line options:
-
-```
-CalcOPP32 [<input file>] [OPTIONS] [-h|--help]
-CalcOPP64 [<input file>] [OPTIONS] [-h|--help]
-```
-
-If no arguments are given, CalcOPP will start in *interactive mode*. It will then let you choose input- and output-file names, type of job, and temperature.
-
-If a valid input-file name is given, CalcOPP will start in *silent mode*. (This is also the case if you drag and drop a file on the application icon.) CalcOPP will load the input file and automatically write the output to `*_opp.asc` If an error map with the name `*_err.stf` is present in the working directory, it will be processed. As the temperature is not stored in the STF file, CalcOPP has to ask for it.
-
-For further information about arguments and command-line switches, please invoke `CalcOPP32 -h` or `CalcOPP64 -h`.
-
-#### CalcOPP-3D
-CalcOPP-3D is run via command line or drag-and-drop of the `*_tmp.xsf`. In the former case, the command is:
-
-`CalcOPP-3D[_32] <input file>`
-
-The file name should refer to temporary PDF output as generated by JANA2006 (`*_tmp.xsf`). CalcOPP-3D tries to extract the measurement temperature from JANA2006's `*.m90` file in the same directory. If it fails, the user is asked for manual input.
-
 For visualization in VESTA, the displaying of sections should be switched off, as the high OPP in most of the unit cell would probably obscure any area of interest. The isovalue (given in electronvolt) must then be chosen reasonably.
 
 ### Caveats
-Any file with the same name as the output will be **overwritten without asking**! Be sure to save any intermediate result that you are going to need.
+Any file with the same name as the standard or chosen output file will be **overwritten without asking**! Be sure to save any intermediate result that you are going to need.
 
-For grid points with a non-positive PDF in CalcOPP, an arbitrarily huge OPP and OPP error of 1.0E+9 meV are set, signifying plus infinity—physically meaning a potential barrier of infinite height.
+In *pdf2opp_2d*, for grid points with a non-positive PDF, arbitrarily huge OPPs and OPP errors of 10<sup>9</sup> meV are set instead of the mathematically rigorous +∞. Nevertheless, this physically means a potential barrier of insurmountable height.
 
-For grid points with a non-positive PDF in CalcOPP-3D, the highest finite OPP in the data (derived from the lowest positive PDF) is arbitrarily set to make the fringes of visualized isosurfaces less spiky after treatment with VESTA's interpolation algorithm. When further processing the data or extracting values directly, however, the user must be aware, that **at these points the potential barrier is infinitely high**.
+In *pdf2opp_3d*, for grid points with a non-positive PDF, the highest finite OPP in the data (derived from the lowest positive PDF) is set to make the fringes of visualized isosurfaces less spiky after treatment with VESTA’s interpolation algorithm. When further processing the data or extracting values directly, however, you must be aware that, **at these points, the potential barrier is insurmountably (infinitely) high**.
 
 ## Acknowledgement
 CalcOPP has been inspired by work from Dr. Hans Boysen (Ludwig-Maximilians-Universität München) and Dr. Anatoliy Senyshyn (Technische Universität München).
 
 ## Citation
-If you prepare data for publication with CalcOPP, please use one of the following citation:
+If you prepare data for publication with CalcOPP, please use the following citation:
 
 D. Wiedemann, CalcOPP, Calculation of One-Particle Potentials, Technische Universität Berlin, Berlin (Germany), **2019**, [doi:XXX](https://doi.org/XXX).
 
 ## Contributing
-I am not actively looking for contributions at the moment, but feel free to contact me if you find any bugs or want to discuss the project.
+I am not looking for contributors at the moment, but feel free to contact me for bug reports and discussion.
