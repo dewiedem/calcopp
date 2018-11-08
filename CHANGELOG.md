@@ -11,6 +11,7 @@ The format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/
 ### Added
 - GUI (yay!) coded in Python using [PySimpleGUI](https://pypi.org/project/PySimpleGUI/).
 - Documentation for the preparation of input data (displayed in GUI).
+- Files to comply with the LGPL v3 license of PySimpleGUI.
 - Logo and icons.
 - PDF2OPP_2D: Possibility to read temperature from JANA2006’s `*.m90` file.
 - PDF2OPP_3D: Possibility to specify temperature and output file name *via* command line.
