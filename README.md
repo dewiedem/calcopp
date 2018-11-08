@@ -62,7 +62,7 @@ For visualization in VESTA, the displaying of sections should be switched off, a
 ### Caveats
 Any file with the same name as the standard or chosen output file will be **overwritten without asking**! Be sure to save any intermediate result that you are going to need.
 
-In *pdf2opp_2d*, for grid points with a non-positive PDF, arbitrarily huge OPPs and OPP errors of 10<sup>9</sup> meV are set instead of the mathematically rigorous +∞. Nevertheless, this physically means a potential barrier of insurmountable height.
+In *pdf2opp_2d*, for grid points with a non-positive PDF, arbitrarily huge OPPs and OPP errors of 10<sup>9</sup> meV are set instead of the mathematically rigorous +∞. Nevertheless, this physically means a potential barrier of insurmountable height.
 
 In *pdf2opp_3d*, for grid points with a non-positive PDF, the highest finite OPP in the data (derived from the lowest positive PDF) is set to make the fringes of visualized isosurfaces less spiky after treatment with VESTA’s interpolation algorithm. When further processing the data or extracting values directly, however, you must be aware that, **at these points, the potential barrier is insurmountably (infinitely) high**.
 
