@@ -163,9 +163,7 @@ layout_about = [
     [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=('None', 18))],
     [sg.Text('Version ' + __version__ + '\n', font=('None', 14))],
     [sg.Text(annot.CITATION + '\n')],
-    [sg.Text('CalcOPP is distributed under the ' + __license__ +
-             ' license (see LICENSE file). It uses the module \nPySimpleGUI by MikeTheWatchGuy distributed under the'
-             ' GNU General Public \nLicense v3.0 (see LGPL-3.0.txt).\n')],
+    [sg.Text(annot.LICENSE)],
     [sg.CloseButton('Done')]
 ]
 
@@ -331,6 +329,7 @@ while True:
             elif event == 'sd_okay':
                 pass  # TODO: write and call sd2opp.py
 
-# TODO Wishlist: Title of error window, multiline read-only
+# TODO wish list: Title of error window, multiline read-only
 # TODO: annotations
 # TODO: error routine
+# TODO: wait in pdf2opp before closing window, if invoked via drag and drop
