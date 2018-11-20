@@ -298,7 +298,7 @@ while True:
 
         if error_message != '':
             # ····· Display Error Message ····· #
-            sg.PopupError('Error', error_message[1:]+'\n', icon='CalcOPP.ico')
+            sg.PopupError(error_message[1:]+'\n', title='Error', icon='CalcOPP.ico')
 
         else:
             # ····· Spawn 2D OPP Calculation Routine ····· #
@@ -307,7 +307,7 @@ while True:
                 command_line += ' -i ' + values['2d_file_in'] + ' -o ' + values['2d_file_out']
                 if values['2d_output_opp_err'] or values['2d_output_pdf_err']:
                     command_line += ' -e ' + values['2d_file_err']
-                command_line += ' -t ' + values['2d_temp']  # TODO: make CalcOPP read from *.m90
+                command_line += ' -t ' + values['2d_temp']
                 command_line += ' -pdf' if values['2d_output_pdf'] else ''
                 command_line += ' -pdferr' if values['2d_output_pdf_err'] else ''
                 command_line += ' -opp' if values['2d_output_opp'] else ''
@@ -329,7 +329,5 @@ while True:
             elif event == 'sd_okay':
                 pass  # TODO: write and call sd2opp.py
 
-# TODO wish list: Title of error window, multiline read-only
-# TODO: annotations
 # TODO: error routine
 # TODO: wait in pdf2opp before closing window, if invoked via drag and drop

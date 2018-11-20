@@ -5,7 +5,7 @@ program pdf2opp_2d
 !   Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)
 
 implicit none
-character(256)                      :: file_input, file_output, file_error, file_m90, key
+character(256)                      :: file_input, file_output, file_error, file_m90, key, line
 character(256)                      :: arg, T_string, comment, output_line, output_addition
 character(51), parameter            :: separator = ' ======================================='
 integer                             :: i, j, data_x, data_y, ext_dot, io_status
@@ -17,7 +17,7 @@ real, dimension(:), allocatable     :: z_stack
 real, dimension(:,:), allocatable   :: z, pdf
 logical                             :: exists_input, exists_error, exists_m90
 logical                             :: output_pdf, output_pdferr, output_opp, output_opperr
-real, parameter                     :: k = 8.6173324E-2     ! Boltzmann constant in meV/K
+real, parameter                     :: k = 8.6173332621451774336636593340806E-2     ! Boltzmann constant in meV/K
 
 ! ACQUIRING NECESSARY INPUT
 
@@ -114,7 +114,7 @@ write(*, fmt = '(/,A,/)') separator   ! separates greeting from checking
 ! Check if input file name is valid (vital)
 if (file_input == '') then
     write(*,*) 'No input file name provided. Exiting.'
-    stop
+    error stop 'No input file name provided. Exiting.'
 else
     exists_input = .false.
     inquire(file = file_input, exist = exists_input)
@@ -123,7 +123,6 @@ else
         stop
     end if
 end if
-
 
 ! Automatically set output file name, if not provided
 if (file_output == '') then
@@ -154,18 +153,45 @@ if ((output_pdferr) .or. (output_opperr)) then
     end if
 end if
 
-! Try automatic extraction of temperature from *.m90, if not provided
+! Temperature extraction from *.m90
 if ((T <= 0.) .and. (output_opp .or. output_opperr)) then
     write(*,fmt='(A)',advance='no') 'Temperature not given. Probing *.m90 ...'
+
+    ! Construct file name of *.m90
+    file_m90 = file_input
+    ext_dot = index(file_m90, '.', .true.)     ! check for file extension
+    if (ext_dot > 0) then                      ! crop file extension, if existing
+        file_m90(ext_dot:len_trim(file_m90)) = repeat(' ', len_trim(file_m90) - ext_dot)
+    end if
+    file_m90 = trim(file_m90) // '.m90'
+
+    ! Try automatic extraction from *.m90
     exists_m90 = .false.
-    if (.not. exists_m90) then
-        write(*,*) ' Not found. Exiting.'
-        stop
+    inquire(file = file_m90, exist = exists_m90)
+    if (exists_m90) then
+        write(*, fmt = '(A)', advance = 'no') ' found.'
+        open(90, file = file_m90, status = 'old', action = 'read')
+        line = ''
+
+        ! Search for keyword "datcolltemp"
+        io_status = 0
+        do while ((io_status == 0) .and. (index(line, 'datcolltemp ') == 0))
+            read(90, fmt = '(A256)', iostat = io_status) line
+        end do
+        close(90)
+
+        ! Try to read in following value
+        if (io_status == 0) then
+            line = line(index(line, 'datcolltemp'):)
+            read(line(12:),*) T
+            write(*,*) 'Temperature: T = ', T, ' K.'
+        else
+            write(*,*) 'No valid temperature found. Exiting.'
+            stop
+        end if
     else
-        write(*,fmt='(A)',advance='no') ' Found:'
-        write(*,*) ' invalid value. Exiting.'
+        write(*,*) ' not found. Exiting.'
         stop
-        write(*,*) T, 'K'
     end if
 end if
 

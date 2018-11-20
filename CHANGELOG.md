@@ -17,6 +17,7 @@ The format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/
 - PDF2OPP_3D: Possibility to specify temperature and output file name *via* command line.
 
 ### Changed
+- PDF2OPP_2D and PDF2OPP_3D: Ported to Fortran2008. 
 - Common release of former CalcOPP (for 2D data) and CalcOPP-3D (for 3D data) under the name CalcOPP.
 - Renaming of former CalcOPP to PDF2OPP_2D and CalcOPP-3D to PDF2OPP_3D.
 - Convergent development at [GitHub](https://github.com/dewiedem/calcopp).
