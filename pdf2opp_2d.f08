@@ -40,8 +40,7 @@ do while (i <= command_argument_count())
             if (i <= command_argument_count()) then
                 call get_command_argument(i, file_input)
             else
-                write(*,*) 'Used -i, but no input file name provided. Exiting.'
-                stop
+                error stop 'Used -i, but no input file name provided.'
             end if
             i = i + 1
         case ('-o')
@@ -49,8 +48,7 @@ do while (i <= command_argument_count())
             if (i <= command_argument_count()) then
                 call get_command_argument(i, file_output)
             else
-                write(*,*) 'Used -o, but no output file name provided. Exiting.'
-                stop
+                error stop 'Used -o, but no output file name provided.'
             end if
             i = i + 1
         case ('-e')
@@ -58,8 +56,7 @@ do while (i <= command_argument_count())
             if (i <= command_argument_count()) then
                 call get_command_argument(i, file_error)
             else
-                write(*,*) 'Used -e, but no error map name provided. Exiting.'
-                stop
+                error stop 'Used -e, but no error map name provided.'
             end if
             i = i + 1
         case ('-t')
@@ -68,8 +65,7 @@ do while (i <= command_argument_count())
                 call get_command_argument(i, T_string)
                 read(T_string, '(E12.5)') T
             else
-                write(*,*) 'Used -t, but no temperature provided. Exiting.'
-                stop
+                error stop 'Used -t, but no temperature provided.'
             end if
             i = i + 1
         case ('-pdf')
@@ -113,18 +109,16 @@ write(*, fmt = '(/,A,/)') separator   ! separates greeting from checking
 
 ! Check if input file name is valid (vital)
 if (file_input == '') then
-    write(*,*) 'No input file name provided. Exiting.'
-    error stop 'No input file name provided. Exiting.'
+    error stop 'No input file name provided.'
 else
     exists_input = .false.
     inquire(file = file_input, exist = exists_input)
     if (.not. exists_input) then
-        write(*,*) 'No valid input file name provided. Exiting.'
-        stop
+        error stop 'No valid input file name provided.'
     end if
 end if
 
-! Automatically set output file name, if not provided
+! Automatically set output file name, if not provides
 if (file_output == '') then
     file_output = file_input
     ext_dot = index(file_output, '.', .true.)    ! check for file extension
@@ -186,12 +180,10 @@ if ((T <= 0.) .and. (output_opp .or. output_opperr)) then
             read(line(12:),*) T
             write(*,*) 'Temperature: T = ', T, ' K.'
         else
-            write(*,*) 'No valid temperature found. Exiting.'
-            stop
+            error stop 'No valid temperature found in *.m90.'
         end if
     else
-        write(*,*) ' not found. Exiting.'
-        stop
+        error stop '*.m90 not found.'
     end if
 end if
 
@@ -208,9 +200,8 @@ do while ((io_status == 0) .and. (key /= 'DIMENSIONS'))
     read(20,*,iostat=io_status) key
 end do
 if (io_status /= 0) then
-    write(*,*) 'Unable to find grid dimensions as defined by DIMENSIONS. Exiting.'
     close(20)
-    stop
+    error stop 'Unable to find grid dimensions in input file.'
 end if
 backspace(20)
 read(20,*,iostat=io_status) key, data_x, data_y
@@ -224,9 +215,8 @@ do while ((io_status == 0) .and. (key /= 'BOUNDS'))
     read(20,*,iostat=io_status) key
 end do
 if (io_status /= 0) then
-    write(*,*) 'Unable to find limits as defined by BOUNDS. Exiting.'
     close(20)
-    stop
+    error stop 'Unable to find limits in input file.'
 end if
 backspace(20)
 read(20,*,iostat=io_status) key, x_min, x_max, y_min, y_max
@@ -318,9 +308,8 @@ do while ((io_status == 0) .and. (key /= 'DATA'))
 end do
 if (io_status /= 0) then
     write(*,*) 'failed.'
-    write(*,*) 'Unable to find DATA statement. Exiting.'
     close(20)
-    stop
+    error stop 'Unable to find data in input file.'
 end if
 do i = 1, int((data_x * data_y)/8.)    ! Reading lines with eight data points
     read(20,*,iostat=io_status) z_stack(8 * i - 7:8 * i)
@@ -535,13 +524,13 @@ end program pdf2opp_2d
 ! Greeting text
 subroutine print_greeting()
     write(*,*); write(*,*) 'PDF2OPP_2D 2.0.0 - Calculation of 2D OPP from PDF Data (JANA2006 STF Format)'
-    write(*,*) 'Copyright ¸ 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)'; write(*,*)
+    write(*,*) 'Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)'; write(*,*)
 end subroutine print_greeting
 
 
 ! Help text
 subroutine print_help()
-    write(*,*); write(*,*) 'Usage: pdf2opp_2d<32|64> [OPTIONS]'; write(*,*)
+    write(*,*); write(*,*) 'Usage: pdf2opp_2d-<x86|x64> [OPTIONS]'; write(*,*)
     write(*,*) 'Options:'; write(*,*)
     write(*,*) '-h                Prints this usage information and exits.'
     write(*,*) '-i <file name>    Specifies the input file (key may be omitted).'

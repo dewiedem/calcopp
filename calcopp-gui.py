@@ -14,6 +14,8 @@ CalcOPP-GUI uses the module PySimpleGUI by MikeTheWatchGuy distributed under the
 
 import os
 import platform
+import shlex
+import subprocess as sp
 import PySimpleGUI as sg
 import annotations as annot
 
@@ -81,7 +83,7 @@ tab_pdf2d = [
          sg.FileBrowse(disabled=True, file_types=(("Structured File", "*.stf"),), key='2d_file_err_button')
          ],
         [sg.Text('Output file', size=(14, 1)),
-         sg.InputText(do_not_clear=True, key='2d_file_out'),
+         sg.InputText(do_not_clear=True, change_submits=True, key='2d_file_out'),
          sg.FileSaveAs(file_types=(("ASCII Text", "*_opp.asc"),))
          ]
     ])],
@@ -108,7 +110,7 @@ tab_pdf3d = [
          sg.FileBrowse(file_types=(("XCrySDen Structure", "*_tmp.xsf"),))
          ],
         [sg.Text('Output file', size=(14, 1)),
-         sg.InputText(do_not_clear=True, key='3d_file_out'),
+         sg.InputText(do_not_clear=True, change_submits=True, key='3d_file_out'),
          sg.FileSaveAs(file_types=(("XCrySDen Structure", "*_opp.xsf"),))
          ]
     ])],
@@ -129,8 +131,8 @@ tab_sd = [
          sg.FileBrowse(file_types=(("Periodic Grid", "*.pgrid"),))
          ],
         [sg.Text('Output density file', size=(14, 1)),
-         sg.InputText(do_not_clear=True, key='sd_file_out'),
-         sg.FileSaveAs(file_types=(("Periodic Grid", "*_opp.pgrid"),))
+         sg.InputText(do_not_clear=True, key='sd_file_out', change_submits=True),
+         sg.FileSaveAs(file_types=(("Periodic Grid", "*_opp.pgrid"),), key='sd_file_out_button')
          ]
     ])],
     [sg.Frame('Temperature', [[
@@ -162,8 +164,12 @@ layout_about = [
     [sg.Image(filename='logo.png')],
     [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=('None', 18))],
     [sg.Text('Version ' + __version__ + '\n', font=('None', 14))],
-    [sg.Text(annot.CITATION + '\n')],
-    [sg.Text(annot.LICENSE)],
+    [sg.Text(annot.CITATION)],
+    [sg.Text('Export Citation:'),
+     sg.Radio('RIS format', "FORMAT", default=True, key='format_ris'),
+     sg.Radio('BibTeX format', "FORMAT", key='format_bib'),
+     sg.ReadButton('Export', key='citation_export')],
+    [sg.Text('\n' + annot.LICENSE)],
     [sg.CloseButton('Done')]
 ]
 
@@ -188,6 +194,21 @@ while True:
             window.FindElement('manual').Update(value=annot.MANUAL_PDF3D)
         else:
             window.FindElement('manual').Update(value=annot.MANUAL_SD)
+
+    # ------ Add Extension to Output File Names ----- #
+    elif event.endswith('_out_button') or event.endswith('_file_out'):
+
+        # ····· Add Extension to 2D OPP Output File Name ····· #
+        if (event == '2d_file_out') and (not values['2d_file_out'].endswith('_opp.asc')):
+            window.FindElement('2d_file_out').Update(values['2d_file_out']+'_opp.asc')
+
+        # ····· Add Extension to 3D OPP Output File Name ····· #
+        elif (event == '3d_file_out') and (not values['3d_file_out'].endswith('_opp.xsf')):
+            window.FindElement('3d_file_out').Update(values['3d_file_out'] + '_opp.xsf')
+
+        # ····· Add Extension to Scatterer Density OPP Output File Name ····· #
+        elif (event == 'sd_file_out') and (not values['sd_file_out'].endswith('_opp.pgrid')):
+            window.FindElement('sd_file_out').Update(values['sd_file_out'] + '_opp.pgrid')
 
     # ------ Toggle Custom Temperature/Extremum Fields ----- #
     elif '_source_' in event:
@@ -252,7 +273,17 @@ while True:
     # ------ Open "About" Window ----- #
     elif event == 'About …':
         window_about = sg.Window('About …', grab_anywhere=False, icon='CalcOPP.ico').Layout(layout_about)
-        window_about.Read()
+
+        # ····· Handle Citation Exports ····· #
+        while True:
+            event_about, values_about = window_about.Read()
+            if event_about is None or event_about == 'Exit':
+                break
+            elif event_about == 'citation_export':
+                if values_about['format_ris']:
+                    sp.run('citation.ris', shell=True)
+                else:
+                    sp.run('citation.bib', shell=True)
 
     # ------ Start Calculations ----- #
     else:
@@ -301,33 +332,56 @@ while True:
             sg.PopupError(error_message[1:]+'\n', title='Error', icon='CalcOPP.ico')
 
         else:
+
             # ····· Spawn 2D OPP Calculation Routine ····· #
             if event == '2d_okay':
+
+                #       Assemble Command Line       #
                 command_line = 'pdf2opp_2d-x64' if os_is_64bit() else 'pdf2opp_2d-x86'
-                command_line += ' -i ' + values['2d_file_in'] + ' -o ' + values['2d_file_out']
+                command_line += ' -i ' + values['2d_file_in']
+                command_line += ' -o ' + values['2d_file_out']
                 if values['2d_output_opp_err'] or values['2d_output_pdf_err']:
                     command_line += ' -e ' + values['2d_file_err']
-                command_line += ' -t ' + values['2d_temp']
+                command_line += ' -t ' + values['2d_temp'] if values['2d_temp_source_custom'] else ''
                 command_line += ' -pdf' if values['2d_output_pdf'] else ''
                 command_line += ' -pdferr' if values['2d_output_pdf_err'] else ''
                 command_line += ' -opp' if values['2d_output_opp'] else ''
                 command_line += ' -opperr' if values['2d_output_opp_err'] else ''
-                print(command_line)        # TODO: debug
-                # os.system(command_line)  # TODO: debug
+
+                window.FindElement('2d_okay').Update(disabled=True)
+
+                #       Execute Command       #
+                pdf2opp = sp.Popen(shlex.split(command_line), stderr=sp.PIPE, stdout=sp.PIPE, text=True)
+                for line in pdf2opp.stdout:
+                    print(line.rstrip())
+                    window.Refresh()
+
+                #       Show Popup on Error       #
+                _, error_message = pdf2opp.communicate()
+                print(error_message)
+                if error_message != '':
+                    error_message = error_message[11:] if error_message.startswith('ERROR STOP ') else error_message
+                    sg.PopupError(error_message, title='Subroutine Error', icon='CalcOPP.ico')
+
+                window.FindElement('2d_okay').Update(disabled=False)
 
             # ····· Spawn 3D OPP Calculation Routine ····· #
             elif event == '3d_okay':
+
+                #       Assemble Command Line       #
                 command_line = 'pdf2opp_3d-x64' if os_is_64bit() else 'pdf2opp_3d-x86'
-                command_line += ' -i ' + values['2d_file_in'] + ' -o ' + values['2d_file_out']
+                command_line += ' -i ' + values['3d_file_in']
+                command_line += ' -o ' + values['3d_file_out']
                 # TODO: make CalcOPP-3D accept input and output file names
-                command_line += ' -t ' + values['2d_temp'] if values['3d_temp_source_custom'] else ''
+                command_line += ' -t ' + values['3d_temp'] if values['3d_temp_source_custom'] else ''
                 # TODO: make CalcOPP-3D accept custom temperatures
                 print(command_line)        # TODO: debug
-                # os.system(command_line)  # TODO: debug
+
+                #       Execute Command       #
+                # os.system(command_line)  # TODO: write subroutine for spawning
 
             # ····· Call OPP Calculation from Scatterer Density ····· #
             elif event == 'sd_okay':
                 pass  # TODO: write and call sd2opp.py
 
-# TODO: error routine
 # TODO: wait in pdf2opp before closing window, if invoked via drag and drop
