@@ -178,7 +178,7 @@ column_right = [
 layout_about = [
     [sg.Image(filename='logo.png')],
     [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=('None', 18))],
-    [sg.Text('Version ' + __version__ + '\n', font=('None', 14))],
+    [sg.Text('Version %s\n' % __version__, font=('None', 14))],
     [sg.Text(an.CITATION)],
     [sg.Text('Export Citation:'),
      sg.Radio('RIS format', "FORMAT", default=True, key='format_ris'),
@@ -215,7 +215,7 @@ while True:
 
         # ····· Add Extension to 2D OPP Output File Name ····· #
         if (event == '2d_file_out') and (not values['2d_file_out'].endswith('_opp.asc')):
-            window.FindElement('2d_file_out').Update(values['2d_file_out']+'_opp.asc')
+            window.FindElement('2d_file_out').Update(values['2d_file_out'] + '_opp.asc')
 
         # ····· Add Extension to 3D OPP Output File Name ····· #
         elif (event == '3d_file_out') and (not values['3d_file_out'].endswith('_opp.xsf')):
@@ -347,7 +347,7 @@ while True:
 
         if error_message != '':
             # ····· Display Error Message ····· #
-            sg.PopupError(error_message[1:]+'\n', grab_anywhere=False, title='Error', icon='CalcOPP.ico')
+            sg.PopupError(error_message[1:] + '\n', grab_anywhere=False, title='Error', icon='CalcOPP.ico')
 
         else:
 
@@ -368,18 +368,23 @@ while True:
 
                 window.FindElement('2d_okay').Update(disabled=True)
 
-                #       Execute Command       #
-                pdf2opp = sp.Popen(shlex.split(command_line), stderr=sp.PIPE, stdout=sp.PIPE, text=True)  # TODO: what happens if executable not there?
-                for line in pdf2opp.stdout:
-                    print(line.rstrip())
-                    window.Refresh()
+                try:
+                    #       Execute Command       #
+                    pdf2opp = sp.Popen(shlex.split(command_line), stderr=sp.PIPE, stdout=sp.PIPE, text=True)
+                    for line in pdf2opp.stdout:
+                        print(line.rstrip())
+                        window.Refresh()
 
-                #       Show Popup on Error       #
-                _, error_message = pdf2opp.communicate()
-                print(error_message)
-                if error_message != '':
-                    error_message = error_message[11:] if error_message.startswith('ERROR STOP ') else error_message
-                    sg.PopupError(error_message, grab_anywhere=False, title='Subroutine Error', icon='CalcOPP.ico')
+                    #       Show Popup on Error       #
+                    _, error_message = pdf2opp.communicate()
+                    print(error_message)
+                    if error_message != '':
+                        error_message = error_message[11:] if error_message.startswith('ERROR STOP ') else error_message
+                        sg.PopupError(error_message, grab_anywhere=False, title='Subroutine Error', icon='CalcOPP.ico')
+
+                except FileNotFoundError:
+                    error_message = 'PDF2OPP executable not found in program directory.'
+                    sg.PopupError(error_message, grab_anywhere=False, title='Program Error', icon='CalcOPP.ico')
 
                 window.FindElement('2d_okay').Update(disabled=False)
 
