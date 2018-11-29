@@ -17,10 +17,10 @@ import platform
 import shlex
 import subprocess as sp
 import PySimpleGUI as sg
-import annotations as annot
+import annotations as an
 
 __author__ = 'Dennis Wiedemann'
-__copyright__ = 'Copyright 2019, Dennis Wiedemann'
+__copyright__ = 'Copyright 2019, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
 __version__ = '2.0.0'
@@ -29,23 +29,35 @@ __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Development'
 
 
-def file_exists(file_name):
+def file_exists(file):
     """Checks if a file exists.
 
-    file_name: Name of the file to check for.
+    :param str file: name of the file to check for
+    :return bool: existence of file
     """
-    return os.path.isfile(file_name)
+    return os.path.isfile(file)
 
 
-def is_float(string_variable):
-    """Checks if a string can be converted to a float.
+def is_float(string):
+    """Checks if a string can be converted to a non-zero float.
 
-    string_variable: String to check for convertibility.
+    :param str string: string to check for convertibility
+    :return bool: convertibility of string
     """
-    global window
     try:
-        float(string_variable)
-        return True
+        return True if float(string) != 0 else False
+    except ValueError:
+        return False
+
+
+def is_pos_float(string):
+    """Checks if a string can be converted to a positive float.
+
+    :param str string: string to check for convertibility
+    :return bool: convertibility of string
+    """
+    try:
+        return True if float(string) > 0 else False
     except ValueError:
         return False
 
@@ -53,8 +65,10 @@ def is_float(string_variable):
 def os_is_64bit():
     """Checks if the operating system is of the 64-bit type.
 
-    Note: checks the machine type because other methods return the capability of the CPU
+    Note: checks the machine type, because other methods return the capability of the CPU
     or the bitness of the interpreter/compiled executable.
+
+    :return bool: existence of 64-bit system
     """
     return platform.machine().endswith('64')
 
@@ -64,10 +78,11 @@ menu_def = [['&File', '&Exit'], ['&Help', '&About …']]
 
 # ====== Left Column Definition ====== #
 column_left = [
-    [sg.Frame('Information and Manual', [[sg.Multiline(size=(61, None), do_not_clear=True, key='manual')]])],
+    [sg.Frame('Information and Manual', [[sg.Multiline(size=(61, None), font=('Courier', 9),
+                                                       do_not_clear=True, key='manual')]])],
     [sg.Frame('Citation', [
         [sg.Text('If you publish data calculated with CalcOPP, please use the following citation:')],
-        [sg.Text(annot.CITATION, font=(None, 10, 'italic'))]])]
+        [sg.Text(an.CITATION, font=(None, 10, 'italic'))]])]
 ]
 
 # ====== Right Column Definition ====== #
@@ -156,7 +171,7 @@ column_right = [
         sg.Tab('3D PDF', tab_pdf3d),
         sg.Tab('Scatterer Density', tab_sd)]],
         change_submits=True, key='data_source')],
-    [sg.Frame('Output', [[sg.Output(size=(77, 12))]])]
+    [sg.Frame('Output', [[sg.Output(size=(77, 12), key='output')]])]
 ]
 
 # ====== "About" Window Definition ===== #
@@ -164,12 +179,12 @@ layout_about = [
     [sg.Image(filename='logo.png')],
     [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=('None', 18))],
     [sg.Text('Version ' + __version__ + '\n', font=('None', 14))],
-    [sg.Text(annot.CITATION)],
+    [sg.Text(an.CITATION)],
     [sg.Text('Export Citation:'),
      sg.Radio('RIS format', "FORMAT", default=True, key='format_ris'),
      sg.Radio('BibTeX format', "FORMAT", key='format_bib'),
      sg.ReadButton('Export', key='citation_export')],
-    [sg.Text('\n' + annot.LICENSE)],
+    [sg.Text('\n' + an.LICENSE)],
     [sg.CloseButton('Done')]
 ]
 
@@ -189,14 +204,14 @@ while True:
     # ------ Toggle Explanations According to Tab ----- #
     if event == 'data_source':
         if values['data_source'] == '2D PDF':
-            window.FindElement('manual').Update(value=annot.MANUAL_PDF2D)
+            window.FindElement('manual').Update(value=an.MANUAL_PDF2D)
         elif values['data_source'] == '3D PDF':
-            window.FindElement('manual').Update(value=annot.MANUAL_PDF3D)
+            window.FindElement('manual').Update(value=an.MANUAL_PDF3D)
         else:
-            window.FindElement('manual').Update(value=annot.MANUAL_SD)
+            window.FindElement('manual').Update(value=an.MANUAL_SD)
 
     # ------ Add Extension to Output File Names ----- #
-    elif event.endswith('_out_button') or event.endswith('_file_out'):
+    elif event.endswith('_file_out'):
 
         # ····· Add Extension to 2D OPP Output File Name ····· #
         if (event == '2d_file_out') and (not values['2d_file_out'].endswith('_opp.asc')):
@@ -251,7 +266,8 @@ while True:
             window.FindElement('2d_output_pdf_err').Update(value=False)
             window.FindElement('2d_output_opp').Update(value=True)
             window.FindElement('2d_output_opp_err').Update(value=False)
-            window.FindElement('manual').Update(value=annot.MANUAL_PDF2D)
+            window.FindElement('manual').Update(value=an.MANUAL_PDF2D)
+            window.FindElement('output').Update('')
 
         # ····· Empty 3D PDF Tab on Reset Button ····· #
         elif event == '3d_reset':
@@ -259,7 +275,8 @@ while True:
             window.FindElement('3d_file_out').Update('')
             window.FindElement('3d_temp_source_m90').Update(value=True)
             window.FindElement('3d_temp').Update('', disabled=True)
-            window.FindElement('manual').Update(value=annot.MANUAL_PDF3D)
+            window.FindElement('manual').Update(value=an.MANUAL_PDF3D)
+            window.FindElement('output').Update('')
 
         # ····· Empty Scatterer Density Tab on Reset Button ····· #
         else:
@@ -268,7 +285,8 @@ while True:
             window.FindElement('sd_temp').Update('')
             window.FindElement('sd_extremum_source_minimum').Update(value=True)
             window.FindElement('sd_extremum').Update('', disabled=True)
-            window.FindElement('manual').Update(value=annot.MANUAL_SD)
+            window.FindElement('manual').Update(value=an.MANUAL_SD)
+            window.FindElement('output').Update('')
 
     # ------ Open "About" Window ----- #
     elif event == 'About …':
@@ -299,8 +317,8 @@ while True:
                 error_message += '\nNo output file is given.'
             if values['2d_temp_source_m90'] and not file_exists(values['2d_file_in'][:-4] + '.m90'):
                 error_message += '\nFile *.m90 does not exist in the same directory.'
-            if values['2d_temp_source_custom'] and not is_float(values['2d_temp']):
-                error_message += '\nTemperature has to be a decimal.'
+            if values['2d_temp_source_custom'] and not is_pos_float(values['2d_temp']):
+                error_message += '\nTemperature has to be a positive decimal.'
             if not (values['2d_output_opp'] or values['2d_output_pdf']
                     or values['2d_output_opp_err'] or values['2d_output_pdf_err']):
                 error_message += '\nNo data to include in output selected.'
@@ -313,8 +331,8 @@ while True:
                 error_message += '\nNo output file is given.'
             if values['3d_temp_source_m90'] and not file_exists(values['3d_file_in'][:-8] + '.m90'):
                 error_message += '\nFile *.m90 does not exist in the same directory.'
-            if values['3d_temp_source_custom'] and not is_float(values['3d_temp']):
-                error_message += '\nTemperature has to be a decimal.'
+            if values['3d_temp_source_custom'] and not is_pos_float(values['3d_temp']):
+                error_message += '\nTemperature has to be a positive decimal.'
 
         # ····· Check Scatterer Density Input Values for Errors ····· #
         elif event == 'sd_okay':
@@ -322,14 +340,14 @@ while True:
                 error_message += '\nInput file does not exist.'
             if values['sd_file_out'] == '':
                 error_message += '\nNo output file is given.'
-            if not is_float(values['sd_temp']):
-                error_message += '\nTemperature has to be a decimal.'
+            if not is_pos_float(values['sd_temp']):
+                error_message += '\nTemperature has to be a positive decimal.'
             if values['sd_extremum_source_custom'] and not is_float(values['sd_extremum']):
                 error_message += '\nExtremal value has to be a decimal.'
 
         if error_message != '':
             # ····· Display Error Message ····· #
-            sg.PopupError(error_message[1:]+'\n', title='Error', icon='CalcOPP.ico')
+            sg.PopupError(error_message[1:]+'\n', grab_anywhere=False, title='Error', icon='CalcOPP.ico')
 
         else:
 
@@ -351,7 +369,7 @@ while True:
                 window.FindElement('2d_okay').Update(disabled=True)
 
                 #       Execute Command       #
-                pdf2opp = sp.Popen(shlex.split(command_line), stderr=sp.PIPE, stdout=sp.PIPE, text=True)
+                pdf2opp = sp.Popen(shlex.split(command_line), stderr=sp.PIPE, stdout=sp.PIPE, text=True)  # TODO: what happens if executable not there?
                 for line in pdf2opp.stdout:
                     print(line.rstrip())
                     window.Refresh()
@@ -361,7 +379,7 @@ while True:
                 print(error_message)
                 if error_message != '':
                     error_message = error_message[11:] if error_message.startswith('ERROR STOP ') else error_message
-                    sg.PopupError(error_message, title='Subroutine Error', icon='CalcOPP.ico')
+                    sg.PopupError(error_message, grab_anywhere=False, title='Subroutine Error', icon='CalcOPP.ico')
 
                 window.FindElement('2d_okay').Update(disabled=False)
 
