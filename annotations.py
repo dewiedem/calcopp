@@ -145,7 +145,7 @@ SD = 'Prerequisites\n—————————————\n' \
      'additional information (e.g., atomic positions) from the input. Both files must be in the same directory for ' \
      'this to work.\n' \
      '\n' \
-     'Caveat\n——————'  # TODO: comment on theoretical feasibility (with citation) in README.md
+     'Caveat\n——————'
 
 MANUAL_PDF2D = INTRODUCTION + PDF2D + ENDING
 MANUAL_PDF3D = INTRODUCTION + PDF3D + ENDING
