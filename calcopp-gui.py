@@ -1,9 +1,9 @@
 #!/usr/bin/env Python3
 # -*- coding: utf-8 -*-
-"""A graphical user interface for the calculation of one-particle potentials (OPPs).
+"""A graphical user interface for the calculation of effective one-particle potentials (OPPs).
 
-CalcOPP â€“ Calculation of One-Particle Potentials
-CalcOPP-GUI â€“ The Graphical User Interface of CalcOPP
+CalcOPP – Calculation of Effective One-Particle Potentials
+CalcOPP-GUI – The Graphical User Interface of CalcOPP
 
 This program provides a GUI for the different routines of CalcOPP taking scatter densities, two- or three-dimensional
  probability-density functions as input.
@@ -30,10 +30,12 @@ __status__ = 'Development'
 
 
 def file_exists(file):
-    """Check if a file exists. # TODO: rework all docstrings
+    """Check if a file exists.
 
-    Args:
-        file (str): name of the file to check for
+    :param file: name of the file to check for
+    :type file: str
+    :return: existence of file
+    :rtype: bool
     """
     return os.path.isfile(file)
 
@@ -41,8 +43,10 @@ def file_exists(file):
 def is_float(string):
     """Check if a string can be converted to a non-zero float.
 
-    Args:
-        string (str): string to check for convertibility
+    :param string: string to check for convertibility
+    :type string: str
+    :return: convertibility of string
+    :rtype: bool
     """
     try:
         return True if float(string) != 0 else False
@@ -53,8 +57,10 @@ def is_float(string):
 def is_pos_float(string):
     """Check if a string can be converted to a positive float.
 
-    Args:
-        string (str): string to check for convertibility
+    :param string: string to check for convertibility
+    :type string: str
+    :return: convertibility of string
+    :rtype: bool
     """
     try:
         return True if float(string) > 0 else False
@@ -65,14 +71,17 @@ def is_pos_float(string):
 def os_is_64bit():
     """Check if the operating system is of the 64-bit type.
 
-    Note: checks the machine type, because other methods return the
-    capability of the CPU or the bitness of the interpreter/compiled executable.
+    Checks the machine type, because other methods return the capability of the CPU or the bitness of the
+    interpreter/compiled executable.
+
+    :return: `True` if the OS is of the 64-bit type.
+    :rtype: bool
     """
     return platform.machine().endswith('64')
 
 
 # ====== Menu Definition ====== #
-menu_def = [['&File', '&Exit'], ['&Help', '&About â€¦']]
+menu_def = [['&File', '&Exit'], ['&Help', '&About …']]
 
 # ====== Left Column Definition ====== #
 column_left = [
@@ -101,7 +110,7 @@ tab_pdf2d = [
          ]
     ])],
     [sg.Frame('Temperature', [[
-        sg.Radio('From JANA2006â€™s *.m90 file', "TEMP2D", change_submits=True, default=True, key='2d_temp_source_m90'),
+        sg.Radio('From JANA2006’s *.m90 file', "TEMP2D", change_submits=True, default=True, key='2d_temp_source_m90'),
         sg.Radio('Custom value:', "TEMP2D", change_submits=True, key='2d_temp_source_custom'),
         sg.InputText(size=(8, 1), do_not_clear=True, disabled=True, key='2d_temp'),
         sg.Text('K')
@@ -128,7 +137,7 @@ tab_pdf3d = [
          ]
     ])],
     [sg.Frame('Temperature', [[
-        sg.Radio('From JANA2006â€™s *.m90 file', "TEMP3D", change_submits=True, default=True, key='3d_temp_source_m90'),
+        sg.Radio('From JANA2006’s *.m90 file', "TEMP3D", change_submits=True, default=True, key='3d_temp_source_m90'),
         sg.Radio('Custom value:', "TEMP3D", change_submits=True, key='3d_temp_source_custom'),
         sg.InputText(size=(8, 1), disabled=True, do_not_clear=True, key='3d_temp'),
         sg.Text('K')
@@ -157,7 +166,7 @@ tab_sd = [
         sg.Radio('Positive maximum', "EXTREMUM", change_submits=True, key='sd_extremum_source_maximum'),
         sg.Radio('Custom value:', "EXTREMUM", change_submits=True, key='sd_extremum_source_custom'),
         sg.InputText(size=(8, 1), disabled=True, do_not_clear=True, key='sd_extremum'),
-        sg.Text('(fm) Ã…\u207BÂ³')
+        sg.Text('(fm) Å⁻³')
     ]])],
     [sg.ReadButton('Go already!', key='sd_okay'), sg.ReadButton('Reset', key='sd_reset')]
 ]
@@ -175,7 +184,7 @@ column_right = [
 # ====== "About" Window Definition ===== #
 layout_about = [
     [sg.Image(filename='logo.png')],
-    [sg.Text('\nCalcOPP â€“ Calculation of One-Particle Potentials', font=('None', 18))],
+    [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=('None', 18))],
     [sg.Text('Version %s\n' % __version__, font=('None', 14))],
     [sg.Text(an.CITATION)],
     [sg.Text('Export Citation:'),
@@ -188,7 +197,7 @@ layout_about = [
 
 # ====== Window Invocation ===== #
 layout = [[sg.Menu(menu_def), sg.Column(column_left), sg.Column(column_right)]]
-window = sg.Window('CalcOPP â€“ Calculation of One-Particle Potentials',
+window = sg.Window('CalcOPP – Calculation of One-Particle Potentials',
                    default_element_size=(40, 1),
                    icon='CalcOPP.ico',
                    grab_anywhere=False).Layout(layout)
@@ -211,15 +220,15 @@ while True:
     # ------ Add Extension to Output File Names ----- #
     elif event.endswith('_file_out'):
 
-        # Â·Â·Â·Â·Â· Add Extension to 2D OPP Output File Name Â·Â·Â·Â·Â· #
+        # ····· Add Extension to 2D OPP Output File Name ····· #
         if (event == '2d_file_out') and (not values['2d_file_out'].endswith('_opp.asc')):
             window.Element('2d_file_out').Update(values['2d_file_out'] + '_opp.asc')
 
-        # Â·Â·Â·Â·Â· Add Extension to 3D OPP Output File Name Â·Â·Â·Â·Â· #
+        # ····· Add Extension to 3D OPP Output File Name ····· #
         elif (event == '3d_file_out') and (not values['3d_file_out'].endswith('_opp.xsf')):
             window.Element('3d_file_out').Update(values['3d_file_out'] + '_opp.xsf')
 
-        # Â·Â·Â·Â·Â· Add Extension to Scatterer Density OPP Output File Name Â·Â·Â·Â·Â· #
+        # ····· Add Extension to Scatterer Density OPP Output File Name ····· #
         elif (event == 'sd_file_out') and (not values['sd_file_out'].endswith('_opp.pgrid')):
             window.Element('sd_file_out').Update(values['sd_file_out'] + '_opp.pgrid')
 
@@ -253,7 +262,7 @@ while True:
     # ------ Empty Tab on Reset Button ----- #
     elif event.endswith('reset'):
 
-        # Â·Â·Â·Â·Â· Empty 2D PDF Tab on Reset Button Â·Â·Â·Â·Â· #
+        # ····· Empty 2D PDF Tab on Reset Button ····· #
         if event == '2d_reset':
             window.Element('2d_file_in').Update('')
             window.Element('2d_file_err').Update('')
@@ -267,7 +276,7 @@ while True:
             window.Element('manual').Update(value=an.MANUAL_PDF2D)
             window.Element('output').Update('')
 
-        # Â·Â·Â·Â·Â· Empty 3D PDF Tab on Reset Button Â·Â·Â·Â·Â· #
+        # ····· Empty 3D PDF Tab on Reset Button ····· #
         elif event == '3d_reset':
             window.Element('3d_file_in').Update('')
             window.Element('3d_file_out').Update('')
@@ -276,7 +285,7 @@ while True:
             window.Element('manual').Update(value=an.MANUAL_PDF3D)
             window.Element('output').Update('')
 
-        # Â·Â·Â·Â·Â· Empty Scatterer Density Tab on Reset Button Â·Â·Â·Â·Â· #
+        # ····· Empty Scatterer Density Tab on Reset Button ····· #
         else:
             window.Element('sd_file_in').Update('')
             window.Element('sd_file_out').Update('')
@@ -287,10 +296,10 @@ while True:
             window.Element('output').Update('')
 
     # ------ Open "About" Window ----- #
-    elif event == 'About â€¦':
-        window_about = sg.Window('About â€¦', grab_anywhere=False, icon='CalcOPP.ico').Layout(layout_about)
+    elif event == 'About …':
+        window_about = sg.Window('About …', grab_anywhere=False, icon='CalcOPP.ico').Layout(layout_about)
 
-        # Â·Â·Â·Â·Â· Handle Citation Exports Â·Â·Â·Â·Â· #
+        # ····· Handle Citation Exports ····· #
         while True:
             event_about, values_about = window_about.Read()
             if event_about is None or event_about == 'Exit':
@@ -304,7 +313,7 @@ while True:
     # ------ Start Calculations ----- #
     else:
 
-        # Â·Â·Â·Â·Â· Check 2D PDF Input Values for Errors Â·Â·Â·Â·Â· #
+        # ····· Check 2D PDF Input Values for Errors ····· #
         error_message = ''
         if event == '2d_okay':
             if not file_exists(values['2d_file_in']):
@@ -321,7 +330,7 @@ while True:
                     or values['2d_output_opp_err'] or values['2d_output_pdf_err']):
                 error_message += '\nNo data to include in output selected.'
 
-        # Â·Â·Â·Â·Â· Check 3D PDF Input Values for Errors Â·Â·Â·Â·Â· #
+        # ····· Check 3D PDF Input Values for Errors ····· #
         elif event == '3d_okay':
             if not file_exists(values['3d_file_in']):
                 error_message += '\nInput file does not exist.'
@@ -332,7 +341,7 @@ while True:
             if values['3d_temp_source_custom'] and not is_pos_float(values['3d_temp']):
                 error_message += '\nTemperature has to be a positive decimal.'
 
-        # Â·Â·Â·Â·Â· Check Scatterer Density Input Values for Errors Â·Â·Â·Â·Â· #
+        # ····· Check Scatterer Density Input Values for Errors ····· #
         elif event == 'sd_okay':
             if not file_exists(values['sd_file_in']):
                 error_message += '\nInput file does not exist.'
@@ -344,16 +353,16 @@ while True:
                 error_message += '\nExtremal value has to be a decimal.'
 
         if error_message != '':
-            # Â·Â·Â·Â·Â· Display Error Message Â·Â·Â·Â·Â· #
+            # ····· Display Error Message ····· #
             sg.PopupError(error_message[1:] + '\n', grab_anywhere=False, title='Error', icon='CalcOPP.ico')
 
         else:
 
-            # Â·Â·Â·Â·Â· Spawn 2D OPP Calculation Routine Â·Â·Â·Â·Â· #
+            # ····· Spawn 2D OPP Calculation Routine ····· #
             if event == '2d_okay':
 
                 #       Assemble Command Line       #
-                command_line = 'pdf2opp_2d-x64' if os_is_64bit() else 'pdf2opp_2d-x86'
+                command_line = 'pdf2opp_2d-x64' if os_is_64bit() else 'pdf2opp_2d-x86'  # TODO: decide about suffix
                 command_line += ' -i ' + values['2d_file_in']
                 command_line += ' -o ' + values['2d_file_out']
                 if values['2d_output_opp_err'] or values['2d_output_pdf_err']:
@@ -386,7 +395,7 @@ while True:
 
                 window.Element('2d_okay').Update(disabled=False)
 
-            # Â·Â·Â·Â·Â· Spawn 3D OPP Calculation Routine Â·Â·Â·Â·Â· #
+            # ····· Spawn 3D OPP Calculation Routine ····· #
             elif event == '3d_okay':
 
                 #       Assemble Command Line       #
@@ -401,8 +410,9 @@ while True:
                 #       Execute Command       #
                 # os.system(command_line)  # TODO: write subroutine for spawning
 
-            # Â·Â·Â·Â·Â· Call OPP Calculation from Scatterer Density Â·Â·Â·Â·Â· #
+            # ····· Call OPP Calculation from Scatterer Density ····· #
             elif event == 'sd_okay':
-                pass  # TODO: write and call sd2opp.py
+                pass  # TODO: write and call sd2opp.py, catch errors as popup
 
 # TODO: wait in pdf2opp before closing window, if invoked via drag and drop
+# TODO: try unicode output for Fortran programs

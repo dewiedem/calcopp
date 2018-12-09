@@ -1,6 +1,6 @@
 program pdf2opp_3d
 
-!   CalcOPP 2.0.0 - Calculation of One-Particle Potentials
+!   CalcOPP 2.0.0 - Calculation of Effective One-Particle Potentials
 !   PDF2OPP_3D - Subroutines for Calculation from 3D PDF Data (JANA2006 XSF Format)
 !   Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)
 

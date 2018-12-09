@@ -1,5 +1,5 @@
 # CalcOPP
-A Suite for the Calculation of One-Particle Potentials (OPPs)
+A Program for the Calculation of Effective One-Particle Potentials (OPPs)
 
 ![GitHub Release](https://img.shields.io/github/release/dewiedem/calcopp.svg)
 ![GitHub Release Date](https://img.shields.io/github/release-date/dewiedem/calcopp.svg)
@@ -18,9 +18,9 @@ E-mail:	[dennis.wiedemann@chem.tu-berlin.de](mailto:dennis.wiedemann@chem.tu-ber
 Web:	http://dennis.wiedemann.name
 
 ## Description and Rationale
-In the OPP approach, every atom is treated as an individual Einstein oscillator subject to Boltzmann statistics in the classical limit. The OPP itself represents the potential as experienced by an atom at a certain position and allows, *e.g.*, to assess the viability and activation barriers of migration pathways (see [K. N. Trueblood *et al.*, *Acta Crystallogr., Sect. A: Found. Crystallogr.* **1996**, *52*, 770–781](https://doi.org/10.1107/S0108767396005697) and [H. Boysen, *Z. Kristallogr.* **2003**, *218*, 123–131](https://doi.org/10.1524/zkri.218.2.123.20668)).
+In the OPP approach, every atom is treated as an individual Einstein oscillator subject to Boltzmann statistics in the classical limit. The effective OPP itself represents the potential as experienced by an atom at a certain position and allows, *e.g.*, to assess the viability and activation barriers of migration pathways (see [K. N. Trueblood *et al.*, *Acta Crystallogr., Sect. A: Found. Crystallogr.* **1996**, *52*, 770–781](https://doi.org/10.1107/S0108767396005697) and [H. Boysen, *Z. Kristallogr.* **2003**, *218*, 123–131](https://doi.org/10.1524/zkri.218.2.123.20668)).
 
-The OPP *V*(***u***) experienced by an atom displaced from its reference position by a vector ***u*** can be calculated from any probability-density function (PDF) *F*(***u***) adequately describing it: *V*(***u***) = –ln[*F*(***u***)/*F*(**0**)] (*cf.* [H. Boysen, *Z. Kristallogr.* **2003**, *218*, 123–131](https://doi.org/10.1524/zkri.218.2.123.20668)). A PDF has to be non-negative, Lebesgue-integrable, and normalized to an integral of unity over the whole space.
+The OPP *V*(***u***) experienced by an atom displaced from its reference position by a vector ***u*** can be calculated from any probability-density function (PDF) *p*(***u***) adequately describing it: *V*(***u***) = –ln[*p*(***u***)/*p*(**0**)] (*cf.* [H. Boysen, *Z. Kristallogr.* **2003**, *218*, 123–131](https://doi.org/10.1524/zkri.218.2.123.20668)). A PDF has to be non-negative, Lebesgue-integrable, and normalized to an integral of unity over the whole space.
 
 Although it is far from mathematically rigorous, the following rationale suggests that a ratio of scattering-length or electron densities within carefully chosen limits has the properties of a probability-density ratio:
 
@@ -29,7 +29,7 @@ Although it is far from mathematically rigorous, the following rationale suggest
 - *Integrability:* Scattering-length and electron densities are Lebesgue-integrable.
 - *Normalization:* For ratios of probability density values, normalization is unnecessary (the normalizing constant cancels).
 
-Depending on the problem, CalcOPP allows to calculate the OPP from a PDF sampled in 2D or 3D by [JANA2006](http://jana.fzu.cz/) or from the MEM-reconstructed scatterer density sampled using [Dysnomia](https://jp-minerals.org/dysnomia/en/)—under certain additional conditions. It can also reformat 2D PDF input and handle the associated error maps.
+Depending on the problem, CalcOPP allows to calculate the effective OPP from a PDF sampled in 2D or 3D by [JANA2006](http://jana.fzu.cz/) or from the MEM-reconstructed scatterer density sampled using [Dysnomia](https://jp-minerals.org/dysnomia/en/)—under certain additional conditions. It can also reformat 2D PDF input and handle the associated error maps.
 
 ## Compiling
 ### Modules *calcopp-gui* and *sd2opp*
@@ -40,7 +40,7 @@ python -OO -m PyInstaller --name="CalcOPP[.exe]" calcopp-gui.py
 python -OO -m PyInstaller --name="sd2opp[.exe]" sd2opp.py
 ```
 
-The module *calcopp-gui* further relies on [PySimpleGUI](https://pypi.org/project/PySimpleGUI/), used in version X.X.X for compiling.
+The module *calcopp-gui* relies on [PySimpleGUI](https://pypi.org/project/PySimpleGUI/), used in version X.X.X for compiling. The module *sd2opp* relies on [NumPy](https://www.numpy.org/), used in version X.X.X for compiling.
 
 ### Modules *pdf2opp_2d* and *pdf2opp_3d*
 The source code adheres strictly to the specifications of Fortran2008. It has been compiled using GFortran from GCC X.X.X/X.X.X (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”:
@@ -74,4 +74,4 @@ If you prepare data for publication with CalcOPP, please use the following citat
 D. Wiedemann, CalcOPP, Calculation of One-Particle Potentials, Technische Universität Berlin, Berlin (Germany), **2019**, [doi:XXX](https://doi.org/XXX).
 
 ## Contributing
-It would be much appreciated if you reported any found bugs or typos to the above e-mail address.
+It is much appreciated if you report any bugs or typos to the above e-mail address.

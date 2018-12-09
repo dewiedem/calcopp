@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Larger string constants for CalcOPP-GUI.
 
-CalcOPP – Calculation of One-Particle Potentials
+CalcOPP – Calculation of Effective One-Particle Potentials
 CalcOPP-GUI – The Graphical User Interface of CalcOPP
 
 This module declares larger strings constants (explanations, annotations, etc.)
@@ -145,7 +145,11 @@ SD = 'Prerequisites\n—————————————\n' \
      'additional information (e.g., atomic positions) from the input. Both files must be in the same directory for ' \
      'this to work.\n' \
      '\n' \
-     'Caveat\n——————'
+     'Caveat\n——————\n' \
+     'For grid points with a non-positive PDF, the highest finite OPP in the data (derived from the lowest positive ' \
+     'PDF) is set to make the fringes of visualized isosurfaces less spiky after treatment with VESTA’s ' \
+     'interpolation algorithm. If you further process the data or extract values directly, be aware that the ' \
+     'potential barrier is insurmountably (infinitely) high at these points.\n'
 
 MANUAL_PDF2D = INTRODUCTION + PDF2D + ENDING
 MANUAL_PDF3D = INTRODUCTION + PDF3D + ENDING
