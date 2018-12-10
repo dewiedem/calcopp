@@ -36,6 +36,10 @@ INTRODUCTION = 'Choose the source-data type by selecting a tab on the right. “
                'D. Wiedemann et al., Z. Phys. Chem. 2017, 231, 1279–1302; doi:10.1515/zpch-2016-0918.\n' \
                '\n'
 
+ERROR_INTRO = 'An error occurred in the subroutine %s.\n\nIf your input files are valid, please report this error to ' \
+              'the developer including a screenshot and the input file(s).\nCalcOPP Version: %s\n\n' % \
+              ('%s', __version__)
+
 ENDING = '\n' \
          'Any file with the same name as the selected output file will be overwritten! Be sure to save intermediate ' \
          'results that you are going to need.'

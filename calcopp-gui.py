@@ -16,6 +16,7 @@ import os
 import platform
 import shlex
 import subprocess as sp
+import traceback as tb
 import PySimpleGUI as sg
 import annotations as an
 import sd2opp
@@ -182,20 +183,6 @@ column_right = [
     [sg.Frame('Output', [[sg.Output(size=(77, 12), key='output')]])]
 ]
 
-# ====== "About" Window Definition ===== #
-layout_about = [
-    [sg.Image(filename='logo.png')],
-    [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=('None', 18))],
-    [sg.Text('Version %s\n' % __version__, font=('None', 14))],
-    [sg.Text(an.CITATION)],
-    [sg.Text('Export Citation:'),
-     sg.Radio('RIS format', "FORMAT", default=True, key='format_ris'),
-     sg.Radio('BibTeX format', "FORMAT", key='format_bib'),
-     sg.ReadButton('Export', key='citation_export')],
-    [sg.Text('\n' + an.LICENSE)],
-    [sg.CloseButton('Done')]
-]
-
 # ====== Window Invocation ===== #
 layout = [[sg.Menu(menu_def), sg.Column(column_left), sg.Column(column_right)]]
 window = sg.Window('CalcOPP – Calculation of One-Particle Potentials',
@@ -298,6 +285,21 @@ while True:
 
     # ------ Open "About" Window ----- #
     elif event == 'About …':
+
+        # ====== "About" Window Definition ===== #
+        layout_about = [
+            [sg.Image(filename='logo.png')],
+            [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=('None', 18))],
+            [sg.Text('Version %s\n' % __version__, font=('None', 14))],
+            [sg.Text(an.CITATION)],
+            [sg.Text('Export Citation:'),
+             sg.Radio('RIS format', "FORMAT", default=True, key='format_ris'),
+             sg.Radio('BibTeX format', "FORMAT", key='format_bib'),
+             sg.ReadButton('Export', key='citation_export')],
+            [sg.Text('\n' + an.LICENSE)],
+            [sg.CloseButton('Done')]
+        ]
+
         window_about = sg.Window('About …', grab_anywhere=False, icon='CalcOPP.ico').Layout(layout_about)
 
         # ····· Handle Citation Exports ····· #
@@ -362,8 +364,8 @@ while True:
             # ····· Spawn 2D OPP Calculation Routine ····· #
             if event == '2d_okay':
 
-                #       Assemble Command Line       #
-                command_line = 'pdf2opp_2d-x64' if os_is_64bit() else 'pdf2opp_2d-x86'  # TODO: decide about suffix
+                #       Assemble Command Line       #  # TODO: no suffixes (adapt doc and usages)
+                command_line = 'pdf2opp_2d-x64' if os_is_64bit() else 'pdf2opp_2d-x86'
                 command_line += ' -i ' + values['2d_file_in']
                 command_line += ' -o ' + values['2d_file_out']
                 if values['2d_output_opp_err'] or values['2d_output_pdf_err']:
@@ -388,6 +390,7 @@ while True:
                     print(error_message)
                     if error_message != '':
                         error_message = error_message[11:] if error_message.startswith('ERROR STOP ') else error_message
+                        error_message = (an.ERROR_INTRO % 'PDF2OPP_2D') + error_message
                         sg.PopupError(error_message, grab_anywhere=False, title='Subroutine Error', icon='CalcOPP.ico')
 
                 except FileNotFoundError:
@@ -424,12 +427,17 @@ while True:
                 else:
                     source = 'custom'
 
-                #       Call Calculation Routine       #
-                sd2opp.calc_opp(values['sd_file_in'], values['sd_file_out'], float(values['sd_temp']),
-                                source, float(values['sd_extremum']) if source == 'custom' else None)
-                print(sys.stderr)
+                try:
+                    #       Call Calculation Routine       #
+                    sd2opp.calc_opp(values['sd_file_in'], values['sd_file_out'], values['sd_temp'],
+                                    source, float(values['sd_extremum']) if source == 'custom' else None)
+                except Exception:
+                    #       Show Popup on Error       #
+                    error_message = (an.ERROR_INTRO % 'SD2OPP') + tb.format_exc()
+                    sg.PopupError(error_message, grab_anywhere=False, title='Subroutine Error', icon='CalcOPP.ico')
+
                 window.Element('sd_okay').Update(disabled=False)
-                # TODO: display errors as popup (try, except)
+
 
 # TODO: wait in pdf2opp before closing window, if invoked via drag and drop
 # TODO: check if input/error/output files are the same
