@@ -119,9 +119,7 @@ SD = 'Prerequisites\n—————————————\n' \
      '• assess the results.\n' \
      '\n' \
      'Input Preparation\n—————————————————\n' \
-     '• Dysnomia writes the necessary *.pgrid file as output.\n' \
-     '• For convenience, keep the corresponding *.vesta file in the\n' \
-     '  same directory.\n' \
+     'Dysnomia writes the necessary *.pgrid file as output.\n' \
      '\n' \
      'Options\n———————\n' \
      'Via radio button, you can choose the source of extremal density (i.e., the highest absolute density) for the ' \
@@ -140,10 +138,9 @@ SD = 'Prerequisites\n—————————————\n' \
      '  pairs, etc.\n' \
      '\n' \
      'Output\n——————\n' \
-     'The output is an *_opp.pgrid file. If the associated *.vesta file was present in the working directory, the ' \
-     'file *_opp.vesta is provided as well. It can be used to open the volumetric data in VESTA and contains all ' \
-     'additional information (e.g., atomic positions) from the input. Both files must be in the same directory for ' \
-     'this to work.\n' \
+     'The output is a binary *_opp.pgrid file. Additionally, an *_opp.vesta file is provided to easily open the ' \
+     'volumetric data in VESTA. You should switch off the displaying of sections, as the high OPP in most of the ' \
+     'unit cell would obscure any area of interest. Choose the isosurface level (given in electronvolt) reasonably.\n' \
      '\n' \
      'Caveat\n——————\n' \
      'For grid points with a non-positive PDF, the highest finite OPP in the data (derived from the lowest positive ' \

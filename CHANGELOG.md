@@ -3,14 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
-### Added
-- Program part SD2OPP (coded in Python) for the calculation of OPPs from MEM-reconstructed scatterer densities.
-
 ## [2.0.0] - 2019-yy-xx
 ### Added
 - GUI (yay!) coded in Python using [PySimpleGUI](https://pypi.org/project/PySimpleGUI/).
 - Documentation for the preparation of input data (displayed in GUI).
+- Program part SD2OPP (coded in Python) for the calculation of OPPs from MEM-reconstructed scatterer densities.
 - Files to comply with the LGPL v3 license of PySimpleGUI.
 - Logo and icons.
 - PDF2OPP_2D: Possibility to read temperature from JANA2006’s `*.m90` file.
@@ -20,7 +17,7 @@ The format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/
 - PDF2OPP_2D and PDF2OPP_3D: Ported to Fortran2008. 
 - Common release of former CalcOPP (for 2D data) and CalcOPP-3D (for 3D data) under the name CalcOPP.
 - Renaming of former CalcOPP to PDF2OPP_2D and CalcOPP-3D to PDF2OPP_3D.
-- Convergent development at [GitHub](https://github.com/dewiedem/calcopp).
+- Development at [GitHub](https://github.com/dewiedem/calcopp).
 - Merged documentation files.
 - Unification of documentation strings.
 

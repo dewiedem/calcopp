@@ -18,6 +18,7 @@ import shlex
 import subprocess as sp
 import PySimpleGUI as sg
 import annotations as an
+import sd2opp
 
 __author__ = 'Dennis Wiedemann'
 __copyright__ = 'Copyright 2019, Dr. Dennis Wiedemann'
@@ -412,7 +413,24 @@ while True:
 
             # ····· Call OPP Calculation from Scatterer Density ····· #
             elif event == 'sd_okay':
-                pass  # TODO: write and call sd2opp.py, catch errors as popup
+
+                window.Element('sd_okay').Update(disabled=True)
+
+                #       Construct String for Extremum Source       #
+                if values['sd_extremum_source_minimum']:
+                    source = 'min'
+                elif values['sd_extremum_source_maximum']:
+                    source = 'max'
+                else:
+                    source = 'custom'
+
+                #       Call Calculation Routine       #
+                sd2opp.calc_opp(values['sd_file_in'], values['sd_file_out'], float(values['sd_temp']),
+                                source, float(values['sd_extremum']) if source == 'custom' else None)
+                print(sys.stderr)
+                window.Element('sd_okay').Update(disabled=False)
+                # TODO: display errors as popup (try, except)
 
 # TODO: wait in pdf2opp before closing window, if invoked via drag and drop
+# TODO: check if input/error/output files are the same
 # TODO: try unicode output for Fortran programs
