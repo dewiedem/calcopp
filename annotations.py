@@ -37,7 +37,7 @@ INTRODUCTION = 'Choose the source-data type by selecting a tab on the right. “
                '\n'
 
 ERROR_INTRO = 'An error occurred in the subroutine %s.\n\nIf your input files are valid, please report this error to ' \
-              'the developer including a screenshot and the input file(s).\nCalcOPP Version: %s\n\n' % \
+              'the developer including a screenshot and the input file(s).\n\nCalcOPP Version: %s\n\n' % \
               ('%s', __version__)
 
 ENDING = '\n' \

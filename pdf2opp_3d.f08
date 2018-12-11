@@ -14,7 +14,7 @@ real, dimension(columns)            :: pdf, opp
 character(64), dimension(columns)   :: pdf_str, opp_str
 real                                :: T, pdf_0, pdf_min, opp_high
 logical                             :: exists_input_xsf, exists_input_m90, temp_found
-real, parameter                     :: k = 8.6173332621451774336636593340806E-5     ! Boltzmann constant in eV/K
+real, parameter                     :: k = 8.617330E-5     ! Boltzmann constant in eV/K
 
 ! INITIALIZING
 
@@ -282,10 +282,10 @@ end subroutine print_greeting
 subroutine print_help(separator)
     character(*), intent(in) :: separator
     write(*, fmt = '(/,A,/)') separator
-    write(*,*) 'Usage: pdf2opp_3d-<x86|x64> [OPTIONS]'; write(*,*)
+    write(*,*) 'Usage: pdf2opp_3d [OPTIONS]'; write(*,*)
     write(*,*) 'Options:'; write(*,*)
     write(*,*) '-h                Prints this usage information and exits.'
-    write(*,*) '-i <file name>    Specifies the input file (key may be omitted).'
+    write(*,*) '-i <file name>    Specifies the input file.'
     write(*,*) '-o <file name>    Specifies the output file.'
     write(*,*) '-t <T/K>          Specifies the temperature in Kelvin'
     write(*,*) '                  (if not provided, extraction from *.m90 will be tried).'
@@ -297,3 +297,8 @@ subroutine print_goodbye(separator)
     write(*, fmt = '(/,A,/)') separator
     write(*,*) '"Trust me, I''m the doctor!" - Dr Who'; write(*,*)
 end subroutine print_goodbye
+
+! TODO (Dennis#1#): Wait in before closing window if invoked via drag and drop
+! TODO (Dennis#1#): Try unicode output
+! TODO (Dennis#1#): Accept input/output file names and custom temperatures
+! TODO (Dennis#1#): Test output size in GUI

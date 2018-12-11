@@ -25,7 +25,7 @@ import os
 import sys
 import numpy as np
 
-K_B = 8.617330e-5  # Boltzmann constant in eV K⁻¹
+K_B = 8.617330e-5  # Boltzmann constant in eV/K
 
 
 def non_zero_float(string):
@@ -105,7 +105,7 @@ def parse_arguments():
 
 def hello():
     """Print greeting message."""
-    print('SD2OPP %s - Calculation of 3D OPP from Scatterer Density (Dysnomia PGRID Format)' % __version__)
+    print('SD2OPP %s - Calculation of 3D OPP from Scatterer Density' % __version__)
     print('%s (%s License, see LICENSE file)\n' % (__copyright__, __license__))
 
 

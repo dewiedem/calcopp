@@ -17,7 +17,7 @@ real, dimension(:), allocatable     :: z_stack
 real, dimension(:,:), allocatable   :: z, pdf
 logical                             :: exists_input, exists_error, exists_m90
 logical                             :: output_pdf, output_pdferr, output_opp, output_opperr
-real, parameter                     :: k = 8.6173332621451774336636593340806E-2     ! Boltzmann constant in meV/K
+real, parameter                     :: k = 8.617330E-2     ! Boltzmann constant in meV/K
 
 ! ACQUIRING NECESSARY INPUT
 
@@ -530,13 +530,13 @@ end subroutine print_greeting
 
 ! Help text
 subroutine print_help()
-    write(*,*); write(*,*) 'Usage: pdf2opp_2d-<x86|x64> [OPTIONS]'; write(*,*)
+    write(*,*); write(*,*) 'Usage: pdf2opp_2d [OPTIONS]'; write(*,*)
     write(*,*) 'Options:'; write(*,*)
     write(*,*) '-h                Prints this usage information and exits.'
-    write(*,*) '-i <file name>    Specifies the input file (key may be omitted).'
+    write(*,*) '-i <file name>    Specifies the input file.'
     write(*,*) '-o <file name>    Specifies the output file.'
     write(*,*) '-e <file name>    Specifies the error map file.'
-    write(*,*) '-t <T/K>          Specifies the temperature in Kelvin'
+    write(*,*) '-t <T/K>          Specifies the temperature in Kelvin.'
     write(*,*) '                  (if not provided, extraction from *.m90 will be tried).'
     write(*,*) '-pdf              Includes PDF data in output.'
     write(*,*) '-pdferr           Includes PDF error map in output.'
@@ -545,3 +545,7 @@ subroutine print_help()
     write(*,*); write(*,*) 'If none of the last four options is included, all data will be calculated'
     write(*,*) 'and put out.'
 end subroutine print_help
+
+! TODO (Dennis#1#): Wait in before closing window if invoked via drag and drop
+! TODO (Dennis#1#): Try unicode output
+! TODO (Dennis#1#): Test output size in GUI
