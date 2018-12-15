@@ -43,11 +43,11 @@ python -OO -m PyInstaller --name="sd2opp[.exe]" sd2opp.py
 The module *calcopp-gui* relies on [PySimpleGUI](https://pypi.org/project/PySimpleGUI/), used in version X.X.X for compiling. The module *sd2opp* relies on [NumPy](https://www.numpy.org/), used in version X.X.X for compiling.
 
 ### Modules *pdf2opp_2d* and *pdf2opp_3d*
-The source code adheres strictly to the specifications of Fortran2008. It has been compiled using GFortran from GCC X.X.X/X.X.X (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”:
+The source code adheres the specifications of Fortran2008 with GNU-specific extensions. It has been compiled using GFortran from GCC X.X.X/X.X.X (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”:
 
 ```
-gfortran -std=f2008 -pedantic -Wall -Wextra -O3 -static -s [-m64] pdf2opp_2d.f08 -o pdf2opp_2d[.exe]
-gfortran -std=f2008 -pedantic -Wall -Wextra -O3 -static -s [-m64] pdf2opp_3d.f08 -o pdf2opp_3d[.exe]
+gfortran -std=f2008 -fall-instrinsics -pedantic -Wall -Wextra -O3 -static -s [-m64] pdf2opp_2d.f08 -o pdf2opp_2d[.exe]
+gfortran -std=f2008 -fall-instrinsics -pedantic -Wall -Wextra -O3 -static -s [-m64] pdf2opp_3d.f08 -o pdf2opp_3d[.exe]
 ```
 
 ## Installation

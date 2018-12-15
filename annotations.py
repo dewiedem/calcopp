@@ -73,12 +73,12 @@ PDF2D = 'Prerequisites\n—————————————\n' \
         'and OPP errors require an input error file.\n' \
         '\n' \
         'Output\n——————\n' \
-        'The output is an ASCII file of space-separated x, y, PDF, and OPP values (both with errors, if supplied) ' \
-        'for each grid point. You can plot it with several applications (e.g., gnuplot, QtiPlot, Origin, or Igor ' \
-        'Pro).\n' \
+        'The output is an ASCII file of space-separated x, y, PDF, and OPP values (the latter two with errors, if ' \
+        'supplied) for each grid point. You can plot it with several applications (e.g., gnuplot, QtiPlot, Origin, ' \
+        'or Igor Pro).\n' \
         '\n' \
         'Caveats\n———————\n' \
-        'For grid points with a non-positive PDF, arbitrarily huge OPPs and OPP errors of 10^9  meV are set. ' \
+        'For grid points with a non-positive PDF, arbitrarily huge OPPs and OPP errors of 10^6  eV are set. ' \
         'Nevertheless, this physically means a potential barrier of insurmountable height.\n'
 
 PDF3D = 'Prerequisites\n—————————————\n' \

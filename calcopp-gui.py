@@ -167,7 +167,7 @@ column_right = [
         sg.Tab('3D PDF', tab_pdf3d),
         sg.Tab('Scatterer Density', tab_sd)]],
         change_submits=True, key='data_source')],
-    [sg.Frame('Output', [[sg.Output(size=(77, 12), font=('Courier', 9), key='output')]])]  # TODO: check if Courier is possible
+    [sg.Frame('Output', [[sg.Output(size=(77, 12), font=('Courier', 9), key='output')]])]
 ]
 
 # ===== Window Invocation ===== #
