@@ -25,8 +25,8 @@ real                                    :: opp_high                            !
 logical                                 :: exists_input_xsf, exists_input_m90  ! Flags for the existence of files
 logical                                 :: temp_found                          ! Flag for existence of temperature in *.m90
 
-character(len = *), parameter           :: separator = ' ' // repeat('=', 40)  ! Visual separator for standard output
-character(len = *), parameter           :: version = '2.0.0'                   ! Program version
+character(len = *), parameter           :: SEPARATOR = ' ' // repeat('=', 40)  ! Visual separator for standard output
+character(len = *), parameter           :: VERSION = '2.0.0'                   ! Program version
 real,               parameter           :: K_B = 8.617330E-5                   ! Boltzmann constant in eV/K
 
 ! INITIALIZING
@@ -337,3 +337,7 @@ end subroutine print_goodbye
 ! TODO (Dennis#1#): Version output
 ! TODO (Dennis#1#): Optimize array handling, avoid text arrays if possible
 ! TODO (Dennis#1#): Conversion function instead of extra variable for str-to-num
+! TODO (Dennis#1#): Adjust case for variables/constants
+! TODO (Dennis#1#): Subroutines for ext-dot etc.
+! TODO (Dennis#1#): one array for input and output values
+! TODO (Dennis#1#): Do not hardcode columns, just read all values in allocatable array, dimension from header data
