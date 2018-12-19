@@ -40,7 +40,7 @@ real, parameter                   :: INFINITE_OPP = 1.0E6                       
 file_input = ''
 file_output = ''
 file_error = ''
-t = -1.
+t = -1.0
 output_pdf = .false.
 output_pdferr = .false.
 output_opp = .false.
@@ -160,7 +160,7 @@ if ((output_pdferr) .or. (output_opperr)) then
 end if
 
 ! Temperature extraction from *.m90
-if ((t <= 0.) .and. (output_opp .or. output_opperr)) then
+if ((t <= 0.0) .and. (output_opp .or. output_opperr)) then
     write(*, fmt = '(A)', advance = 'no') ' Temperature not given. Probing *.m90 ...'
 
     ! Construct file name of *.m90
@@ -477,6 +477,7 @@ contains
 ! Get a value from a stream-mode scratch file
 function get_scratch(unit_number)
 
+    implicit none
     integer, intent(in) :: unit_number  ! Number of input unit to get data from
     real                :: get_scratch  ! Value got from scratch file
 
@@ -487,10 +488,11 @@ end function get_scratch
 ! Add a different extension to a file name
 function new_ext(file_name, extension)
 
-    character(*), intent(in)  :: file_name  ! File to add new extension to
-    character(*), intent(in)  :: extension  ! New extension to add
-    character(len = 256)      :: new_ext    ! File name with new extension
-    integer                   :: dot_pos    ! Position of extension dot
+    implicit none
+    character(len = *), intent(in)  :: file_name  ! File to add new extension to
+    character(len = *), intent(in)  :: extension  ! New extension to add
+    character(len = 256)            :: new_ext    ! File name with new extension
+    integer                         :: dot_pos    ! Position of extension dot
 
     dot_pos = scan(trim(file_name), '.', back = .true.)
     if (dot_pos > 0) then
@@ -508,8 +510,8 @@ end program pdf2opp_2d
 subroutine finish(error_message, is_drag_and_drop)
 
     implicit none
-    character(*), intent(in) :: error_message     ! Error message (empty for no error)
-    logical,      intent(in) :: is_drag_and_drop  ! True if program invoked via drag and drop
+    character(len = *), intent(in) :: error_message     ! Error message (empty for no error)
+    logical,            intent(in) :: is_drag_and_drop  ! True if program invoked via drag and drop
     intrinsic sleep
 
     write(*, *)
@@ -535,7 +537,7 @@ end subroutine finish
 subroutine print_greeting(ver)
 
     implicit none
-    character(*), intent(in) :: ver  ! Program version
+    character(len = *), intent(in) :: ver  ! Program version
 
     write(*, *) 'PDF2OPP_2D ' // ver // ' - Calculation of 2D OPP from PDF Data (JANA2006 STF Format)'
     write(*, *) 'Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)'

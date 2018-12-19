@@ -26,12 +26,15 @@ character(len = *), parameter      :: VERSION = '2.0.0'                   ! Prog
 real,               parameter      :: K_B = 8.617330E-5                   ! Boltzmann constant in eV/K
 
 
+! INITIALIZING
 call print_greeting(SEPARATOR, VERSION)
+file_output_xsf = ''
+temp = -1.0
 
 ! ACQUIRING INPUT FILE
 
+
 ! Getting file name from command line
-file_output_xsf = ''
 if (command_argument_count() == 0) then
     write(*, *) 'No file name provided. Exiting.'
     call print_help(SEPARATOR)
@@ -51,19 +54,19 @@ if (.not. exists_input_xsf) then
     stop
 end if
 
-! Prepare file names
+! Construct file names
 file_input_m90 = new_ext(file_input_xsf, '.m90')
 file_output_vesta = new_ext(file_input_xsf, '_opp.vesta')
 if (file_output_xsf == '') file_output_xsf = new_ext(file_input_xsf, '_opp.xsf')
 
-! ACQUIRE TEMPERATURE
-
-! Try automatic extraction from *.m90
-inquire(file = file_input_m90, exist = exists_input_m90)
-
-if (exists_input_m90) then
+! If temperature not provided, try automatic extraction from *.m90
+if (.not. (temp > 0.0)) then
     write(*, fmt = '(A)', advance = 'no') ' *.m90 found.'
-    open(newunit = m90_unit, file = file_input_m90, status = 'old', action = 'read')
+    inquire(file = file_input_m90, exist = exists_input_m90)
+
+    if (exists_input_m90) then
+        write(*, fmt = '(A)', advance = 'no') ' *.m90 found.'
+        open(newunit = m90_unit, file = file_input_m90, status = 'old', action = 'read')
     line = ''
 
     ! Search for keyword "datcolltemp"
@@ -200,10 +203,11 @@ contains
 ! Add a different extension to a file name
 function new_ext(file_name, extension)
 
-    character(*), intent(in)  :: file_name  ! File to add new extension to
-    character(*), intent(in)  :: extension  ! New extension to add
-    character(len = 256)      :: new_ext    ! File name with new extension
-    integer, dimension(2)     :: ext_pos    ! Positions of extension separators
+    implicit none
+    character(len = *), intent(in)  :: file_name  ! File to add new extension to
+    character(len = *), intent(in)  :: extension  ! New extension to add
+    character(len = 256)            :: new_ext    ! File name with new extension
+    integer, dimension(2)           :: ext_pos    ! Positions of extension separators
 
     ext_pos = (/ scan(trim(file_name), '_tmp', back = .true.) - 4,  scan(trim(file_name), '.', back = .true.) - 1 /)
     if (any(ext_pos > 0)) then
@@ -222,8 +226,8 @@ end program pdf2opp_3d
 subroutine print_greeting(sep, ver)
 
     implicit none
-    character(*), intent(in) :: sep  ! Visual separator
-    character(*), intent(in) :: ver  ! Program version
+    character(len = *), intent(in) :: sep  ! Visual separator
+    character(len = *), intent(in) :: ver  ! Program version
 
     write(*, *) 'PDF2OPP_3D ' // ver // ' - Calculation of 3D OPP from PDF Data (JANA2006 XSF Format)'
     write(*, *) 'Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)'
@@ -235,7 +239,7 @@ end subroutine print_greeting
 subroutine print_help(sep)
 
     implicit none
-    character(*), intent(in) :: sep  ! Visual separator
+    character(len = *), intent(in) :: sep  ! Visual separator
 
     write(*, fmt = '(/, A, /)') sep
     write(*, *) 'Usage: pdf2opp_3d [OPTIONS]'
@@ -255,7 +259,7 @@ end subroutine print_help
 subroutine print_goodbye(sep)
 
     implicit none
-    character(*), intent(in) :: sep  ! Visual separator
+    character(len = *), intent(in) :: sep  ! Visual separator
 
     write(*, fmt = '(/, A, /)') sep
     write(*, *) '"Trust me, I''m the doctor!" - The Doctor'
@@ -304,8 +308,8 @@ end subroutine create_vesta
 subroutine finish(error_message, is_drag_and_drop)
 
     implicit none
-    character(*), intent(in) :: error_message     ! Error message (empty for no error)
-    logical,      intent(in) :: is_drag_and_drop  ! True if program invoked via drag and drop
+    character(len = *), intent(in) :: error_message     ! Error message (empty for no error)
+    logical,            intent(in) :: is_drag_and_drop  ! True if program invoked via drag and drop
     intrinsic sleep
 
     write(*, *)
@@ -333,3 +337,4 @@ end subroutine finish
 ! TODO (Dennis#1#): Strip user input via keyboard
 ! TODO (Dennis#1#): Version output
 ! TODO (Dennis#1#): Delete file on error with close(out_unit, status = 'delete')
+! TODO (Dennis#1#): Test failures (also with XSF data structure)
