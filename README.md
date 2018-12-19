@@ -43,7 +43,7 @@ python -OO -m PyInstaller --name="sd2opp[.exe]" sd2opp.py
 The module *calcopp-gui* relies on [PySimpleGUI](https://pypi.org/project/PySimpleGUI/), used in version X.X.X for compiling. The module *sd2opp* relies on [NumPy](https://www.numpy.org/), used in version X.X.X for compiling.
 
 ### Modules *pdf2opp_2d* and *pdf2opp_3d*
-The source code adheres the specifications of Fortran2008 with GNU-specific extensions. It has been compiled using GFortran from GCC X.X.X/X.X.X (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”:
+The source code adheres the specifications of Fortran 2008 with GNU-specific extensions. It has been compiled using GFortran from GCC X.X.X/X.X.X (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”:
 
 ```
 gfortran -std=f2008 -fall-instrinsics -pedantic -Wall -Wextra -O3 -static -s [-m64] pdf2opp_2d.f08 -o pdf2opp_2d[.exe]
@@ -71,7 +71,7 @@ CalcOPP has been inspired by work from Dr. Hans Boysen (Ludwig-Maximilians-Unive
 ## Citation
 If you prepare data for publication with CalcOPP, please use the following citation:
 
-D. Wiedemann, CalcOPP, Calculation of One-Particle Potentials, Technische Universität Berlin, Berlin (Germany), **2019**, [doi:XXX](https://doi.org/XXX).
+D. Wiedemann, CalcOPP, Calculation of Effective One-Particle Potentials, Technische Universität Berlin, Berlin (Germany), **2019**, [doi:XXX](https://doi.org/XXX).
 
 ## Contributing
 It is much appreciated if you report any bugs or typos to the above e-mail address.
