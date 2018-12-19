@@ -74,7 +74,7 @@ menu_def = [['&File', '&Exit'], ['&Help', '&About …']]
 
 # ===== Left Column Definition ===== #
 column_left = [
-    [sg.Frame('Information and Manual', [[sg.Multiline(size=(61, None), font=('Courier', 9),
+    [sg.Frame('Information and Manual', [[sg.Multiline(size=(61, 25), font=('Courier', 9),
                                                        do_not_clear=True, key='manual')]])],
     [sg.Frame('Citation', [
         [sg.Text('If you publish data calculated with CalcOPP, please use the following citation:')],
@@ -276,8 +276,8 @@ while True:
         # ····· "About" Window Definition ····· #  (keep in the same control structure as call to not retain state)
         layout_about = [
             [sg.Image(filename='logo.png')],
-            [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=('None', 18))],
-            [sg.Text('Version %s\n' % __version__, font=('None', 14))],
+            [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=(None, 18))],
+            [sg.Text('Version %s\n' % __version__, font=(None, 14))],
             [sg.Text(an.CITATION)],
             [sg.Text('Export Citation:'),
              sg.Radio('RIS format', "FORMAT", default=True, key='format_ris'),

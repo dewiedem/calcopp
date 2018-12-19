@@ -16,10 +16,11 @@ The format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/
 
 ### Changed
 - PDF2OPP_2D: Now calculates OPPs in eV instead of meV.
-- PDF2OPP_2D: Rewritten array handling for faster calculation.
-- PDF2OPP_2D: Rewritten routines for more simplicity.
-- PDF2OPP_2D: Improved text output.
 - PDF2OPP_2D: Stripped unnecessary blanks bloating output files.
+- PDF2OPP_3D: Improved VESTA output file for direct display.
+- PDF2OPP_2D and PDF2OPP_3D: Rewritten array handling for faster calculation.
+- PDF2OPP_2D and PDF2OPP_3D: Rewritten routines for more simplicity.
+- PDF2OPP_2D and PDF2OPP_3D: Improved text output.
 - PDF2OPP_2D and PDF2OPP_3D: Ported to Fortran2008.
 - PDF2OPP_2D and PDF2OPP_3D: Improved code readability.
 - Common release of former CalcOPP (for 2D data) and CalcOPP-3D (for 3D data) under the name CalcOPP.

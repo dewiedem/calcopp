@@ -14,7 +14,7 @@ integer                           :: i, j                                       
 integer                           :: data_x, data_y, err_data_x, err_data_y                ! Number of data points in x/y direction
                                                                                            !   in input/error file
 integer                           :: in_unit, out_unit, err_unit, m90_unit, opp_unit, &
-                                     pdferr_unit                                           ! Unit number for file access
+                                     pdferr_unit                                           ! Unit numbers for file access
 integer                           :: io_status                                             ! Status of the file I/O                             !
 integer, dimension(2)             :: xy_0                                                  ! Position of maximum PDF
 real                              :: x_min, x_max, y_min, y_max, &                         ! Minimal/maximal x/y values in
@@ -144,7 +144,7 @@ else
     end if
 end if
 
-! Automatically set output file name, if not provides
+! Automatically set output file name, if not provided
 if (file_output == '') file_output = new_ext(file_input, '_opp.asc')
 
 ! Automatically set error map name, if not provided and necessary, and check existence
