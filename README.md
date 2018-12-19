@@ -71,7 +71,7 @@ CalcOPP has been inspired by work from Dr. Hans Boysen (Ludwig-Maximilians-Unive
 ## Citation
 If you prepare data for publication with CalcOPP, please use the following citation:
 
-D. Wiedemann, CalcOPP, Calculation of One-Particle Potentials, Technische Universität Berlin, Berlin (Germany), **2019**, [doi:XXX](https://doi.org/XXX).
+D. Wiedemann, CalcOPP, Calculation of Effective One-Particle Potentials, Technische Universität Berlin, Berlin (Germany), **2019**, [doi:XXX](https://doi.org/XXX).
 
 ## Contributing
 It is much appreciated if you report any bugs or typos to the above e-mail address.
