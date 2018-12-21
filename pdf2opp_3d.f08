@@ -9,103 +9,145 @@ character(len = 256)               :: file_input_xsf, file_output_xsf, &
                                       file_input_m90, file_output_vesta   ! Input and output file names
 character(len = 256)               :: line                                ! Input line read from files
 character(len = 256)               :: dataset_name                        ! Name of dataset from header
+character(len = 256)               :: temp_string                         ! Temperature as string
+character(len = 256)               :: cmd_arg                             ! Command-line argument
 integer                            :: io_status                           ! Status of the file I/O
 integer                            :: i                                   ! Counter
 integer                            :: in_unit, out_unit, m90_unit         ! Unit numbers for file access
-integer, dimension(3)              :: npoints                             ! Number of points in x, y, z direction from header
+integer, dimension(3)              :: npoints                             ! Number of points in x, y, z direction
 real,    dimension(:), allocatable :: values                              ! PDF/OPP values
 real                               :: temp                                ! Temperature in Kelvin
 real                               :: pdf_0                               ! Maximum input PDF
 real                               :: pdf_min                             ! Minimum input PDF
 real                               :: opp_max                             ! Maximum OPP
 logical                            :: exists_input_xsf, exists_input_m90  ! Flags for the existence of files
-logical                            :: temp_found                          ! Flag for existence of temperature in *.m90
+logical                            :: is_dnd                              ! Flag for drag and drop
 
-character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 40)  ! Visual separator for standard output
+character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 50)  ! Visual separator for standard output
 character(len = *), parameter      :: VERSION = '2.0.0'                   ! Program version
 real,               parameter      :: K_B = 8.617330E-5                   ! Boltzmann constant in eV/K
 
 
-! INITIALIZING
-call print_greeting(SEPARATOR, VERSION)
+! INITIALIZE
+
+file_input_xsf = ''
 file_output_xsf = ''
+out_unit = -1
 temp = -1.0
+is_dnd = .false.
 
-! ACQUIRING INPUT FILE
+! PARSE COMMAND-LINE ARGUMENTS
 
+! Read in values and perform basic checks
+i = 1
+do while (i <= command_argument_count())
+    call get_command_argument(i, cmd_arg)
+    select case (cmd_arg)
+        case ('-h')
+            call print_help()
+            call finish('', out_unit, is_dnd)
+        case ('-v')
+            write(*, fmt = '(A)') VERSION
+            call finish('', out_unit, is_dnd)
+        case ('-i')
+            i = i + 1
+            if (i <= command_argument_count()) then
+                call get_command_argument(i, file_input_xsf)
+            else
+                call print_help()
+                call finish('Used -i, but no input file name provided.', out_unit, is_dnd)
+            end if
+            i = i + 1
+        case ('-o')
+            i = i + 1
+            if (i <= command_argument_count()) then
+                call get_command_argument(i, file_output_xsf)
+            else
+                call print_help()
+                call finish('Used -o, but no output file name provided.', out_unit, is_dnd)
+            end if
+            i = i + 1
+        case ('-t')
+            i = i + 1
+            if (i <= command_argument_count()) then
+                call get_command_argument(i, temp_string)
+                read(temp_string, *, iostat = io_status) temp
+                if (io_status /= 0) call finish('Used -t, but no valid temperature as decimal value provided.', out_unit, is_dnd)
+            else
+                call print_help()
+                call finish('Used -t, but no temperature provided.', out_unit, is_dnd)
+            end if
+            i = i + 1
+        case default
+            if (index(cmd_arg, '-') == 1) then
+                call print_help()
+                call finish('Unrecognized command-line option: ' // trim(cmd_arg), out_unit, is_dnd)
+            else if (file_input_xsf == '') then
+                file_input_xsf = cmd_arg
+                is_dnd = .true.
+            else
+                write(*, *) 'Ignoring unexpected input: ' // trim(cmd_arg)
+            end if
+            i = i + 1
+    end select
+end do
 
-! Getting file name from command line
-if (command_argument_count() == 0) then
-    write(*, *) 'No file name provided. Exiting.'
-    call print_help(SEPARATOR)
-    call print_goodbye(SEPARATOR)
-    stop
+! Check validity of input file name
+if (file_input_xsf == '') then
+    call print_help()
+    call finish('No input file name provided.', out_unit, is_dnd)
 else
-    call get_command_argument(1, file_input_xsf)
+    exists_input_xsf = .false.
+    inquire(file = file_input_xsf, exist = exists_input_xsf)
+    if (.not. exists_input_xsf) call finish('No valid input file name provided.', out_unit, is_dnd)
 end if
 
-! Testing if input file exists
-exists_input_xsf = .false.
-inquire(file = file_input_xsf, exist = exists_input_xsf)
-if (.not. exists_input_xsf) then
-    write(*, *) 'Input file not found. Exiting.'
-    call print_help(SEPARATOR)
-    call print_goodbye(SEPARATOR)
-    stop
-end if
+call print_greeting(SEPARATOR, VERSION)
 
 ! Construct file names
 file_input_m90 = new_ext(file_input_xsf, '.m90')
-file_output_vesta = new_ext(file_input_xsf, '_opp.vesta')
-if (file_output_xsf == '') file_output_xsf = new_ext(file_input_xsf, '_opp.xsf')
-
-! If temperature not provided, try automatic extraction from *.m90
-if (.not. (temp > 0.0)) then
-    write(*, fmt = '(A)', advance = 'no') ' *.m90 found.'
-    inquire(file = file_input_m90, exist = exists_input_m90)
-
-    if (exists_input_m90) then
-        write(*, fmt = '(A)', advance = 'no') ' *.m90 found.'
-        open(newunit = m90_unit, file = file_input_m90, status = 'old', action = 'read')
-    line = ''
-
-    ! Search for keyword "datcolltemp"
-    io_status = 0
-    do while ((io_status == 0) .and. (index(line, 'datcolltemp ') == 0))
-        read(m90_unit, fmt = '(A256)', iostat = io_status) line
-    end do
-    close(m90_unit)
-
-    ! Try to read in following value
-    if (io_status == 0) then
-        line = line(index(line, 'datcolltemp'):)
-        read(line(12:), *) temp
-        write(*, fmt = '(A, F0.4, A)') 'Temperature found: T = ', temp, ' K'
-        temp_found = .true.
-    else
-        write(*, *) 'Temperature not found in *.m90.'
-        temp_found = .false.
-    end if
-
+if (file_output_xsf == '') then
+    file_output_xsf = new_ext(file_input_xsf, '_opp.xsf')
+    file_output_vesta = new_ext(file_input_xsf, '_opp.vesta')
 else
-
-    write(*, *) '*.m90 not found.'
-    temp_found = .false.
-
+    file_output_vesta = new_ext(file_output_xsf, '.vesta')
 end if
 
-! Ask for user input if temperature was not found
-if (.not. temp_found) then
-    temp = -1.
-    do while (temp <= 0.)
-        write(*, fmt = '(A)', advance = 'no') ' Temperature/K: '
-        read(*, *) temp
-    end do
+! Extract temperature from *.m90
+if (temp <= 0.0) then
+    write(*, fmt = '(A)', advance = 'no') ' Temperature not given. Probing *.m90 ...'
+
+    exists_input_m90 = .false.
+    inquire(file = file_input_m90, exist = exists_input_m90)
+    if (exists_input_m90) then
+        write(*, fmt = '(A)', advance = 'no') ' found.'
+        open(newunit = m90_unit, file = file_input_m90, status = 'old', action = 'read')
+        line = ''
+
+        ! Search for keyword "datcolltemp"
+        io_status = 0
+        do while ((io_status == 0) .and. (index(line, 'datcolltemp ') == 0))
+            read(m90_unit, fmt = '(A256)', iostat = io_status) line
+        end do
+        close(m90_unit)
+
+        ! Try to read in following value
+        if (io_status == 0) then
+            read(line(12:), *, iostat = io_status) temp
+            if (io_status /= 0) call finish('No valid temperature found in *.m90.', out_unit, is_dnd)
+            write(*, *)
+            write(*, fmt = '(A, F0.4, A)') ' Temperature: T = ', temp, ' K'
+            write(*, fmt = '(/, A, /)') SEPARATOR  ! Separates temperature extraction from calculation
+        else
+            call finish('No valid temperature found in *.m90.', out_unit, is_dnd)
+        end if
+    else
+        write(*, *) 'failed.'
+        call finish('Temperature not given and *.m90 not found.', out_unit, is_dnd)
+    end if
 end if
 
-write(*, fmt = '(/, A, /)') SEPARATOR ! Separates input from calculation
-
-! PARSING AND COPYING INPUT HEADER
+! PARSE AND COPY INPUT HEADER
 
 write(*, fmt = '(A)', advance = 'no') ' Reading file header ...'
 open(newunit = in_unit, file = file_input_xsf, status = 'old', action = 'read')
@@ -119,9 +161,18 @@ do while ((.not. is_iostat_end(io_status)) .and. (index(line, 'BEGIN_BLOCK_DATAG
     write(out_unit, fmt = '(A)') trim(line)
 end do
 
+if (is_iostat_end(io_status)) then
+    write(*, *) 'failed.'
+    call finish('No 3D data-grid block found.', out_unit, is_dnd)
+end if
+
 ! Read dataset title and write modified title
-read(in_unit, *) dataset_name
-write(out_unit, fmt = '(A)') '  OPP from ' // trim(dataset_name)
+read(in_unit, fmt = '(A)', iostat = io_status) dataset_name
+if (io_status /= 0) then
+    write(*, *) 'failed.'
+    call finish('Error reading dataset title.', out_unit, is_dnd)
+end if
+write(out_unit, fmt = '(A)') '  OPP from ' // trim(adjustl(dataset_name))
 
 ! Copy between dataset title and first 3D grid verbatim
 do while ((.not. is_iostat_end(io_status)) .and. (index(line, 'BEGIN_DATAGRID_3D') == 0))
@@ -131,59 +182,75 @@ end do
 
 if (is_iostat_end(io_status)) then
     write(*, *) 'failed.'
-    write(*, *) 'No 3D data grid found in ' // trim(file_input_xsf) // ' . Exiting.'
-    call print_goodbye(SEPARATOR)
-    stop
+    call finish('No 3D data grid found.', out_unit, is_dnd)
 end if
 
-! Reading number of data points
-read(in_unit, *) npoints
+! Read number of data points
+read(in_unit, *, iostat = io_status) npoints
+if (io_status /= 0) then
+    write(*, *) 'failed.'
+    call finish('Error reading number of data points.', out_unit, is_dnd)
+end if
 write(out_unit, fmt = '(3(2X, I0))') npoints
 
 ! Copy origin and three spanning vectors verbatim
 do i = 1, 4
-    read(in_unit, fmt = '(A)') line
+    read(in_unit, fmt = '(A)', iostat = io_status) line
+    if (io_status /= 0) then
+        write(*, *) 'failed.'
+        call finish('Error reading cell vectors.', out_unit, is_dnd)
+    end if
     write(out_unit, fmt = '(A)') trim(line)
 end do
 
 write(*, *) 'done.'
-write(*, *) 'Dataset title: ' // trim(dataset_name)
+write(*, *) 'Dataset title: ' // trim(adjustl(dataset_name))
 write(*, fmt = '(A, 3(I0, 2X), /)') ' Number of data (x, y, z):  ', npoints
 
-! READING AND PROCESSING VALUES
+! READ, PROCESS, AND WRITE VALUES
 
+! Read PDF from file
 allocate(values(product(npoints)))
 write(*, fmt = '(A)', advance = 'no') ' Reading data ...'
-read(in_unit, *) values
+read(in_unit, *, iostat = io_status) values
+if (io_status /= 0) then
+    write(*, *) 'failed.'
+    call finish('Error reading data values.', out_unit, is_dnd)
+    end if
 write(*, *) 'done.'
 
 pdf_min = minval(values)
 pdf_0 = maxval(values)
 write(*, fmt = '(A, F0.6, A)') ' p(max) = ', pdf_0, ' A^-3'
-write(*, fmt = '(A, F0.6, A, /)') ' p(min) = ', pdf_min, ' A^-3'
+write(*, fmt = '(A, F0.6, A)') ' p(min) = ', pdf_min, ' A^-3'
+
 
 ! Check for regular termination of data block
 read(in_unit, fmt = '(A)', iostat = io_status) line
-if (trim(adjustl(line)) /= 'END_DATAGRID_3D') then
-    write(*, *) 'WARNING: Unexpected end of data grid. Output will probably be malformed.'
+if (io_status /= 0 .or. trim(adjustl(line)) /= 'END_DATAGRID_3D') then
     write(*, *)
+    write(*, *) 'WARNING: Irregular end of data grid.'
+    write(*, *) '         Output will possibly be malformed.'
 end if
+
+write(*, fmt = '(/, A, /)') SEPARATOR  ! Separates PDF from OPP part
 
 ! Calculate OPP
 write(*, fmt = '(A)', advance = 'no') ' Calculating OPP ...'
+
 values = -1 * K_B * temp * log(values/pdf_0)
-opp_max = maxval(values)
+opp_max = maxval(values, (.not. isnan(values)))
 where (isnan(values)) values = opp_max
 write(*, *) 'done.'
 write(*, fmt = '(A, F0.6, A, /)') ' V(max) = ', opp_max, ' eV'
 
-! Writing OPP to file
-write(*, fmt = '(A)', advance = 'no') ' Writing OPP to ' // trim(file_output_xsf) // ' ...'
+! Write OPP to file
+write(*, fmt = '(A)', advance = 'no') ' Writing OPP ...'
 write(out_unit, fmt = '(5E15.6)') values
-write(out_unit, fmt = '(A)') trim(line)
+write(out_unit, fmt = '(A)') '  END_DATAGRID_3D'
 write(*, *) 'done.'
 
-! COPYING INPUT FOOTER
+! COPY INPUT FOOTER
 
 do while (.not. is_iostat_end(io_status))
     read(in_unit, fmt = '(A)', iostat = io_status) line
@@ -191,14 +258,20 @@ do while (.not. is_iostat_end(io_status))
     write(out_unit, fmt = '(A)') trim(line)
 end do
 
-! FINISHING
+! CREATE VESTA File
+
+call create_vesta('OPP from ' // trim(adjustl(dataset_name)), file_output_xsf, file_output_vesta, opp_max / 2)
+
+! TERMINATE
 
 close(in_unit)
 close(out_unit)
-call create_vesta(dataset_name, file_output_xsf, file_output_vesta, opp_max / 2)
 call print_goodbye(SEPARATOR)
+call finish('', out_unit, is_dnd)
+
 
 contains
+
 
 ! Add a different extension to a file name
 function new_ext(file_name, extension)
@@ -235,13 +308,10 @@ subroutine print_greeting(sep, ver)
 
 end subroutine print_greeting
 
+
 ! Print help text
-subroutine print_help(sep)
+subroutine print_help()
 
-    implicit none
-    character(len = *), intent(in) :: sep  ! Visual separator
-
-    write(*, fmt = '(/, A, /)') sep
     write(*, *) 'Usage: pdf2opp_3d [OPTIONS]'
     write(*, *)
     write(*, *) 'Options:'
@@ -255,6 +325,7 @@ subroutine print_help(sep)
 
 end subroutine print_help
 
+
 ! Print goodbye text
 subroutine print_goodbye(sep)
 
@@ -263,9 +334,9 @@ subroutine print_goodbye(sep)
 
     write(*, fmt = '(/, A, /)') sep
     write(*, *) '"Trust me, I''m the doctor!" - The Doctor'
-    write(*, *)
 
 end subroutine print_goodbye
+
 
 ! Create VESTA file
 subroutine create_vesta(title, xsf_file, vesta_file, isovalue)
@@ -276,7 +347,7 @@ subroutine create_vesta(title, xsf_file, vesta_file, isovalue)
     real,                intent(in) :: isovalue              ! Isosurface level for initial display
     integer                         :: vesta_unit            ! Unit number for VESTA output file
 
-    write(*, fmt = '(A)', advance = 'no') ' Creating ' // trim(vesta_file) // ' ...'
+    write(*, fmt = '(A)', advance = 'no') ' Creating VESTA file ...'
     open(newunit = vesta_unit, file = vesta_file, status = 'replace', action = 'write')
 
     write(vesta_unit, fmt = '(A)') '#VESTA_FORMAT_VERSION 3.3.0'
@@ -304,12 +375,15 @@ subroutine create_vesta(title, xsf_file, vesta_file, isovalue)
 
 end subroutine create_vesta
 
+
 ! Exit program
-subroutine finish(error_message, is_drag_and_drop)
+subroutine finish(error_message, out_unit, is_drag_and_drop)
 
     implicit none
     character(len = *), intent(in) :: error_message     ! Error message (empty for no error)
+    integer,            intent(in) :: out_unit          ! Unit number of output file
     logical,            intent(in) :: is_drag_and_drop  ! True if program invoked via drag and drop
+    logical                        :: output_open       ! Flag for status of output
     intrinsic sleep
 
     write(*, *)
@@ -323,18 +397,12 @@ subroutine finish(error_message, is_drag_and_drop)
         write(*, *)
     end if
     if (error_message /= '') then
+        output_open = .false.
+        if (out_unit /= -1) inquire(out_unit, opened = output_open)
+        if (output_open) close(out_unit, status = 'delete')
         error stop error_message
     else
         stop
     end if
 
 end subroutine finish
-
-! TODO (Dennis#1#): Implement finish
-! TODO (Dennis#1#): Accept input/output file names and custom temperatures
-! TODO (Dennis#1#): Test output size in GUI
-! TODO (Dennis#1#): Check output spacing and separators
-! TODO (Dennis#1#): Strip user input via keyboard
-! TODO (Dennis#1#): Version output
-! TODO (Dennis#1#): Delete file on error with close(out_unit, status = 'delete')
-! TODO (Dennis#1#): Test failures (also with XSF data structure)

@@ -36,8 +36,8 @@ Depending on the problem, CalcOPP allows to calculate the effective OPP from a P
 The source code adheres to the specifications of Python 3.7 and heeds [*PEP 8 – Style Guide for Python Code*](https://www.python.org/dev/peps/pep-0008/). It has been compiled using Python X.X.X/X.X.X (Windows/Linux) and [PyInstaller](https://www.pyinstaller.org/) X.X.X with assert statements, any code conditional on the value of `__debug__`, and docstrings removed.
 
 ```
-python -OO -m PyInstaller --name="CalcOPP[.exe]" calcopp-gui.py
-python -OO -m PyInstaller --name="sd2opp[.exe]" sd2opp.py
+python -OO -m PyInstaller --onefile --name="CalcOPP[.exe]" calcopp-gui.py
+python -OO -m PyInstaller --onefile --name="sd2opp[.exe]" sd2opp.py
 ```
 
 The module *calcopp-gui* relies on [PySimpleGUI](https://pypi.org/project/PySimpleGUI/), used in version X.X.X for compiling. The module *sd2opp* relies on [NumPy](https://www.numpy.org/), used in version X.X.X for compiling.

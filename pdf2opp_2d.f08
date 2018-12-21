@@ -28,7 +28,7 @@ logical                           :: exists_input, exists_error, exists_m90     
 logical                           :: output_pdf, output_pdferr, output_opp, output_opperr  ! Flags controlling data output
 logical                           :: is_dnd                                                ! Flag for drag and drop
 
-character(len = *), parameter     :: SEPARATOR = ' ' // repeat('=', 40)                    ! Visual separator for standard output
+character(len = *), parameter     :: SEPARATOR = ' ' // repeat('=', 50)                    ! Visual separator for standard output
 character(len = *), parameter     :: VERSION = '2.0.0'                                     ! Program version
 real, parameter                   :: K_B = 8.617330E-5                                     ! Boltzmann constant in eV/K
 real, parameter                   :: INFINITE_OPP = 1.0E6                                  ! Pseudo-infinite OPP in eV
@@ -84,7 +84,8 @@ do while (i <= command_argument_count())
             i = i + 1
             if (i <= command_argument_count()) then
                 call get_command_argument(i, t_string)
-                read(t_string, '(E12.5)') t
+                read(t_string, *, iostat = io_status) t
+                if (io_status /= 0) call finish('Used -t, but no valid temperature as decimal value provided.', is_dnd)
             else
                 call print_help()
                 call finish('Used -t, but no temperature provided.', is_dnd)
@@ -106,17 +107,17 @@ do while (i <= command_argument_count())
             call print_help()
             call finish('', is_dnd)
         case ('-v')
-            write(*, *) VERSION
+            write(*, fmt = '(A)') VERSION
             call finish('', is_dnd)
         case default
             if (index(arg, '-') == 1) then
                 call print_help()
                 call finish('Unrecognized command-line option: ' // trim(arg), is_dnd)
+            else if (file_input == '') then
+                file_input = arg
+                is_dnd = .true.
             else
-                if (file_input == '') then
-                    call get_command_argument(i, file_input)
-                    is_dnd = .true.
-                end if
+                write(*, *) 'Ignoring unexpected input: ' // trim(arg)
             end if
             i = i + 1
     end select
@@ -183,8 +184,8 @@ if ((t <= 0.0) .and. (output_opp .or. output_opperr)) then
 
         ! Try to read in following value
         if (io_status == 0) then
-            line = line(index(line, 'datcolltemp'):)
-            read(line(12:), *) t
+            read(line(12:), *, iostat = io_status) t
+            if (io_status /= 0) call finish('No valid temperature found in *.m90.', is_dnd)
             write(*, *)
             write(*, fmt = '(A, F0.4, A)') ' Temperature: T = ', t, ' K'
         else
