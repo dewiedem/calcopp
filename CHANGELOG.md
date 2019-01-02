@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file. Its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [2.0.0] - 2019-yy-xx
 ### Added
 - Binaries for Windows and Linux (64/32 bit).
 
@@ -9,7 +9,7 @@ All notable changes to CalcOPP will be documented in this file. Its format is ba
 - Bumped all version and status strings.
 - Inserted correct DOI.
 
-## [2.0.0-rc1] - 2019-yy-xx
+## [2.0.0-rc1] - 2019-02-01
 ### Added
 - GUI (yay!) coded in Python using [PySimpleGUI](https://pypi.org/project/PySimpleGUI/).
 - Documentation for the preparation of input data (displayed in GUI).

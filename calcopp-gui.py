@@ -24,10 +24,10 @@ __author__ = 'Dennis Wiedemann'
 __copyright__ = 'Copyright 2019, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.0-rc1'
+__version__ = '2.0.0'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
-__status__ = 'Development'
+__status__ = 'Production'
 
 
 def file_exists(file):

@@ -1,7 +1,7 @@
 # CalcOPP
 A Program for the Calculation of Effective One-Particle Potentials (OPPs)
 
-![GitHub Release](https://img.shields.io/github/release/dewiedem/calcopp.svg) ![GitHub Release Date](https://img.shields.io/github/release-date/dewiedem/calcopp.svg) ![GitHub License](https://img.shields.io/github/license/dewiedem/calcopp.svg)
+![GitHub Release](https://img.shields.io/github/release/dewiedem/calcopp.svg) ![GitHub Release Date](https://img.shields.io/github/release-date/dewiedem/calcopp.svg) ![GitHub License](https://img.shields.io/github/license/dewiedem/calcopp.svg) [![DOI](https://zenodo.org/badge/147833200.svg)](https://zenodo.org/badge/latestdoi/147833200)
 
 ## Author and Maintainer
 Dr. Dennis Wiedemann\
@@ -85,7 +85,7 @@ CalcOPP has been inspired by work from Dr. Hans Boysen (Ludwig-Maximilians-Unive
 ## Citation
 If you prepare data for publication with CalcOPP, please use the following citation:
 
-D. Wiedemann, CalcOPP, Calculation of Effective One-Particle Potentials, Technische Universität Berlin, Berlin (Germany), **2019**, [doi:XXX](https://doi.org/XXX).
+D. Wiedemann, CalcOPP, Calculation of Effective One-Particle Potentials, Technische Universität Berlin, Berlin (Germany), **2019**, [doi:10.5281/zenodo.2530346](https://doi.org/10.5281/zenodo.2530346).
 
 ## Contributing
 It is much appreciated if you report any bugs, typos, or suggestions for improvement to [dennis.wiedemann@chem.tu-berlin.de](mailto:dennis.wiedemann@chem.tu-berlin.de).
