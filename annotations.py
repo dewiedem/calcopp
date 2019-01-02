@@ -13,7 +13,7 @@ __author__ = 'Dennis Wiedemann'
 __copyright__ = 'Copyright 2019, Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.0'
+__version__ = '2.0.0-rc1'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Development'
@@ -70,16 +70,17 @@ PDF2D = 'Prerequisites\n—————————————\n' \
         'Options\n———————\n' \
         'Via radio button, you can choose if CalcOPP shall read the temperature from the *.m90 file or use a ' \
         'user-provided custom value. The checkboxes define which data columns are written in the output file; PDF ' \
-        'and OPP errors require an input error file.\n' \
+        'and OPP uncertainties require an input error map.\n' \
         '\n' \
         'Output\n——————\n' \
-        'The output is an ASCII file of space-separated x, y, PDF, and OPP values (the latter two with errors, if ' \
-        'supplied) for each grid point. You can plot it with several applications (e.g., gnuplot, QtiPlot, Origin, ' \
-        'or Igor Pro).\n' \
+        'The output is an ASCII file of space-separated x, y, PDF, and OPP values (the latter two with ' \
+        'uncertainties, if supplied) for each grid point. You can plot it with several applications (e.g., gnuplot, ' \
+        'QtiPlot, Origin, or Igor Pro).\n' \
         '\n' \
         'Caveats\n———————\n' \
-        'For grid points with a non-positive PDF, arbitrarily huge OPPs and OPP errors of 10^6  eV are set. ' \
-        'Nevertheless, this physically means a potential barrier of insurmountable height.\n'
+        'For grid points with a non-positive PDF or lower PDF uncertainty limit, an arbitrarily huge OPP and OPP ' \
+        'uncertainty of 10^6  eV is set. Nevertheless, this physically means a potential barrier of insurmountable ' \
+        'height.\n'
 
 PDF3D = 'Prerequisites\n—————————————\n' \
         'You know how to\n' \

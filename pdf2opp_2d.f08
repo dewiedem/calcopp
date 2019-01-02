@@ -1,37 +1,37 @@
 program pdf2opp_2d
 
-!   CalcOPP 2.0.0 - Calculation of Effective One-Particle Potentials
+!   CalcOPP 2.0.0-rc1 - Calculation of Effective One-Particle Potentials
 !   PDF2OPP_2D - Subroutines for Calculation from 2D PDF Data (JANA2006 STF Format)
 !   Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)
 
 implicit none
-character(len = 256)              :: file_input, file_output, file_error, file_m90         ! Names of handled files
-character(len = 256)              :: key                                                   ! Key read from input file
-character(len = 256)              :: line                                                  ! Input line read from *.m90 file
-character(len = 256)              :: arg                                                   ! Command-line argument
-character(len = 256)              :: t_string                                              ! Temperature as string
-integer                           :: i, j                                                  ! Counters
-integer                           :: data_x, data_y, err_data_x, err_data_y                ! Number of data points in x/y direction
-                                                                                           !   in input/error file
-integer                           :: in_unit, out_unit, err_unit, m90_unit, opp_unit, &
-                                     pdferr_unit                                           ! Unit numbers for file access
-integer                           :: io_status                                             ! Status of the file I/O                             !
-integer, dimension(2)             :: xy_0                                                  ! Position of maximum PDF
-real                              :: x_min, x_max, y_min, y_max, &                         ! Minimal/maximal x/y values in
-                                     err_x_min, err_x_max, err_y_min, err_y_max            !   input/error file
-real                              :: t                                                     ! Temperature in Kelvin
-real                              :: pdf_0, err_pdf_0                                      ! Maximum input/error PDF
-real                              :: x_inc, y_inc                                          ! Increment in x/y direction
-real, dimension(:,:), allocatable :: z                                                     ! (Error) PDF/OPP values as x * y matrix
-real, dimension(:,:), allocatable :: pdf                                                   ! PDF values as x * y matrix
-logical                           :: exists_input, exists_error, exists_m90                ! Flags for existence of files
-logical                           :: output_pdf, output_pdferr, output_opp, output_opperr  ! Flags controlling data output
-logical                           :: is_dnd                                                ! Flag for drag and drop
+character(len = 256)               :: file_input, file_output, file_error, file_m90         ! Names of handled files
+character(len = 256)               :: key                                                   ! Key read from input file
+character(len = 256)               :: line                                                  ! Input line read from *.m90 file
+character(len = 256)               :: cmd_arg                                               ! Command-line argument
+character(len = 256)               :: temp_string                                           ! Temperature as string
+integer                            :: i, j                                                  ! Counters
+integer                            :: in_unit, out_unit, err_unit, m90_unit, opp_unit, &
+                                      pdferr_unit                                           ! Unit numbers for file access
+integer                            :: io_status                                             ! Status of the file I/O                             !
+integer, dimension(2)              :: pos_0                                                 ! Position of maximum PDF
+integer, dimension(2)              :: data_num, err_data_num                                ! Number of data points in x/y direction
+                                                                                            !   in input/error file
+real                               :: temp                                                  ! Temperature in Kelvin
+real                               :: pdf_0, err_pdf_0                                      ! Maximum input/error PDF
+real, dimension(2)                 :: range_min, range_max, err_range_min, err_range_max    ! Minimal/maximal x/y values in
+                                                                                            !   input/error file
+real, dimension(2)                 :: inc                                                   ! Increment in x/y direction
+real, dimension(:, :), allocatable :: z, opp_low_err                                        ! (Error) PDF/OPP values as x * y matrix
+real, dimension(:, :), allocatable :: pdf                                                   ! PDF values as x * y matrix
+logical                            :: exists_input, exists_error, exists_m90                ! Flags for existence of files
+logical                            :: output_pdf, output_pdferr, output_opp, output_opperr  ! Flags controlling data output
+logical                            :: is_dnd                                                ! Flag for drag and drop
 
-character(len = *), parameter     :: SEPARATOR = ' ' // repeat('=', 50)                    ! Visual separator for standard output
-character(len = *), parameter     :: VERSION = '2.0.0'                                     ! Program version
-real, parameter                   :: K_B = 8.617330E-5                                     ! Boltzmann constant in eV/K
-real, parameter                   :: INFINITE_OPP = 1.0E6                                  ! Pseudo-infinite OPP in eV
+character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 50)                    ! Visual separator for standard output
+character(len = *), parameter      :: VERSION = '2.0.0-rc1'                                 ! Program version
+real, parameter                    :: K_B = 8.617330E-5                                     ! Boltzmann constant in eV/K
+real, parameter                    :: INFINITE_OPP = 1.0E6                                  ! Pseudo-infinite OPP in eV
 
 
 ! ACQUIRING NECESSARY INPUT
@@ -40,7 +40,7 @@ real, parameter                   :: INFINITE_OPP = 1.0E6                       
 file_input = ''
 file_output = ''
 file_error = ''
-t = -1.0
+temp = -1.0
 output_pdf = .false.
 output_pdferr = .false.
 output_opp = .false.
@@ -51,8 +51,8 @@ pdferr_unit = -1
 
 i = 1
 do while (i <= command_argument_count())
-    call get_command_argument(i, arg)
-    select case (arg)
+    call get_command_argument(i, cmd_arg)
+    select case (cmd_arg)
         case ('-i')
             i = i + 1
             if (i <= command_argument_count()) then
@@ -83,8 +83,8 @@ do while (i <= command_argument_count())
         case ('-t')
             i = i + 1
             if (i <= command_argument_count()) then
-                call get_command_argument(i, t_string)
-                read(t_string, *, iostat = io_status) t
+                call get_command_argument(i, temp_string)
+                read(temp_string, *, iostat = io_status) temp
                 if (io_status /= 0) call finish('Used -t, but no valid temperature as decimal value provided.', is_dnd)
             else
                 call print_help()
@@ -110,14 +110,14 @@ do while (i <= command_argument_count())
             write(*, fmt = '(A)') VERSION
             call finish('', is_dnd)
         case default
-            if (index(arg, '-') == 1) then
+            if (index(cmd_arg, '-') == 1) then
                 call print_help()
-                call finish('Unrecognized command-line option: ' // trim(arg), is_dnd)
+                call finish('Unrecognized command-line option: ' // trim(cmd_arg), is_dnd)
             else if (file_input == '') then
-                file_input = arg
+                file_input = cmd_arg
                 is_dnd = .true.
             else
-                write(*, *) 'Ignoring unexpected input: ' // trim(arg)
+                write(*, *) 'Ignoring unexpected input: ' // trim(cmd_arg)
             end if
             i = i + 1
     end select
@@ -140,28 +140,26 @@ if (file_input == '') then
 else
     exists_input = .false.
     inquire(file = file_input, exist = exists_input)
-    if (.not. exists_input) then
-        call finish('No valid input file name provided.', is_dnd)
-    end if
+    if (.not. exists_input) call finish('No valid input file name provided.', is_dnd)
 end if
 
 ! Automatically set output file name, if not provided
 if (file_output == '') file_output = new_ext(file_input, '_opp.asc')
 
 ! Automatically set error map name, if not provided and necessary, and check existence
-if ((output_pdferr) .or. (output_opperr)) then
+if (output_pdferr .or. output_opperr) then
     if (file_error == '') file_error = new_ext(file_input, '_err.stf')
     exists_error = .false.
     inquire(file = file_error, exist = exists_error)
     if (.not. exists_error) then
-        write(*, *) 'Error map not found. PDF/OPP error will not be included in output.'
+        write(*, *) 'Error map not found. PDF/OPP uncertainty will not be included in output.'
         output_pdferr = .false.
         output_opperr = .false.
     end if
 end if
 
 ! Temperature extraction from *.m90
-if ((t <= 0.0) .and. (output_opp .or. output_opperr)) then
+if ((temp <= 0.0) .and. (output_opp .or. output_opperr)) then
     write(*, fmt = '(A)', advance = 'no') ' Temperature not given. Probing *.m90 ...'
 
     ! Construct file name of *.m90
@@ -184,10 +182,10 @@ if ((t <= 0.0) .and. (output_opp .or. output_opperr)) then
 
         ! Try to read in following value
         if (io_status == 0) then
-            read(line(12:), *, iostat = io_status) t
+            read(line(12:), *, iostat = io_status) temp
             if (io_status /= 0) call finish('No valid temperature found in *.m90.', is_dnd)
             write(*, *)
-            write(*, fmt = '(A, F0.4, A)') ' Temperature: T = ', t, ' K'
+            write(*, fmt = '(A, F0.4, A)') ' Temperature: T = ', temp, ' K'
         else
             call finish('No valid temperature found in *.m90.', is_dnd)
         end if
@@ -214,8 +212,12 @@ if (io_status /= 0) then
     call finish('Unable to find grid dimensions in input file.', is_dnd)
 end if
 backspace(in_unit)
-read(in_unit, *, iostat = io_status) key, data_x, data_y
-write(*, fmt = '(A, 3X, I0, 3X, I0)') ' Numbers of data points (x, y):', data_x, data_y
+read(in_unit, *, iostat = io_status) key, data_num
+if (io_status /= 0) then
+    close(in_unit)
+    call finish('Unable to read grid dimensions from input file.', is_dnd)
+end if
+write(*, fmt = '(A, 3X, I0, 3X, I0)') ' Numbers of data points (x, y):', data_num
 write(*, *)
 
 ! Search for BOUNDS
@@ -230,9 +232,13 @@ if (io_status /= 0) then
     call finish('Unable to find limits in input file.', is_dnd)
 end if
 backspace(in_unit)
-read(in_unit, *, iostat = io_status) key, x_min, x_max, y_min, y_max
-write(*, fmt = '(A, 3X, F0.8, A, 3X, F0.8, A)') ' Limits of x (min, max):', x_min, ' A', x_max, ' A'
-write(*, fmt = '(A, 3X, F0.8, A, 3X, F0.8, A)') ' Limits of y (min, max):', y_min, ' A', y_max, ' A'
+read(in_unit, *, iostat = io_status) key, range_min(1), range_max(1), range_min(2), range_max(2)
+if (io_status /= 0) then
+    close(in_unit)
+    call finish('Unable to read limits from input file.', is_dnd)
+end if
+write(*, fmt = '(A, 2X, F0.6, A, 2X, F0.6, A)') ' Limits of x (min, max):', range_min(1), ' A', range_max(1), ' A'
+write(*, fmt = '(A, 2X, F0.6, A, 2X, F0.6, A)') ' Limits of y (min, max):', range_min(2), ' A', range_max(2), ' A'
 write(*, *)
 
 ! Test conformance of error map DIMENSIONS
@@ -255,8 +261,15 @@ if (output_pdferr .or. output_opperr) then
 end if
 if (output_pdferr .or. output_opperr) then
     backspace(err_unit)
-    read(err_unit, *, iostat = io_status) key, err_data_x, err_data_y
-    if ((err_data_x /= data_x) .or. (err_data_y /= data_y)) then
+    read(err_unit, *, iostat = io_status) key, err_data_num
+    if (io_status /= 0) then
+        write(*, *) 'failed.'
+        write(*, *) 'Unable to read number of data points. Ignoring error map.'
+        write(*, *)
+        output_pdferr = .false.
+        output_opperr = .false.
+        close(err_unit)
+    else if (any(err_data_num /= data_num)) then
         write(*, *) 'failed.'
         write(*, *) 'Mismatching number of data points. Ignoring error map.'
         write(*, *)
@@ -285,9 +298,16 @@ if (output_pdferr .or. output_opperr) then
 end if
 if (output_pdferr .or. output_opperr) then
     backspace(err_unit)
-    read(err_unit, *, iostat = io_status) key, err_x_min, err_x_max, err_y_min, err_y_max
-    if ((abs(err_x_min - x_min) > epsilon(x_min)) .or. (abs(err_x_max - x_max) > epsilon(x_max)) .or. &
-       (abs(err_y_min - y_min) > epsilon(y_min)) .or. (abs(err_y_max - y_max) > epsilon(y_max))) then
+    read(err_unit, *, iostat = io_status) key, err_range_min(1), err_range_max(1), err_range_min(2), err_range_max(2)
+    if (io_status /= 0) then
+        write(*, *) 'failed.'
+        write(*, *) 'Unable to read limits. Ignoring error map.'
+        write(*, *)
+        output_pdferr = .false.
+        output_opperr = .false.
+        close(err_unit)
+    else if (any(abs(err_range_min - range_min) > epsilon(range_min)) &
+            .or. any(abs(err_range_max - range_max) > epsilon(range_max))) then
         write(*, *) 'failed.'
         write(*, *) 'Mismatching limits. Ignoring error map.'
         write(*, *)
@@ -310,8 +330,7 @@ if (output_pdferr .or. output_opperr) then
 end if
 
 ! Calculation of constructing variables
-x_inc = (x_max - x_min) / (data_x - 1)
-y_inc = (y_max - y_min) / (data_y - 1)
+inc = (range_max - range_min) / (data_num - 1)
 
 ! Reading of PDF data
 rewind(in_unit)
@@ -326,10 +345,14 @@ if (io_status /= 0) then
     close(in_unit)
     call finish('Unable to find data in input file.', is_dnd)
 end if
-allocate(pdf(1:data_x, 1:data_y))
+allocate(pdf(1:data_num(1), 1:data_num(2)))
 read(in_unit, *, iostat = io_status) pdf
+if (io_status /= 0) then
+    write(*, *) 'failed.'
+    call finish('Unable to read correct number of PDF data.', is_dnd)
+end if
 write(*, *) 'done.'
-write(*, fmt = '(A, I0)') ' Total number of PDF data points: ', data_x * data_y
+write(*, fmt = '(A, I0)') ' Total number of PDF data points: ', product(data_num)
 close(in_unit)
 
 ! CALCULATION OF OPP
@@ -338,17 +361,15 @@ if (output_pdf .or. output_opp) write(*, fmt = '(/, A, /)') SEPARATOR  ! separat
 
 ! Norm of PDF
 pdf_0 = maxval(pdf)
-xy_0 = maxloc(pdf)
-if (output_opp .or. output_pdf) then
-    write(*, fmt = '(A, 3X, F0.8, A)') ' Maximum of PDF:', pdf_0, ' A^-3'
-end if
+pos_0 = maxloc(pdf)
+if (output_opp .or. output_pdf) write(*, fmt = '(A, 1X, ES13.6, A)') ' Maximum of PDF:', pdf_0, ' A^-3'
 
-! Calculation of OPP for every data point
 if (output_opp) then
+    ! Calculation of OPP for every data point
     write(*, *)
     write(*, fmt = '(A)', advance = 'no') ' Calculating OPP data ...'
-    allocate(z(1:data_x, 1:data_y))
-    z = -1 * K_B * t * log(pdf / pdf_0)
+    allocate(z(1:data_num(1), 1:data_num(2)))
+    z = abs(K_B * temp * log(pdf / pdf_0))  ! z filled with OPP (absolute value to avoid negative zero)
     where (isnan(z)) z = INFINITE_OPP
     write(*, *) 'done.'
 
@@ -389,32 +410,50 @@ if (.not. (output_pdf .or. output_pdferr .or. output_opp .or. output_opperr)) th
 end if
 
 if (output_pdferr .or. output_opperr) then
-    allocate(z(1:err_data_x, 1:err_data_y))
-    read(err_unit, *, iostat = io_status) z
-    write(*, *) 'done.'
-    write(*, *)
+    allocate(z(1:err_data_num(1), 1:err_data_num(2)))
+    allocate(opp_low_err(1:err_data_num(1), 1:err_data_num(2)))
+    read(err_unit, *, iostat = io_status) z  ! z filled with PDF error
+    if (io_status /= 0) then
+        write(*, *) 'failed.'
+        write(*, *) 'Unable to read correct number of PDF error data.'
+        write(*, *) 'Ignoring error map.'
+        output_pdferr = .false.
+        output_opperr = .false.
+
+        ! Check if error map is vital to job
+        if (.not. (output_pdf .or. output_pdferr .or. output_opp .or. output_opperr)) then
+            write(*, *)
+            write(*, *) 'No job to do. Exiting.'
+            call finish('', is_dnd)
+        end if
+    else
+        z = abs(z)  ! errors from Monte-Carlo approach may be negative
+        write(*, *) 'done.'
+        write(*, *)
+    end if
     close(err_unit)
 end if
 
 ! Store PDF error in temporary file to reduce memory usage
 if (output_pdferr) then
     open(newunit = pdferr_unit, status = 'scratch', access = 'stream', action = 'readwrite')
-    write(*, fmt = '(A)', advance = 'no') ' Temporarily storing PDF error data ...'
+    write(*, fmt = '(A)', advance = 'no') ' Temporarily storing PDF uncertainty data ...'
     write(pdferr_unit) z
     write(*, *) 'done.'
 end if
 
-! Error of maximum
 if (output_opperr) then
-    err_pdf_0 = z(xy_0(1), xy_0(2))
-    write(*, fmt = '(A, 3X, F0.8, A)') ' Error at maximum of PDF:', err_pdf_0, ' A^-3'
-end if
 
-! Calculation of error in OPP for every data point
-if (output_opperr) then
-    write(*, fmt = '(A)', advance = 'no') ' Calculating OPP error data ...'
-    z = K_B * t * sqrt((err_pdf_0 / pdf_0) ** 2 + (z / pdf) ** 2)
-    where (.not. (pdf > 0)) z = INFINITE_OPP
+    ! Error of maximum
+    err_pdf_0 = z(pos_0(1), pos_0(2))
+    write(*, fmt = '(A, 1X, ES13.6, A)') ' Uncertainty at maximum of PDF:', err_pdf_0, ' A^-3'
+
+    ! Calculation of error in OPP for every data point
+    write(*, fmt = '(A)', advance = 'no') ' Calculating OPP uncertainties ...'
+    opp_low_err = -1 * K_B * temp * log((1 + z/pdf) / (1 - err_pdf_0/pdf_0))
+    z = -1 * K_B * temp * log((1 - z/pdf) / (1 + err_pdf_0/pdf_0))  ! z filled with upper OPP error
+    where (.not. (pdf > 0.0) .or. isnan(z)) z = INFINITE_OPP
+    where (.not. (pdf > 0.0) .or. isnan(opp_low_err)) opp_low_err = -1 * INFINITE_OPP
     write(*, *) 'done.'
 end if
 
@@ -425,66 +464,66 @@ write(*, fmt = '(/, A, /)') SEPARATOR  ! separates calculation from output infor
 write(*, fmt = '(A)', advance = 'no') ' Writing output file ...'
 open(newunit = out_unit, file = file_output, status = 'replace', action = 'write')
 write(out_unit, fmt = '(A)') '# ASCII output generated by CalcOPP (PDF2OPP_2D) ' // VERSION
-write(out_unit, fmt = '(A)', advance = 'no') '# Format: x/A, y/A'
-if (output_pdf) write(out_unit, fmt = '(A)', advance = 'no') ', PDF/A^-3'
-if (output_pdferr) write(out_unit, fmt = '(A)', advance = 'no') ', sigma(PDF)/A^-3'
-if (output_opp) write(out_unit, fmt = '(A)', advance = 'no') ', OPP/eV'
-if (output_opperr) write(out_unit, fmt = '(A)', advance = 'no') ', sigma(OPP)/eV'
+write(out_unit, fmt = '(A)', advance = 'no') '# A: Angstrom'
+if (output_pdferr) write(out_unit, fmt = '(A)', advance = 'no') '; s: standard deviation'
+if (output_opperr) write(out_unit, fmt = '(A)', advance = 'no') '; u+, u-: upper and lower uncertainty'
+write(out_unit, *)
+write(out_unit, fmt = '(A)', advance = 'no') '#    x/A           y/A     '
+if (output_pdf) write(out_unit, fmt = '(A)', advance = 'no') '    PDF/A^-3  '
+if (output_pdferr) write(out_unit, fmt = '(A)', advance = 'no') '  s(PDF)/A^-3 '
+if (output_opp) write(out_unit, fmt = '(A)', advance = 'no') '     OPP/eV   '
+if (output_opperr) write(out_unit, fmt = '(A)', advance = 'no') '   u+(OPP)/eV    u-(OPP)/eV '
 write(out_unit, *)
 
 ! Preparing scratch data
-if (output_opp) then
-    rewind(opp_unit)
-end if
-if (output_pdferr) then
-    rewind(pdferr_unit)
-end if
-
+if (output_opp) rewind(opp_unit)
+if (output_pdferr) rewind(pdferr_unit)
 
 ! Writing actual data lines
-do j = 1, data_y
-    do i = 1, data_x
-        write(out_unit, fmt = '(ES13.6, 1X, ES13.6)', advance = 'no') x_min + (i - 1) * x_inc, y_min + (j - 1) * y_inc
+do j = 1, data_num(2)
+    do i = 1, data_num(1)
+        write(out_unit, fmt = '(ES13.6, 1X, ES13.6)', advance = 'no') range_min(1) + (i - 1) * inc(1), &
+                                                                      range_min(2) + (j - 1) * inc(2)
         if (output_pdf) write(out_unit, fmt = '(1X, ES13.6)', advance = 'no') pdf(i, j)
-        if (output_pdferr) write(out_unit, fmt = '(1X, ES13.6)', advance = 'no') get_scratch(pdferr_unit)
-        if (output_opp) write(out_unit, fmt = '(1X, ES13.6)', advance = 'no') get_scratch(opp_unit)
-        if (output_opperr) write(out_unit, fmt = '(1X, ES13.6)', advance = 'no') z(i, j)
+        if (output_pdferr) write(out_unit, fmt = '(1X, ES13.6)', advance = 'no') get_scratch(pdferr_unit, is_dnd)
+        if (output_opp) write(out_unit, fmt = '(1X, ES13.6)', advance = 'no') get_scratch(opp_unit, is_dnd)
+        if (output_opperr) write(out_unit, fmt = '(2(1X, ES13.6))', advance = 'no') z(i, j), opp_low_err(i, j)
         write(out_unit, *)
     end do
 end do
 endfile(out_unit)
 close(out_unit)
 write(*, *) 'done.'
-write(*, *) 'Output written to: ', trim(file_output)
 
 ! Clean exit
 deallocate(pdf)
-if (allocated(z)) then
-    deallocate(z)
-end if
-if (output_opp) then
-    close(opp_unit)
-end if
-if (output_pdferr) then
-    close(pdferr_unit)
-end if
+if (allocated(z)) deallocate(z)
+if (allocated(opp_low_err)) deallocate(opp_low_err)
+if (output_opp) close(opp_unit)
+if (output_pdferr) close(pdferr_unit)
 
 write(*, fmt = '(/, A, /)') SEPARATOR ! separates output from goodbye
 write(*, *) '"This *does* compute!" - BMO'
 call finish('', is_dnd)
 
+
 contains
 
+
 ! Get a value from a stream-mode scratch file
-function get_scratch(unit_number)
+function get_scratch(unit_number, is_dnd)
 
     implicit none
     integer, intent(in) :: unit_number  ! Number of input unit to get data from
+    logical, intent(in) :: is_dnd       ! True if program invoked via drag and drop
     real                :: get_scratch  ! Value got from scratch file
+    integer             :: io_status    ! Status of file I/O
 
-    read(unit_number) get_scratch
+    read(unit_number, iostat = io_status) get_scratch
+    if (io_status /= 0) call finish('Unable to read from scratch.', is_dnd)
 
 end function get_scratch
+
 
 ! Add a different extension to a file name
 function new_ext(file_name, extension)
@@ -503,6 +542,7 @@ function new_ext(file_name, extension)
     end if
 
 end function new_ext
+
 
 end program pdf2opp_2d
 
@@ -569,3 +609,5 @@ subroutine print_help()
     write(*, *) 'and put out.'
 
 end subroutine print_help
+
+! TODO: Test treatment with fake file containing every case

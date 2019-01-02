@@ -1,6 +1,6 @@
 program pdf2opp_3d
 
-!   CalcOPP 2.0.0 - Calculation of Effective One-Particle Potentials
+!   CalcOPP 2.0.0-rc1 - Calculation of Effective One-Particle Potentials
 !   PDF2OPP_3D - Subroutines for Calculation from 3D PDF Data (JANA2006 XSF Format)
 !   Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)
 
@@ -24,7 +24,7 @@ logical                            :: exists_input_xsf, exists_input_m90  ! Flag
 logical                            :: is_dnd                              ! Flag for drag and drop
 
 character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 50)  ! Visual separator for standard output
-character(len = *), parameter      :: VERSION = '2.0.0'                   ! Program version
+character(len = *), parameter      :: VERSION = '2.0.0-rc1'               ! Program version
 real,               parameter      :: K_B = 8.617330E-5                   ! Boltzmann constant in eV/K
 
 
@@ -221,8 +221,8 @@ write(*, *) 'done.'
 
 pdf_min = minval(values)
 pdf_0 = maxval(values)
-write(*, fmt = '(A, F0.6, A)') ' p(max) = ', pdf_0, ' A^-3'
-write(*, fmt = '(A, F0.6, A)') ' p(min) = ', pdf_min, ' A^-3'
+write(*, fmt = '(A, ES13.6, A)') ' p(max) = ', pdf_0, ' A^-3'
+write(*, fmt = '(A, ES13.6, A)') ' p(min) = ', pdf_min, ' A^-3'
 
 
 ! Check for regular termination of data block
@@ -242,7 +242,7 @@ values = -1 * K_B * temp * log(values/pdf_0)
 opp_max = maxval(values, (.not. isnan(values)))
 where (isnan(values)) values = opp_max
 write(*, *) 'done.'
-write(*, fmt = '(A, F0.6, A, /)') ' V(max) = ', opp_max, ' eV'
+write(*, fmt = '(A, ES13.6, A, /)') ' V(max) = ', opp_max, ' eV'
 
 ! Write OPP to file
 write(*, fmt = '(A)', advance = 'no') ' Writing OPP ...'
@@ -258,7 +258,7 @@ do while (.not. is_iostat_end(io_status))
     write(out_unit, fmt = '(A)') trim(line)
 end do
 
-! CREATE VESTA File
+! CREATE VESTA FILE
 
 call create_vesta('OPP from ' // trim(adjustl(dataset_name)), file_output_xsf, file_output_vesta, opp_max / 2)
 

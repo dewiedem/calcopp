@@ -1,9 +1,15 @@
 # Changelog
-All notable changes to this project will be documented in this file.
+All notable changes to CalcOPP will be documented in this file. Its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/).
 
-The format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/).
+## [Unreleased]
+### Added
+- Binaries for Windows and Linux (64/32 bit).
 
-## [2.0.0] - 2019-yy-xx
+### Changed
+- Bumped all version and status strings.
+- Inserted correct DOI.
+
+## [2.0.0-rc1] - 2019-yy-xx
 ### Added
 - GUI (yay!) coded in Python using [PySimpleGUI](https://pypi.org/project/PySimpleGUI/).
 - Documentation for the preparation of input data (displayed in GUI).
@@ -15,11 +21,13 @@ The format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/
 - PDF2OPP_3D: Possibility to specify temperature and output file name *via* command line.
 
 ### Changed
-- PDF2OPP_2D: Now calculates OPPs in eV instead of meV.
+- **PDF2OPP_2D: Now calculates OPPs in eV instead of meV.**
+- **PDF2OPP_2D: New algorithm for error estimation (see README).** Before, values were rough estimates for relative PDF errors δ*p* < 15% and fully valid only for δ*p* < 1.5%.
 - PDF2OPP_2D: Stripped unnecessary blanks bloating output files.
 - PDF2OPP_3D: Improved VESTA output file for direct display.
 - PDF2OPP_2D and PDF2OPP_3D: Rewritten array handling for faster calculation.
 - PDF2OPP_2D and PDF2OPP_3D: Rewritten routines for more simplicity.
+- PDF2OPP_2D and PDF2OPP_3D: Improved input checks.
 - PDF2OPP_2D and PDF2OPP_3D: Improved text output.
 - PDF2OPP_2D and PDF2OPP_3D: Ported to Fortran2008.
 - PDF2OPP_2D and PDF2OPP_3D: Improved code readability.
