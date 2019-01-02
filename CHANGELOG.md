@@ -1,27 +1,46 @@
 # Changelog
-All notable changes to this project will be documented in this file.
-
-The format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/).
+All notable changes to CalcOPP will be documented in this file. Its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-- Add a GUI.
-- Routines to calculate OPP from MEM-reconstructed scatterer density.
+- Binaries for Windows and Linux (64/32 bit).
 
 ### Changed
-- Switch license according to dependency needs.
+- Bumped all version and status strings.
+- Inserted correct DOI.
+
+## [2.0.0-rc1] - 2019-yy-xx
+### Added
+- GUI (yay!) coded in Python using [PySimpleGUI](https://pypi.org/project/PySimpleGUI/).
+- Documentation for the preparation of input data (displayed in GUI).
+- Program part SD2OPP (coded in Python) for the calculation of OPPs from MEM-reconstructed scatterer densities.
+- Files to comply with LGPL v3 license of PySimpleGUI.
+- Files to comply with license of NumPy.
+- Logo and icons.
+- PDF2OPP_2D: Possibility to read temperature from JANA2006’s `*.m90` file.
+- PDF2OPP_3D: Possibility to specify temperature and output file name *via* command line.
+
+### Changed
+- **PDF2OPP_2D: Now calculates OPPs in eV instead of meV.**
+- **PDF2OPP_2D: New algorithm for error estimation (see README).** Before, values were rough estimates for relative PDF errors δ*p* < 15% and fully valid only for δ*p* < 1.5%.
+- PDF2OPP_2D: Stripped unnecessary blanks bloating output files.
+- PDF2OPP_3D: Improved VESTA output file for direct display.
+- PDF2OPP_2D and PDF2OPP_3D: Rewritten array handling for faster calculation.
+- PDF2OPP_2D and PDF2OPP_3D: Rewritten routines for more simplicity.
+- PDF2OPP_2D and PDF2OPP_3D: Improved input checks.
+- PDF2OPP_2D and PDF2OPP_3D: Improved text output.
+- PDF2OPP_2D and PDF2OPP_3D: Ported to Fortran2008.
+- PDF2OPP_2D and PDF2OPP_3D: Improved code readability.
+- Common release of former CalcOPP (for 2D data) and CalcOPP-3D (for 3D data) under the name CalcOPP.
+- Renaming of former CalcOPP to PDF2OPP_2D and CalcOPP-3D to PDF2OPP_3D.
+- Development at [GitHub](https://github.com/dewiedem/calcopp).
+- Merged documentation files.
+- Unification of documentation strings.
 
 ### Removed
-- Hard-coded descriptions, menus, and help texts from program parts.
-
-## [2.0.0] - 2018-yy-xx
-### Added
-- New program part CalcOPP-3D.
-
-### Changed
-- First common release of CalcOPP (for 2D data) and CalcOPP-3D under the name CalcOPP. The included versions are identical with CalcOPP 1.6.1 and CalcOPP-3D 1.0.0. 
-- Convergent development at [GitHub](https://github.com/dewiedem/calcopp).
-- Merged documentation files.
+- PDF2OPP_2D and PDF2OPP_3D: Interactive input facilities (obsolete because of GUI).
+- PDF2OPP_2D: Alternative command-line parameters.
+- Extensive information on usage in README (obsolete because of explanations in GUI and command-line parameter `-h` for executables).
 
 ## [1.6.1]
 ### Fixed
