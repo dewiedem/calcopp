@@ -20,7 +20,7 @@ __status__ = 'Production'
 
 
 CITATION = 'D. Wiedemann, CalcOPP, Calculation of One-Particle Potentials, Technische \n' \
-           'Universität Berlin, Berlin (Germany), 2019, doi:10.5281/zenodo.2530346.'
+           'Universität Berlin, Berlin (Germany), 2019, doi:10.5281/zenodo.2530345.'
 
 LICENSE = 'CalcOPP is distributed under the %s license (see LICENSE file). It uses the modules\n' \
           'PySimpleGUI by MikeTheWatchGuy distributed under the GNU General Public License\n' \
