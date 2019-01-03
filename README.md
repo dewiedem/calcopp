@@ -1,7 +1,7 @@
 # CalcOPP
 A Program for the Calculation of Effective One-Particle Potentials (OPPs)
 
-![GitHub Release](https://img.shields.io/github/release/dewiedem/calcopp.svg) ![GitHub Release Date](https://img.shields.io/github/release-date/dewiedem/calcopp.svg) ![GitHub License](https://img.shields.io/github/license/dewiedem/calcopp.svg) [![DOI](https://zenodo.org/badge/147833200.svg)](https://zenodo.org/badge/latestdoi/147833200)
+![GitHub Release](https://img.shields.io/github/release/dewiedem/calcopp/all.svg) ![GitHub Release Date](https://img.shields.io/github/release-date-pre/dewiedem/calcopp.svg) ![GitHub License](https://img.shields.io/github/license/dewiedem/calcopp.svg) [![DOI](https://zenodo.org/badge/147833200.svg)](https://zenodo.org/badge/latestdoi/147833200)
 
 ## Author and Maintainer
 Dr. Dennis Wiedemann\
