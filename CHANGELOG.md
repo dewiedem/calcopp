@@ -63,7 +63,7 @@ All notable changes to CalcOPP will be documented in this file. Its format is ba
 - Menu to select job in interactive mode.
 - Added help text.
 - Added citation to standard output.
-- Versions for Windows and Linux (32bit, 64bit).
+- Versions for Windows and Linux (32/64 bit).
 - Added documentation for new features.
 
 ### Changed

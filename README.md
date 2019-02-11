@@ -47,11 +47,38 @@ As CalcOPP is unaware of the covariance of maximal and local probability density
 
 ## Compiling
 ### Modules *calcopp-gui* and *sd2opp*
-The source code adheres to the specifications of Python 3.7 and heeds [*PEP 8 – Style Guide for Python Code*](https://www.python.org/dev/peps/pep-0008/). It has been compiled using Python X.X.X/X.X.X (Windows/Linux) and [PyInstaller](https://www.pyinstaller.org/) X.X.X with assert statements, any code conditional on the value of `__debug__`, and docstrings removed.
+The source code adheres to the specifications of Python 3.7 and heeds [*PEP 8 – Style Guide for Python Code*](https://www.python.org/dev/peps/pep-0008/). It has been compiled using Python X.X.X/X.X.X (Windows/Linux) and [PyInstaller](https://www.pyinstaller.org/) X.X.X with assert statements and any code conditional on the value of `__debug__` removed.
 
 ```
-python -OO -m PyInstaller --onefile --name="CalcOPP[.exe]" calcopp-gui.py
-python -OO -m PyInstaller --onefile --name="sd2opp[.exe]" sd2opp.py
+python -O -m PyInstaller sd2opp.py ^
+   --noconfirm ^
+   --clean ^
+   --onefile ^
+   --log-level=WARN ^
+   --upx-dir=c:\upx ^
+   --nowindowed ^
+   --icon=CalcOPP.ico
+
+python -O -m PyInstaller calcopp-gui.py ^
+   --name=CalcOPP ^
+   --noconfirm ^
+   --clean ^
+   --onedir ^
+   --log-level=WARN ^
+   --upx-dir=c:\upx ^
+   --add-data="citation.bib;." ^
+   --add-data="citation.ris;." ^
+   --add-data="logo.png;." ^
+   --add-data="CalcOPP.ico;." ^
+   --add-data="dist\sd2opp.exe;." ^
+   --add-data="bin\Release\pdf2opp_2d.exe;." ^
+   --add-data="bin\Release\pdf2opp_3d.exe;." ^
+   --add-data="pandoc\README.html;doc" ^
+   --add-data="pandoc\CHANGELOG.html;doc" ^
+   --add-data="LICENSE;doc" ^
+   --add-data="BSD-2.0.txt;doc" ^
+   --add-data="LGPL-3.0.txt;doc" ^
+   --icon=CalcOPP.ico
 ```
 
 The modules *calcopp-gui* and *sd2opp* were compiled against [PySimpleGUI](https://pypi.org/project/PySimpleGUI/) X.X.X and [NumPy](https://www.numpy.org/) X.X.X, respectively.
@@ -65,7 +92,9 @@ gfortran -std=f2008 -fall-instrinsics -pedantic -Wall -Wextra -O3 -fno-backtrace
 ```
 
 ## Installation
-Unpack one of the archives (64-/32-bit version for Windows/Linux) into any user-writable directory. For the graphical user interface (GUI) to work correctly, the executables must be in a common directory. You can also use the executables `pdf2opp_2d[.exe]`, `pdf2opp_3d[.exe]`, and `sd2opp[.exe]` in a stand-alone (scriptable) fashion. It may be necessary to set the execute permission on Unix-like systems.
+- On Windows versions earlier than Windows 10, install the [Visual C++ Redistributable für Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=48145) with the same bitness as CalcOPP if necessary.
+- Unpack one of the archives (64-/32-bit version for Windows/Linux) into any user-writable directory. For the graphical user interface (GUI) to work correctly, the executables must be in a common directory. You can also use the executables `pdf2opp_2d[.exe]`, `pdf2opp_3d[.exe]`, and `sd2opp[.exe]` in a stand-alone (scriptable) fashion.
+- On Unix-like systems, it may be necessary to set execute permissions for the executables `CalcOPP`, `pdf2opp_2d`, `pdf2opp_3d`, and `sd2opp`.
 
 ## Usage
 ### GUI
