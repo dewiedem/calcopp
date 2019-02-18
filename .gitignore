@@ -154,7 +154,7 @@ dmypy.json
 .pyre/
 
 # Test data
-test/
+*test*
 
 # PyCharm
 .idea/

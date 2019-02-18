@@ -4,11 +4,14 @@ All notable changes to CalcOPP will be documented in this file. Its format is ba
 ## [2.0.0] - 2019-yy-xx
 ### Added
 - Binaries for Windows and Linux (64/32 bit).
+- Menu items to access README and CHANGELOG.
+- Quirks to freeze to Windows binary with desired behavior. 
 
 ### Changed
 - Bumped all version and status strings.
 - Inserted correct DOI.
 - Correctly documented software versions, build commands, and installation requirements.
+- Moved external files into separate data directory.
 
 ## [2.0.0-rc1] - 2019-01-02
 ### Added

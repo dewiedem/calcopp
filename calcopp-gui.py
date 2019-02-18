@@ -69,8 +69,35 @@ def is_pos_float(string):
         return False
 
 
+def sp_args():
+    """Apply quirks for ``subprocess.Popen`` to have standard behavior in PyInstaller-frozen windows binary.
+
+    :return: additional arguments for ``subprocess`` calls
+    :rtype: kwargs
+    """
+    if hasattr(sp, 'STARTUPINFO'):  # True only on Windows
+
+        # Prevent Windows from popping up a command window on subprocess calls
+        startup_info = sp.STARTUPINFO()
+        startup_info.dwFlags |= sp.STARTF_USESHOWWINDOW
+
+        # Make Windows search the ``PATH``
+        environment = os.environ
+
+        # Avoid dangling file handles
+        close_descriptors = True
+    else:
+        startup_info = None
+        environment = None
+        close_descriptors = None
+
+    # Avoid ``OSError`` exception by redirecting all standard handles
+    return {'stdout': sp.PIPE, 'stdin': sp.PIPE, 'stderr': sp.PIPE, 'startupinfo': startup_info, 'env': environment,
+            'close_fds': close_descriptors}
+
+
 # ===== Menu Definition ===== #
-menu_def = [['&File', '&Exit'], ['&Help', '&About …']]
+menu_def = [['&File', 'E&xit'], ['&Help', ['&Readme', '&Changelog', '---', '&About …']]]
 
 # ===== Left Column Definition ===== #
 column_left = [
@@ -174,7 +201,7 @@ column_right = [
 layout = [[sg.Menu(menu_def), sg.Column(column_left), sg.Column(column_right)]]
 window = sg.Window('CalcOPP – Calculation of One-Particle Potentials',
                    default_element_size=(40, 1),
-                   icon='CalcOPP.ico',
+                   icon=os.path.join('data', 'CalcOPP.ico'),
                    grab_anywhere=False).Layout(layout)
 
 # ===== Event Loop for Persistent Window (Main Program) ===== #
@@ -270,12 +297,16 @@ while True:
             window.Element('manual').Update(value=an.MANUAL_SD)
             window.Element('output').Update('')
 
+    # ----- Open README or CHANGELOG ----- #
+    elif event in ['Readme', 'Changelog']:
+        sp.run(os.path.join('docs', '%s.html' % event.upper()), shell=True, **sp_args())
+
     # ----- Open "About" Window ----- #
     elif event == 'About …':
 
         # ····· "About" Window Definition ····· #  (keep in the same control structure as call to not retain state)
         layout_about = [
-            [sg.Image(filename='logo.png')],
+            [sg.Image(filename=os.path.join('data', 'logo.png'))],
             [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=(None, 18))],
             [sg.Text('Version %s\n' % __version__, font=(None, 14))],
             [sg.Text(an.CITATION)],
@@ -287,7 +318,8 @@ while True:
             [sg.CloseButton('Done')]
         ]
         window.Hide()
-        window_about = sg.Window('About …', grab_anywhere=False, icon='CalcOPP.ico').Layout(layout_about)
+        window_about = sg.Window('About …', grab_anywhere=False,
+                                 icon=os.path.join('data', 'CalcOPP.ico')).Layout(layout_about)
 
         # ····· Handle Citation Exports ····· #
         while True:
@@ -297,9 +329,9 @@ while True:
                 break
             elif event_about == 'citation_export':
                 if values_about['format_ris']:
-                    sp.run('citation.ris', shell=True)
+                    sp.run(os.path.join('data', 'citation.ris'), shell=True, **sp_args())
                 else:
-                    sp.run('citation.bib', shell=True)
+                    sp.run(os.path.join('data', 'citation.bib'), shell=True, **sp_args())
 
     # ----- Start Calculations ----- #
     else:
@@ -355,7 +387,8 @@ while True:
 
         if error_message != '':
             # ····· Display Error Message ····· #
-            sg.PopupError(error_message[1:] + '\n', grab_anywhere=False, title='Error', icon='CalcOPP.ico')
+            sg.PopupError(error_message[1:] + '\n', grab_anywhere=False, title='Error',
+                          icon=os.path.join('data', 'CalcOPP.ico'))
 
         else:
 
@@ -378,7 +411,7 @@ while True:
 
                 try:
                     #       Execute Command       #
-                    pdf2opp = sp.Popen(shlex.split(command_line), stderr=sp.PIPE, stdout=sp.PIPE, text=True)
+                    pdf2opp = sp.Popen(shlex.split(command_line), text=True, **sp_args())
                     for line in pdf2opp.stdout:
                         print(line.rstrip())
                         window.Refresh()
@@ -389,11 +422,13 @@ while True:
                     if error_message != '':
                         error_message = error_message[11:] if error_message.startswith('ERROR STOP ') else error_message
                         error_message = (an.ERROR_INTRO % 'PDF2OPP_2D') + error_message
-                        sg.PopupError(error_message, grab_anywhere=False, title='Subroutine Error', icon='CalcOPP.ico')
+                        sg.PopupError(error_message, grab_anywhere=False, title='Subroutine Error',
+                                      icon=os.path.join('data', 'CalcOPP.ico'))
 
                 except FileNotFoundError:
                     error_message = 'PDF2OPP_2D executable not found in program directory.'
-                    sg.PopupError(error_message, grab_anywhere=False, title='Program Error', icon='CalcOPP.ico')
+                    sg.PopupError(error_message, grab_anywhere=False, title='Program Error',
+                                  icon=os.path.join('data', 'CalcOPP.ico'))
 
                 window.Element('2d_okay').Update(disabled=False)
 
@@ -410,7 +445,7 @@ while True:
 
                 try:
                     #       Execute Command       #
-                    pdf3opp = sp.Popen(shlex.split(command_line), stderr=sp.PIPE, stdout=sp.PIPE, text=True)
+                    pdf3opp = sp.Popen(shlex.split(command_line), text=True, **sp_args())
                     for line in pdf3opp.stdout:
                         print(line.rstrip())
                         window.Refresh()
@@ -421,11 +456,13 @@ while True:
                     if error_message != '':
                         error_message = error_message[11:] if error_message.startswith('ERROR STOP ') else error_message
                         error_message = (an.ERROR_INTRO % 'PDF2OPP_3D') + error_message
-                        sg.PopupError(error_message, grab_anywhere=False, title='Subroutine Error', icon='CalcOPP.ico')
+                        sg.PopupError(error_message, grab_anywhere=False, title='Subroutine Error',
+                                      icon=os.path.join('data', 'CalcOPP.ico'))
 
                 except FileNotFoundError:
                     error_message = 'PDF2OPP_3D executable not found in program directory.'
-                    sg.PopupError(error_message, grab_anywhere=False, title='Program Error', icon='CalcOPP.ico')
+                    sg.PopupError(error_message, grab_anywhere=False, title='Program Error',
+                                  icon=os.path.join('data', 'CalcOPP.ico'))
 
                 window.Element('3d_okay').Update(disabled=False)
 
@@ -449,6 +486,9 @@ while True:
                 except Exception:
                     #       Show Popup on Error       #
                     error_message = (an.ERROR_INTRO % 'SD2OPP') + tb.format_exc()
-                    sg.PopupError(error_message, grab_anywhere=False, title='Subroutine Error', icon='CalcOPP.ico')
+                    sg.PopupError(error_message, grab_anywhere=False, title='Subroutine Error',
+                                  icon=os.path.join('data', 'CalcOPP.ico'))
 
                 window.Element('sd_okay').Update(disabled=False)
+
+# TODO: fix crash on quit with PyInstaller-frozen executable; possible workarounds: disable X button, start with console

@@ -93,7 +93,7 @@ gfortran -std=f2008 -fall-instrinsics -pedantic -Wall -Wextra -O3 -fno-backtrace
 
 ## Installation
 - On Windows versions earlier than Windows 10, install the [Visual C++ Redistributable für Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=48145) with the same bitness as CalcOPP if necessary.
-- Unpack one of the archives (64-/32-bit version for Windows/Linux) into any user-writable directory. For the graphical user interface (GUI) to work correctly, the executables must be in a common directory. You can also use the executables `pdf2opp_2d[.exe]`, `pdf2opp_3d[.exe]`, and `sd2opp[.exe]` in a stand-alone (scriptable) fashion.
+- Unpack one of the archives (64-/32-bit version for Windows/Linux) into any user-writable directory. For the graphical user interface (GUI) to work correctly, the executables must be in a common directory. You can also use `pdf2opp_2d[.exe]`, `pdf2opp_3d[.exe]`, and `sd2opp[.exe]` in a scriptable fashion; the former two are stand-alone executables.
 - On Unix-like systems, it may be necessary to set execute permissions for the executables `CalcOPP`, `pdf2opp_2d`, `pdf2opp_3d`, and `sd2opp`.
 
 ## Usage
