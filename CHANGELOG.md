@@ -5,7 +5,8 @@ All notable changes to CalcOPP will be documented in this file. Its format is ba
 ### Added
 - Binaries for Windows and Linux (64/32 bit).
 - Menu items to access README and CHANGELOG.
-- Quirks to freeze to Windows binary with desired behavior. 
+- Quirks to freeze to Windows binary with desired behavior.
+- Test input data.
 
 ### Changed
 - Bumped all version and status strings.
