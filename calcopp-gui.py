@@ -492,3 +492,4 @@ while True:
                 window.Element('sd_okay').Update(disabled=False)
 
 # TODO: fix crash on quit with PyInstaller-frozen executable; possible workarounds: disable X button, start with console
+# TODO: avoid adding suffixes if suffix is altered, rethink this feature

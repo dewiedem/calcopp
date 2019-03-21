@@ -47,49 +47,14 @@ As CalcOPP is unaware of the covariance of maximal and local probability density
 
 ## Compiling
 ### Modules *calcopp-gui* and *sd2opp*
-The source code adheres to the specifications of Python 3.7 and heeds [*PEP 8 – Style Guide for Python Code*](https://www.python.org/dev/peps/pep-0008/). It has been compiled using Python X.X.X/X.X.X (Windows/Linux) and [PyInstaller](https://www.pyinstaller.org/) X.X.X with assert statements and any code conditional on the value of `__debug__` removed.
+The source code adheres to the specifications of Python 3.7 and heeds [*PEP 8 – Style Guide for Python Code*](https://www.python.org/dev/peps/pep-0008/). It has been compiled against Python X.X.X/X.X.X (Windows/Linux) and frozen using [PyInstaller](https://www.pyinstaller.org/) X.X.X with assert statements and any code conditional on the value of `__debug__` removed. The modules *calcopp-gui* and *sd2opp* were frozen including [PySimpleGUI](https://pypi.org/project/PySimpleGUI/) X.X.X and [NumPy](https://www.numpy.org/) X.X.X, respectively.
 
-```
-python -O -m PyInstaller sd2opp.py ^
-   --noconfirm ^
-   --clean ^
-   --onefile ^
-   --log-level=WARN ^
-   --upx-dir=c:\upx ^
-   --nowindowed ^
-   --icon=CalcOPP.ico
-
-python -O -m PyInstaller calcopp-gui.py ^
-   --name=CalcOPP ^
-   --noconfirm ^
-   --clean ^
-   --onedir ^
-   --log-level=WARN ^
-   --upx-dir=c:\upx ^
-   --add-data="citation.bib;." ^
-   --add-data="citation.ris;." ^
-   --add-data="logo.png;." ^
-   --add-data="CalcOPP.ico;." ^
-   --add-data="dist\sd2opp.exe;." ^
-   --add-data="bin\Release\pdf2opp_2d.exe;." ^
-   --add-data="bin\Release\pdf2opp_3d.exe;." ^
-   --add-data="pandoc\README.html;doc" ^
-   --add-data="pandoc\CHANGELOG.html;doc" ^
-   --add-data="LICENSE;doc" ^
-   --add-data="BSD-2.0.txt;doc" ^
-   --add-data="LGPL-3.0.txt;doc" ^
-   --icon=CalcOPP.ico
-```
-
-The modules *calcopp-gui* and *sd2opp* were compiled against [PySimpleGUI](https://pypi.org/project/PySimpleGUI/) X.X.X and [NumPy](https://www.numpy.org/) X.X.X, respectively.
+Options are detailed in the build scripts `build.cmd` (Windows) and `build.sh` (Linux) shipped with the source code.
 
 ### Modules *pdf2opp_2d* and *pdf2opp_3d*
-The source code adheres the specifications of Fortran 2008 with GNU-specific extensions. It has been compiled using GFortran X.X.X/X.X.X (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”:
+The source code adheres the specifications of Fortran 2008 with GNU-specific extensions. It has been compiled using GFortran X.X.X/X.X.X (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”.
 
-```
-gfortran -std=f2008 -fall-instrinsics -pedantic -Wall -Wextra -O3 -fno-backtrace -static -s [-m64] pdf2opp_2d.f08 -o pdf2opp_2d[.exe]
-gfortran -std=f2008 -fall-instrinsics -pedantic -Wall -Wextra -O3 -fno-backtrace -static -s [-m64] pdf2opp_3d.f08 -o pdf2opp_3d[.exe]
-```
+Options are detailed in the build scripts `build.cmd` (Windows) and `build.sh` (Linux) shipped with the source code.
 
 ## Installation
 - On Windows versions earlier than Windows 10, install the [Visual C++ Redistributable für Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=48145) with the same bitness as CalcOPP if necessary.
