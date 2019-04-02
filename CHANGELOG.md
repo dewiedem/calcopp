@@ -7,12 +7,18 @@ All notable changes to CalcOPP will be documented in this file. Its format is ba
 - Menu items to access README and CHANGELOG.
 - Quirks to freeze to Windows binary with desired behavior.
 - Test input data.
+- Build scripts for Windows and Linux.
 
 ### Changed
 - Bumped all version and status strings.
 - Inserted correct DOI.
-- Correctly documented software versions, build commands, and installation requirements.
+- Correctly documented software versions and installation requirements.
 - Moved external files into separate data directory.
+- Made README more concise.
+- CALCOPP_GUI: The field “Information and Manual” is now read-only.
+- CALCOPP_GUI: Deleted explicit `do_not_clear` and `grab_anywhere` flags (defaults with new PySimpleGUI version).
+- CALCOPP_GUI: Improved error messages for invalid/inconsistent input.
+- CALCOPP_GUI: File extension for output files no longer added automatically (before, file name was garbled when editing the extension).
 
 ## [2.0.0-rc1] - 2019-01-02
 ### Added

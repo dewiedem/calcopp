@@ -58,7 +58,7 @@ Options are detailed in the build scripts `build.cmd` (Windows) and `build.sh` (
 
 ## Installation
 - On Windows versions earlier than Windows 10, install the [Visual C++ Redistributable für Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=48145) with the same bitness as CalcOPP if necessary.
-- Unpack one of the archives (64-/32-bit version for Windows/Linux) into any user-writable directory. For the graphical user interface (GUI) to work correctly, the executables must be in a common directory. You can also use `pdf2opp_2d[.exe]`, `pdf2opp_3d[.exe]`, and `sd2opp[.exe]` in a scriptable fashion; the former two are stand-alone executables.
+- Unpack one of the archives (64-/32-bit version for Windows/Linux) into any user-writable directory. For the graphical user interface (GUI) to work correctly, the executables must be in a common directory.
 - On Unix-like systems, it may be necessary to set execute permissions for the executables `CalcOPP`, `pdf2opp_2d`, `pdf2opp_3d`, and `sd2opp`.
 
 ## Usage
@@ -66,12 +66,12 @@ Options are detailed in the build scripts `build.cmd` (Windows) and `build.sh` (
 Start the application `CalcOPP[.exe]` *via* desktop environment or shell. Further instructions are displayed in the box on the left. 
 
 ### Drag and Drop
-For `pdf2opp_2d[.exe]`, you can drag and drop the icon of an appropriate `*.stf` file on the icon of the executable. The latter will then try to read the measurement temperature from a JANA2006 `*.m90` file in the working directory and, if the file is found, automatically write the output to `*_opp.asc`. If an error map with the name `*_err.stf` is also present, it will be processed, too.
+For `pdf2opp_2d[.exe]`, you can drag and drop the icon of an appropriate `*.stf` file on the executable’s icon. It will then try to read the measurement temperature from a JANA2006 `*.m90` file in the working directory and, if the file is found, automatically write the output to `*_opp.asc`. If an error map with the name `*_err.stf` is also present, it will be processed, too.
 
-For `pdf2opp_3d[.exe]`, you can drag and drop the icon of an appropriate `*_tmp.xsf` file on the icon of the executable. The latter will then try to read the measurement temperature from a JANA2006 `*.m90` file in the working directory and, if the file is found, automatically write the output to `*_opp.xsf` and `*_opp.vesta`.
+For `pdf2opp_3d[.exe]`, you can drag and drop the icon of an appropriate `*_tmp.xsf` file on the executable’s icon. It will then try to read the measurement temperature from a JANA2006 `*.m90` file in the working directory and, if the file is found, automatically write the output to `*_opp.xsf` and `*_opp.vesta`.
 
 ### Command Line
-If you want to use the executables `pdf2opp_2d[.exe]`, `pdf2opp_3d[.exe]`, or `sd2opp[.exe]` from the command line, please invoke them with the parameter `-h` (for help) to display their usage.
+If you want to use `pdf2opp_2d[.exe]`, `pdf2opp_3d[.exe]`, or `sd2opp[.exe]` from the command line (*e.g.*, in custom scripts), please invoke them with the parameter `-h` (for help) to display their usage. The former two are stand-alone executables.
 
 ## Acknowledgement
 CalcOPP has been inspired by work from Dr. Hans Boysen (Ludwig-Maximilians-Universität München) and Dr. Anatoliy Senyshyn (Technische Universität München).
