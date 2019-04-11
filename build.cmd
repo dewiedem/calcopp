@@ -1,15 +1,15 @@
 @echo off
 rem   This file is used to build/freeze CalcOPP on Windows systems. It relies on
 rem   GFortran (https://gcc.gnu.org/wiki/GFortran), Pandoc (https://pandoc.org/),
-rem   Python (https://www.python.org/), and UPX rem (https://upx.github.io/) being
+rem   Python (https://www.python.org/), and UPX (https://upx.github.io/) being
 rem   in the system PATH and WinRAR residing in its standard path.
 
 
 rem   Compile the Fortran modules "pdf2opp_2d" and "pdf2opp_3d"
 gfortran pdf2opp_2d.f08 ^
-    -o pdf2opp_2d.exe ^
+    -o bin\Release\pdf2opp_2d.exe ^
     -std=f2008 ^
-    -fall-instrinsics ^
+    -fall-intrinsics ^
     -pedantic ^
     -Wall ^
     -Wextra ^
@@ -20,9 +20,9 @@ gfortran pdf2opp_2d.f08 ^
     -m64
 
 gfortran pdf2opp_3d.f08 ^
-    -o pdf2opp_3d.exe ^
+    -o bin\Release\pdf2opp_3d.exe ^
     -std=f2008 ^
-    -fall-instrinsics ^
+    -fall-intrinsics ^
     -pedantic ^
     -Wall ^
     -Wextra ^
@@ -72,7 +72,6 @@ python -O -m PyInstaller calcopp-gui.py ^
    --clean ^
    --onedir ^
    --log-level=WARN ^
-   --noconsole ^
    --add-data="data\citation.bib;data" ^
    --add-data="data\citation.ris;data" ^
    --add-data="data\logo.png;data" ^
@@ -88,6 +87,10 @@ python -O -m PyInstaller calcopp-gui.py ^
    --add-data="bin\Release\pdf2opp_3d.exe;." ^
    --icon=data\CalcOPP.ico ^
    --version-file=calcopp_info.txt
+rem   --noconsole ^
+rem   Opening an underlying console window as a workaround for a crash on
+rem   exit via the X button, which is caused by some bad interplay between
+rem   PyInstaller, NumPy, and PySimpleGUI.
 
 
 rem   Pack the data for distribution
@@ -96,6 +99,3 @@ cd dist
 "C:\Program Files\WinRAR\WinRAR.exe" a -m5zip CalcOPP.zip CalcOPP
 
 cd ..
-
-
-rem   TODO: adjust pdf2_opp directories

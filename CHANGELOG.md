@@ -1,11 +1,11 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file. Its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/).
 
-## [2.0.0] - 2019-yy-xx
+## [2.0.0] - 2019-04-11
 ### Added
-- Binaries for Windows and Linux (64/32 bit).
-- Menu items to access README and CHANGELOG.
-- Quirks to freeze to Windows binary with desired behavior.
+- Binaries for Windows (64/32 bit) and Linux (64 bit).
+- CALCOPP_GUI: Menu items to access README and CHANGELOG.
+- CALCOPP_GUI: Quirks to freeze to Windows binary with desired behavior.
 - Test input data.
 - Build scripts for Windows and Linux.
 

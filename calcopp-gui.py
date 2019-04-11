@@ -476,5 +476,3 @@ while True:
                     sg.PopupError(error_message, title='Subroutine Error', icon=os.path.join('data', 'CalcOPP.ico'))
 
                 window.Element('sd_okay').Update(disabled=False)
-
-# TODO: fix crash on quit with PyInstaller-frozen executable; possible workarounds: disable X button, start with console
