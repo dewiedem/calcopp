@@ -159,4 +159,6 @@ test.py
 # PyCharm
 .idea/
 
+# Miscellaneous
 *.bat
+*.html
