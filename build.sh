@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 #
 # This file is used to build/freeze CalcOPP on Linux systems. It relies on
 # GFortran (https://gcc.gnu.org/wiki/GFortran), Pandoc (https://pandoc.org/),
@@ -11,8 +11,8 @@ if [ ! -d "dist" ]; then
     mkdir dist
 fi
 
-gfortran pdf2opp_2d.f08 \
-    -o dist\pdf2opp_2d.exe \
+gfortran-8 pdf2opp_2d.f08 \
+    -o dist/pdf2opp_2d \
     -std=f2008 \
     -fall-intrinsics \
     -pedantic \
@@ -24,8 +24,8 @@ gfortran pdf2opp_2d.f08 \
     -s \
     -m64
 
-gfortran pdf2opp_3d.f08 \
-    -o dist\pdf2opp_3d.exe \
+gfortran-8 pdf2opp_3d.f08 \
+    -o dist/pdf2opp_3d \
     -std=f2008 \
     -fall-intrinsics \
     -pedantic \
@@ -37,23 +37,24 @@ gfortran pdf2opp_3d.f08 \
     -s \
     -m64 
 
+chmod +x dist/pdf2opp_2d dist/pdf2opp_3d
 
 # Create the documentation HTML files
 cd pandoc
 
-pandoc ..\README.md \
+pandoc ../README.md \
     --from gfm \
     --to html5 \
-    --output ..\docs\README.html \
+    --output ../docs/README.html \
     --standalone \
     --metadata-file=metadata.yaml \
-    --resource-path=.;.. \
+    --resource-path=.:.. \
     --self-contained
 
-pandoc ..\CHANGELOG.md \
+pandoc ../CHANGELOG.md \
     --from gfm \
     --to html5 \
-    --output ..\docs\CHANGELOG.html \
+    --output ../docs/CHANGELOG.html \
     --standalone \
     --metadata-file=metadata.yaml \
     --self-contained
@@ -62,36 +63,37 @@ cd ..
 
 
 # Freeze the Python modules "sd2opp" and "calcopp-gui"
-python -O -m PyInstaller sd2opp.py \
+python3.7 -O -m PyInstaller sd2opp.py \
    --noconfirm \
    --clean \
    --onedir \
    --log-level=WARN \
    --nowindowed \
-   --icon=data\CalcOPP.ico \
+   --icon=data/CalcOPP.ico \
    --version-file=sd2opp_info.txt
 
-python -O -m PyInstaller calcopp-gui.py \
+python3.7 -O -m PyInstaller calcopp-gui.py \
    --name=CalcOPP \
    --noconfirm \
    --clean \
    --onedir \
    --log-level=WARN \
-   --add-data="data\citation.bib;data" \
-   --add-data="data\citation.ris;data" \
-   --add-data="data\logo.png;data" \
-   --add-data="data\CalcOPP.ico;data" \
-   --add-data="docs\README.html;docs" \
-   --add-data="docs\CHANGELOG.html;docs" \
-   --add-data="LICENSE;docs" \
-   --add-data="docs\BSD-2.0.txt;docs" \
-   --add-data="docs\LGPL-3.0.txt;docs" \
-   --add-data="dist\sd2opp\sd2opp.exe;." \
-   --add-data="dist\sd2opp\sd2opp.exe.manifest;." \
-   --add-data="dist\pdf2opp_2d.exe;." \
-   --add-data="dist\pdf2opp_3d.exe;." \
-   --icon=data\CalcOPP.ico \
-   --version-file=calcopp_info.txt
+   --add-data="data/citation.bib:data" \
+   --add-data="data/citation.ris:data" \
+   --add-data="data/logo.png:data" \
+   --add-data="data/CalcOPP.ico:data" \
+   --add-data="docs/README.html:docs" \
+   --add-data="docs/CHANGELOG.html:docs" \
+   --add-data="LICENSE:docs" \
+   --add-data="docs/BSD-2.0.txt:docs" \
+   --add-data="docs/LGPL-3.0.txt:docs" \
+   --add-data="dist/sd2opp/sd2opp:." \
+   --add-data="dist/pdf2opp_2d:." \
+   --add-data="dist/pdf2opp_3d:." \
+   --icon=data/CalcOPP.ico
+
+chmod +x dist/CalcOPP/CalcOPP dist/CalcOPP/sd2opp
+
 # --noconsole \
 # Opening an underlying console window as a workaround for a crash on
 # exit via the X button, which is caused by some bad interplay between

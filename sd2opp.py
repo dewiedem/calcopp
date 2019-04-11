@@ -87,7 +87,7 @@ def parse_arguments():
     """
     parser = ap.ArgumentParser(
         description='Calculate 3D OPP from MEM-reconstructed electron/scattering-length density',
-        epilog='SD2OPP uses the module NumPy by the NumPy developers distributed under the BSD License 2.0'
+        epilog='SD2OPP uses the module NumPy by the NumPy developers distributed under the BSD License 2.0 '
                '(see BSD-2.0.txt).')
     parser.add_argument('input', type=ap.FileType('rb'), help='specifies the PGRID input file')
     parser.add_argument('output', type=ap.FileType('wb'), help='specifies the PGRID output file')
