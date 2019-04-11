@@ -68,9 +68,7 @@ python3.7 -O -m PyInstaller sd2opp.py \
    --clean \
    --onedir \
    --log-level=WARN \
-   --nowindowed \
-   --icon=data/CalcOPP.ico \
-   --version-file=sd2opp_info.txt
+   --strip
 
 python3.7 -O -m PyInstaller calcopp-gui.py \
    --name=CalcOPP \
@@ -90,14 +88,9 @@ python3.7 -O -m PyInstaller calcopp-gui.py \
    --add-data="dist/sd2opp/sd2opp:." \
    --add-data="dist/pdf2opp_2d:." \
    --add-data="dist/pdf2opp_3d:." \
-   --icon=data/CalcOPP.ico
+   --strip
 
 chmod +x dist/CalcOPP/CalcOPP dist/CalcOPP/sd2opp
-
-# --noconsole \
-# Opening an underlying console window as a workaround for a crash on
-# exit via the X button, which is caused by some bad interplay between
-# PyInstaller, NumPy, and PySimpleGUI.
 
 
 # Pack the data for distribution
