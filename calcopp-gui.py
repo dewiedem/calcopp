@@ -283,7 +283,7 @@ while True:
 
     # ----- Open README or CHANGELOG ----- #
     elif event in ['Readme', 'Changelog']:
-        sp.run(os.path.join('docs', '%s.html' % event.upper()), shell=True, **sp_args())
+        sp.run(['xdg-open', os.path.join('docs', '%s.html' % event.upper())], shell=False, **sp_args())
 
     # ----- Open "About" Window ----- #
     elif event == 'About …':
@@ -312,7 +312,7 @@ while True:
                 break
             elif event_about == 'citation_export':
                 if values_about['format_ris']:
-                    sp.run(os.path.join('data', 'citation.ris'), shell=True, **sp_args())
+                    sp.run(['xdg-open', os.path.join('data', 'citation.ris')], shell=False, **sp_args())
                 else:
                     sp.run(os.path.join('data', 'citation.bib'), shell=True, **sp_args())
 
