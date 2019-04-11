@@ -393,7 +393,7 @@ while True:
             if event == '2d_okay':
 
                 #       Assemble Command Line       #
-                command_line = os.path.join('.', 'pdf2opp_2d')
+                command_line = './pdf2opp_2d'
                 command_line += ' -i ' + values['2d_file_in']
                 command_line += ' -o ' + values['2d_file_out']
                 if values['2d_output_opp_err'] or values['2d_output_pdf_err']:
@@ -431,7 +431,7 @@ while True:
             elif event == '3d_okay':
 
                 #       Assemble Command Line       #
-                command_line = os.path.join('.', 'pdf2opp_3d')
+                command_line = './pdf2opp_3d'
                 command_line += ' -i ' + values['3d_file_in']
                 command_line += ' -o ' + values['3d_file_out']
                 command_line += ' -t ' + values['3d_temp'] if values['3d_temp_source_custom'] else ''

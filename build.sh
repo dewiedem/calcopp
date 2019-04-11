@@ -12,7 +12,7 @@ if [ ! -d "dist" ]; then
 fi
 
 gfortran-8 pdf2opp_2d.f08 \
-    -o dist/pdf2opp_2d \
+    -o pdf2opp_2d \
     -std=f2008 \
     -fall-intrinsics \
     -pedantic \
@@ -25,7 +25,7 @@ gfortran-8 pdf2opp_2d.f08 \
     -m64
 
 gfortran-8 pdf2opp_3d.f08 \
-    -o dist/pdf2opp_3d \
+    -o pdf2opp_3d \
     -std=f2008 \
     -fall-intrinsics \
     -pedantic \
@@ -37,7 +37,7 @@ gfortran-8 pdf2opp_3d.f08 \
     -s \
     -m64 
 
-chmod +x dist/pdf2opp_2d dist/pdf2opp_3d
+chmod +x pdf2opp_2d pdf2opp_3d
 
 # Create the documentation HTML files
 cd pandoc
@@ -86,8 +86,8 @@ python3.7 -O -m PyInstaller calcopp-gui.py \
    --add-data="docs/BSD-2.0.txt:docs" \
    --add-data="docs/LGPL-3.0.txt:docs" \
    --add-data="dist/sd2opp/sd2opp:." \
-   --add-data="dist/pdf2opp_2d:." \
-   --add-data="dist/pdf2opp_3d:." \
+   --add-data="pdf2opp_2d:." \
+   --add-data="pdf2opp_3d:." \
    --strip
 
 chmod +x dist/CalcOPP/CalcOPP dist/CalcOPP/sd2opp

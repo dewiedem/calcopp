@@ -9,7 +9,7 @@ rem   Compile the Fortran modules "pdf2opp_2d" and "pdf2opp_3d"
 if not exist dist\ mkdir dist
 
 gfortran pdf2opp_2d.f08 ^
-    -o dist\pdf2opp_2d.exe ^
+    -o pdf2opp_2d.exe ^
     -std=f2008 ^
     -fall-intrinsics ^
     -pedantic ^
@@ -22,7 +22,7 @@ gfortran pdf2opp_2d.f08 ^
     -m64
 
 gfortran pdf2opp_3d.f08 ^
-    -o dist\pdf2opp_3d.exe ^
+    -o pdf2opp_3d.exe ^
     -std=f2008 ^
     -fall-intrinsics ^
     -pedantic ^
@@ -85,8 +85,8 @@ python -O -m PyInstaller calcopp-gui.py ^
    --add-data="docs\LGPL-3.0.txt;docs" ^
    --add-data="dist\sd2opp\sd2opp.exe;." ^
    --add-data="dist\sd2opp\sd2opp.exe.manifest;." ^
-   --add-data="dist\pdf2opp_2d.exe;." ^
-   --add-data="dist\pdf2opp_3d.exe;." ^
+   --add-data="pdf2opp_2d.exe;." ^
+   --add-data="pdf2opp_3d.exe;." ^
    --icon=data\CalcOPP.ico ^
    --version-file=calcopp_info.txt
 rem   --noconsole ^

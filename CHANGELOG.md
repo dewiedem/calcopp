@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file. Its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/).
 
-## [2.0.0] - 2019-04-11
+## [2.0.0] - 2019-04-12
 ### Added
 - Binaries for Windows (64/32 bit) and Linux (64 bit).
 - CALCOPP_GUI: Menu items to access README and CHANGELOG.
@@ -19,6 +19,7 @@ All notable changes to CalcOPP will be documented in this file. Its format is ba
 - CALCOPP_GUI: Deleted explicit `do_not_clear` and `grab_anywhere` flags (defaults with new PySimpleGUI version).
 - CALCOPP_GUI: Improved error messages for invalid/inconsistent input.
 - CALCOPP_GUI: File extension for output files no longer added automatically (before, file name was garbled when editing the extension).
+- CALCOPP_GUI: Adaptations to external file execution under Linux.
 
 ## [2.0.0-rc1] - 2019-01-02
 ### Added
