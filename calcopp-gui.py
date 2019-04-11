@@ -96,6 +96,15 @@ def sp_args():
             'close_fds': close_descriptors}
 
 
+def doc_handler():
+    """Return the command for opening document files with the standard application for its type (on Windows and Linux).
+
+    :return: filename of handler for opening documents
+    :rtype: string
+    """
+    return 'explorer.exe' if hasattr(sp, 'STARTUPINFO') else 'xdg-open'
+
+
 # ===== Menu Definition ===== #
 menu_def = [['&File', 'E&xit'], ['&Help', ['&Readme', '&Changelog', '---', '&About …']]]
 
@@ -283,7 +292,7 @@ while True:
 
     # ----- Open README or CHANGELOG ----- #
     elif event in ['Readme', 'Changelog']:
-        sp.run(os.path.join('docs', '%s.html' % event.upper()), shell=True, **sp_args())
+        sp.run([doc_handler(), os.path.join('docs', '%s.html' % event.upper())], **sp_args())
 
     # ----- Open "About" Window ----- #
     elif event == 'About …':
@@ -312,9 +321,9 @@ while True:
                 break
             elif event_about == 'citation_export':
                 if values_about['format_ris']:
-                    sp.run(os.path.join('data', 'citation.ris'), shell=True, **sp_args())
+                    sp.run([doc_handler(), os.path.join('data', 'citation.ris')], **sp_args())
                 else:
-                    sp.run(os.path.join('data', 'citation.bib'), shell=True, **sp_args())
+                    sp.run([doc_handler(), os.path.join('data', 'citation.bib')], **sp_args())
 
     # ----- Start Calculations ----- #
     else:
