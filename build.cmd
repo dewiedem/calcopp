@@ -12,27 +12,27 @@ gfortran pdf2opp_2d.f08 ^
     -o pdf2opp_2d.exe ^
     -std=f2008 ^
     -fall-intrinsics ^
+	-ffpe-summary=none ^
     -pedantic ^
     -Wall ^
     -Wextra ^
     -O3 ^
     -fno-backtrace ^
     -static ^
-    -s ^
-    -m64
+    -s
 
 gfortran pdf2opp_3d.f08 ^
     -o pdf2opp_3d.exe ^
     -std=f2008 ^
     -fall-intrinsics ^
+	-ffpe-summary=none ^
     -pedantic ^
     -Wall ^
     -Wextra ^
     -O3 ^
     -fno-backtrace ^
     -static ^
-    -s ^
-    -m64 
+    -s
 
 
 rem   Create the documentation HTML files
