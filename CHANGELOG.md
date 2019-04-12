@@ -59,7 +59,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 
 ## [1.6.1] - 2015-09-03
 ### Fixed
-- Rebuilt broken CalcOPP windows binaries against gcc-4.9.3.
+- Rebuilt broken Windows binaries against GFortran 4.9.3.
 
 ## [1.6.0] - 2015-09-03
 ### Added
