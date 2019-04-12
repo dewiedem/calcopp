@@ -15,6 +15,7 @@ gfortran-8 pdf2opp_2d.f08 \
     -o pdf2opp_2d \
     -std=f2008 \
     -fall-intrinsics \
+    -ffpe-summary=none \
     -pedantic \
     -Wall \
     -Wextra \
@@ -28,6 +29,7 @@ gfortran-8 pdf2opp_3d.f08 \
     -o pdf2opp_3d \
     -std=f2008 \
     -fall-intrinsics \
+    -ffpe-summary=none \
     -pedantic \
     -Wall \
     -Wextra \
@@ -68,7 +70,8 @@ python3.7 -O -m PyInstaller sd2opp.py \
    --clean \
    --onedir \
    --log-level=WARN \
-   --strip
+   --strip \
+   --upx-dir="/usr/bin/"
 
 python3.7 -O -m PyInstaller calcopp-gui.py \
    --name=CalcOPP \
@@ -88,7 +91,8 @@ python3.7 -O -m PyInstaller calcopp-gui.py \
    --add-data="dist/sd2opp/sd2opp:." \
    --add-data="pdf2opp_2d:." \
    --add-data="pdf2opp_3d:." \
-   --strip
+   --strip \
+   --upx-dir="/usr/bin/"
 
 chmod +x dist/CalcOPP/CalcOPP dist/CalcOPP/sd2opp
 
