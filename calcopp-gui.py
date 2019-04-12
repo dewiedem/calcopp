@@ -203,9 +203,9 @@ column_right = [
 ]
 
 # ===== Window Invocation ===== #
-layout = [[sg.Menu(menu_def), sg.Column(column_left), sg.Column(column_right)]]
+layout_main = [[sg.Menu(menu_def), sg.Column(column_left), sg.Column(column_right)]]
 window = sg.Window('CalcOPP – Calculation of One-Particle Potentials', default_element_size=(40, 1),
-                   icon=os.path.join('data', 'CalcOPP.ico')).Layout(layout)
+                   icon=os.path.join('data', 'CalcOPP.ico'), layout=layout_main)
 
 # ===== Event Loop for Persistent Window (Main Program) ===== #
 while True:
@@ -308,7 +308,7 @@ while True:
             [sg.CloseButton('Done')]
         ]
         window.Hide()
-        window_about = sg.Window('About …', icon=os.path.join('data', 'CalcOPP.ico')).Layout(layout_about)
+        window_about = sg.Window('About …', icon=os.path.join('data', 'CalcOPP.ico'), layout=layout_about)
 
         # ····· Handle Citation Exports ····· #
         while True:
