@@ -153,11 +153,12 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Test data
-test/
+# Test files
+test.py
 
 # PyCharm
 .idea/
 
-# Pandoc
-pandoc/
+# Miscellaneous
+*.bat
+*.html
