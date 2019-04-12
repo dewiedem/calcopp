@@ -89,7 +89,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 ### Added
 - First production version with basic functionality.
 
-[2.0.0]: https://github.com/dewiedem/calcopp/releases/tag/v.2.0.0
+[2.0.0]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.0
 [2.0.0-rc1]: https://github.com/dewiedem/calcopp/releases/tag/v.2.0.0-rc1
 [1.6.1]: https://doi.org/10.6084/m9.figshare.1461721.v4
 [1.6.0]: https://doi.org/10.6084/m9.figshare.1461721.v2
