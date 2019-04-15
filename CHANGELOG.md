@@ -61,7 +61,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 ### Fixed
 - Rebuilt broken Windows binaries against GFortran 4.9.3.
 
-## [1.6.0] - 2015-09-03
+## [1.6] - 2015-09-03
 ### Added
 - Extended documentation (`Readme.txt`) to include purpose and architecture information.
 
@@ -72,7 +72,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 ### Fixed
 - Typo in `--help` output.
 
-## 1.5.0 - 2015-06-24
+## 1.5 - 2015-06-24
 ### Added
 - Processing of error maps.
 - Menu to select job in interactive mode.
@@ -85,11 +85,11 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 - More verbose output to monitor status.
 - Parsing of whole command line for current and future use.
 
-## 1.0.0 - 2013-07-08
+## 1.0 - 2013-07-08
 ### Added
 - First production version with basic functionality.
 
 [2.0.0]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.0
 [2.0.0-rc.1]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.0-rc.1
 [1.6.1]: https://doi.org/10.6084/m9.figshare.1461721.v4
-[1.6.0]: https://doi.org/10.6084/m9.figshare.1461721.v2
+[1.6]: https://doi.org/10.6084/m9.figshare.1461721.v2
