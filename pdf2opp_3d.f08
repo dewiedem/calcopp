@@ -1,8 +1,10 @@
 program pdf2opp_3d
 
-!   CalcOPP 2.0.0 - Calculation of Effective One-Particle Potentials
+!   CalcOPP 2.0.1 - Calculation of Effective One-Particle Potentials
 !   PDF2OPP_3D - Subroutines for Calculation from 3D PDF Data (JANA2006 XSF Format)
 !   Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)
+
+use, intrinsic                     :: ieee_arithmetic
 
 implicit none
 character(len = 256)               :: file_input_xsf, file_output_xsf, &
@@ -24,9 +26,8 @@ logical                            :: exists_input_xsf, exists_input_m90  ! Flag
 logical                            :: is_dnd                              ! Flag for drag and drop
 
 character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 50)  ! Visual separator for standard output
-character(len = *), parameter      :: VERSION = '2.0.0'                   ! Program version
+character(len = *), parameter      :: VERSION = '2.0.1'                   ! Program version
 real,               parameter      :: K_B = 8.617330E-5                   ! Boltzmann constant in eV/K
-
 
 ! INITIALIZE
 
@@ -239,8 +240,8 @@ write(*, fmt = '(/, A, /)') SEPARATOR  ! Separates PDF from OPP part
 write(*, fmt = '(A)', advance = 'no') ' Calculating OPP ...'
 
 values = -1 * K_B * temp * log(values/pdf_0)
-opp_max = maxval(values, (.not. isnan(values)))
-where (isnan(values)) values = opp_max
+opp_max = maxval(values, (ieee_is_finite(values)))
+where (.not. ieee_is_finite(values)) values = opp_max
 write(*, *) 'done.'
 write(*, fmt = '(A, ES13.6, A, /)') ' V(max) = ', opp_max, ' eV'
 
