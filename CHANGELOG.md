@@ -2,11 +2,11 @@
 All notable changes to CalcOPP will be documented in this file; its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/). This project adheres to [*Semantic Versioning*](https://semver.org/spec/v2.0.0.html).
 
 ## [2.0.1] - 2019-07-16
-### Fixed
-- `pdf2opp_3d`: Ability to handle zeros as PDF input values.
-
 ### Changed
 - Defined Boltzmann constant as ratio of two exact values (CODATA 2018).
+
+### Fixed
+- `pdf2opp_3d`: Ability to handle zeros as PDF input values.
 
 ## [2.0.0] - 2019-04-12
 ### Added
