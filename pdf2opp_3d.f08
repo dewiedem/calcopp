@@ -8,26 +8,26 @@ use, intrinsic                     :: ieee_arithmetic
 
 implicit none
 character(len = 256)               :: file_input_xsf, file_output_xsf, &
-                                      file_input_m90, file_output_vesta   ! Input and output file names
-character(len = 256)               :: line                                ! Input line read from files
-character(len = 256)               :: dataset_name                        ! Name of dataset from header
-character(len = 256)               :: temp_string                         ! Temperature as string
-character(len = 256)               :: cmd_arg                             ! Command-line argument
-integer                            :: io_status                           ! Status of the file I/O
-integer                            :: i                                   ! Counter
-integer                            :: in_unit, out_unit, m90_unit         ! Unit numbers for file access
-integer, dimension(3)              :: npoints                             ! Number of points in x, y, z direction
-real,    dimension(:), allocatable :: values                              ! PDF/OPP values
-real                               :: temp                                ! Temperature in Kelvin
-real                               :: pdf_0                               ! Maximum input PDF
-real                               :: pdf_min                             ! Minimum input PDF
-real                               :: opp_max                             ! Maximum OPP
-logical                            :: exists_input_xsf, exists_input_m90  ! Flags for the existence of files
-logical                            :: is_dnd                              ! Flag for drag and drop
+                                      file_input_m90, file_output_vesta     ! Input and output file names
+character(len = 256)               :: line                                  ! Input line read from files
+character(len = 256)               :: dataset_name                          ! Name of dataset from header
+character(len = 256)               :: temp_string                           ! Temperature as string
+character(len = 256)               :: cmd_arg                               ! Command-line argument
+integer                            :: io_status                             ! Status of the file I/O
+integer                            :: i                                     ! Counter
+integer                            :: in_unit, out_unit, m90_unit           ! Unit numbers for file access
+integer, dimension(3)              :: npoints                               ! Number of points in x, y, z direction
+real,    dimension(:), allocatable :: values                                ! PDF/OPP values
+real                               :: temp                                  ! Temperature in Kelvin
+real                               :: pdf_0                                 ! Maximum input PDF
+real                               :: pdf_min                               ! Minimum input PDF
+real                               :: opp_max                               ! Maximum OPP
+logical                            :: exists_input_xsf, exists_input_m90    ! Flags for the existence of files
+logical                            :: is_dnd                                ! Flag for drag and drop
 
-character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 50)  ! Visual separator for standard output
-character(len = *), parameter      :: VERSION = '2.0.1'                   ! Program version
-real,               parameter      :: K_B = 8.617330E-5                   ! Boltzmann constant in eV/K
+character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 50)    ! Visual separator for standard output
+character(len = *), parameter      :: VERSION = '2.0.1'                     ! Program version
+real,               parameter      :: K_B = 1.380649E-23 / 1.602176634E-19  ! Boltzmann constant in eV/K (according to CODATA 2018)
 
 ! INITIALIZE
 

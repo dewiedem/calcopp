@@ -30,7 +30,8 @@ logical                            :: is_dnd                                    
 
 character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 50)                    ! Visual separator for standard output
 character(len = *), parameter      :: VERSION = '2.0.1'                                     ! Program version
-real, parameter                    :: K_B = 8.617330E-5                                     ! Boltzmann constant in eV/K
+real, parameter                    :: K_B = 1.380649E-23 / 1.602176634E-19                  ! Boltzmann constant in eV/K (according
+                                                                                            !   to CODATA 2018)
 real, parameter                    :: INFINITE_OPP = 1.0E6                                  ! Pseudo-infinite OPP in eV
 
 
@@ -609,5 +610,3 @@ subroutine print_help()
     write(*, *) 'and put out.'
 
 end subroutine print_help
-
-! TODO: Test treatment with fake file containing every case

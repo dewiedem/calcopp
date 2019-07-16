@@ -25,7 +25,7 @@ import os
 import sys
 import numpy as np
 
-K_B = 8.617330e-5  # Boltzmann constant in eV/K
+K_B = 1.380649e-23 / 1.602176634e-19  # Boltzmann constant in eV/K (according to CODATA 2018)
 
 
 def non_zero_float(string):
