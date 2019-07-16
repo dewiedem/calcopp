@@ -31,7 +31,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 - Several typos throughout.
 - `calcopp-gui`: Code for external file execution to run under Windows *and* Linux.
 
-## [2.0.0-rc1] - 2019-01-02
+## [2.0.0-rc.1] - 2019-01-02
 ### Added
 - GUI (yay!) coded in Python using [PySimpleGUI](https://pypi.org/project/PySimpleGUI/).
 - Documentation for the preparation of input data (displayed in GUI).
@@ -96,13 +96,8 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 ### Added
 - First production version with basic functionality.
 
-<<<<<<< Updated upstream
-[2.0.0]: https://github.com/dewiedem/calcopp/releases/tag/v.2.0.0
-[2.0.0-rc1]: https://github.com/dewiedem/calcopp/releases/tag/v.2.0.0-rc1
-=======
 [2.0.1]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.1
 [2.0.0]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.0
 [2.0.0-rc.1]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.0-rc.1
->>>>>>> Stashed changes
 [1.6.1]: https://doi.org/10.6084/m9.figshare.1461721.v4
 [1.6.0]: https://doi.org/10.6084/m9.figshare.1461721.v2
