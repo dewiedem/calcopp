@@ -89,7 +89,7 @@ python -O -m PyInstaller calcopp-gui.py ^
    --add-data="pdf2opp_3d.exe;." ^
    --icon=data\CalcOPP.ico ^
    --version-file=calcopp_info.txt
-rem   --noconsole ^
+rem   --noconsole
 rem   Opening an underlying console window as a workaround for a crash on
 rem   exit via the X button, which is caused by some bad interplay between
 rem   PyInstaller, NumPy, and PySimpleGUI.

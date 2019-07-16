@@ -1,32 +1,33 @@
 program pdf2opp_3d
 
-!   CalcOPP 2.0.0 - Calculation of Effective One-Particle Potentials
+!   CalcOPP 2.0.1 - Calculation of Effective One-Particle Potentials
 !   PDF2OPP_3D - Subroutines for Calculation from 3D PDF Data (JANA2006 XSF Format)
 !   Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)
 
+use, intrinsic                     :: ieee_arithmetic
+
 implicit none
 character(len = 256)               :: file_input_xsf, file_output_xsf, &
-                                      file_input_m90, file_output_vesta   ! Input and output file names
-character(len = 256)               :: line                                ! Input line read from files
-character(len = 256)               :: dataset_name                        ! Name of dataset from header
-character(len = 256)               :: temp_string                         ! Temperature as string
-character(len = 256)               :: cmd_arg                             ! Command-line argument
-integer                            :: io_status                           ! Status of the file I/O
-integer                            :: i                                   ! Counter
-integer                            :: in_unit, out_unit, m90_unit         ! Unit numbers for file access
-integer, dimension(3)              :: npoints                             ! Number of points in x, y, z direction
-real,    dimension(:), allocatable :: values                              ! PDF/OPP values
-real                               :: temp                                ! Temperature in Kelvin
-real                               :: pdf_0                               ! Maximum input PDF
-real                               :: pdf_min                             ! Minimum input PDF
-real                               :: opp_max                             ! Maximum OPP
-logical                            :: exists_input_xsf, exists_input_m90  ! Flags for the existence of files
-logical                            :: is_dnd                              ! Flag for drag and drop
+                                      file_input_m90, file_output_vesta     ! Input and output file names
+character(len = 256)               :: line                                  ! Input line read from files
+character(len = 256)               :: dataset_name                          ! Name of dataset from header
+character(len = 256)               :: temp_string                           ! Temperature as string
+character(len = 256)               :: cmd_arg                               ! Command-line argument
+integer                            :: io_status                             ! Status of the file I/O
+integer                            :: i                                     ! Counter
+integer                            :: in_unit, out_unit, m90_unit           ! Unit numbers for file access
+integer, dimension(3)              :: npoints                               ! Number of points in x, y, z direction
+real,    dimension(:), allocatable :: values                                ! PDF/OPP values
+real                               :: temp                                  ! Temperature in Kelvin
+real                               :: pdf_0                                 ! Maximum input PDF
+real                               :: pdf_min                               ! Minimum input PDF
+real                               :: opp_max                               ! Maximum OPP
+logical                            :: exists_input_xsf, exists_input_m90    ! Flags for the existence of files
+logical                            :: is_dnd                                ! Flag for drag and drop
 
-character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 50)  ! Visual separator for standard output
-character(len = *), parameter      :: VERSION = '2.0.0'                   ! Program version
-real,               parameter      :: K_B = 8.617330E-5                   ! Boltzmann constant in eV/K
-
+character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 50)    ! Visual separator for standard output
+character(len = *), parameter      :: VERSION = '2.0.1'                     ! Program version
+real,               parameter      :: K_B = 1.380649E-23 / 1.602176634E-19  ! Boltzmann constant in eV/K (according to CODATA 2018)
 
 ! INITIALIZE
 
@@ -239,8 +240,8 @@ write(*, fmt = '(/, A, /)') SEPARATOR  ! Separates PDF from OPP part
 write(*, fmt = '(A)', advance = 'no') ' Calculating OPP ...'
 
 values = -1 * K_B * temp * log(values/pdf_0)
-opp_max = maxval(values, (.not. isnan(values)))
-where (isnan(values)) values = opp_max
+opp_max = maxval(values, (ieee_is_finite(values)))
+where (.not. ieee_is_finite(values)) values = opp_max
 write(*, *) 'done.'
 write(*, fmt = '(A, ES13.6, A, /)') ' V(max) = ', opp_max, ' eV'
 

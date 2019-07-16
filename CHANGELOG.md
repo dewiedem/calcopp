@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file; its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/). This project adheres to [*Semantic Versioning*](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2019-07-16
+### Changed
+- Defined Boltzmann constant as ratio of two exact values (CODATA 2018).
+
+### Fixed
+- `pdf2opp_3d`: Ability to handle zeros as PDF input values.
+
 ## [2.0.0] - 2019-04-12
 ### Added
 - Binaries for Windows (64/32 bit) and Linux (64 bit).
@@ -89,6 +96,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 ### Added
 - First production version with basic functionality.
 
+[2.0.1]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.1
 [2.0.0]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.0
 [2.0.0-rc.1]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.0-rc.1
 [1.6.1]: https://doi.org/10.6084/m9.figshare.1461721.v4

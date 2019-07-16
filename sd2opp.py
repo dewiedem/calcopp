@@ -15,7 +15,7 @@ __author__ = 'Dennis Wiedemann'
 __copyright__ = 'Copyright 2019, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.0'
+__version__ = '2.0.1'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Production'
@@ -25,7 +25,7 @@ import os
 import sys
 import numpy as np
 
-K_B = 8.617330e-5  # Boltzmann constant in eV/K
+K_B = 1.380649e-23 / 1.602176634e-19  # Boltzmann constant in eV/K (according to CODATA 2018)
 
 
 def non_zero_float(string):
