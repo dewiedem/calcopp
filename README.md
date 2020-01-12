@@ -47,18 +47,18 @@ As CalcOPP is unaware of the covariance of maximal and local probability density
 
 ## Compiling
 ### Modules *calcopp-gui* and *sd2opp*
-The source code adheres to the specifications of Python 3.7 and heeds [*PEP 8 – Style Guide for Python Code*](https://www.python.org/dev/peps/pep-0008/). It has been compiled against Python 3.7.4/3.7.3 (Windows/Linux) and frozen using [PyInstaller](https://www.pyinstaller.org/) 3.5 with assert statements and any code conditional on the value of `__debug__` removed. The modules *calcopp-gui* and *sd2opp* were frozen including [PySimpleGUI](https://pypi.org/project/PySimpleGUI/) 4.0.0 and [NumPy](https://www.numpy.org/) 1.16.4, respectively.
+The source code adheres to the specifications of Python 3.7 and heeds [*PEP 8 – Style Guide for Python Code*](https://www.python.org/dev/peps/pep-0008/). It has been compiled against Python 3.7.6/3.7.3 (Windows/Linux) and frozen using [PyInstaller](https://www.pyinstaller.org/) 3.6 with assert statements and any code conditional on the value of `__debug__` removed. The modules *calcopp-gui* and *sd2opp* were frozen including [PySimpleGUI](https://pypi.org/project/PySimpleGUI/) 4.15.1 and [NumPy](https://www.numpy.org/) 1.18.1, respectively.
 
 Options are detailed in the build scripts `build.cmd` (Windows) and `build.sh` (Linux) shipped with the source code.
 
 ### Modules *pdf2opp_2d* and *pdf2opp_3d*
-The source code adheres the specifications of Fortran 2008 with GNU-specific extensions. It has been compiled using GFortran 9.1.0/8.3.0 (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”.
+The source code adheres the specifications of Fortran 2018 with GNU-specific extensions. It has been compiled using GFortran 9.2.0/8.3.0 (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”.
 
 Options are detailed in the build scripts `build.cmd` (Windows) and `build.sh` (Linux) shipped with the source code.
 
 ## Installation
 - On Windows versions earlier than Windows 10, install the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=48145) with the same bitness as CalcOPP if it is not present yet.
-- Unpack one of the archives (64-/32-bit version for Windows/Linux) into any user-writable directory. For the graphical user interface (GUI) to work correctly, the executables must be in a common directory.
+- Unpack one of the archives (version for Windows/Linux) into any user-writable directory. For the graphical user interface (GUI) to work correctly, the executables must be in a common directory.
 - On Unix-like systems, set execute permissions for the executables `CalcOPP`, `pdf2opp_2d`, `pdf2opp_3d`, and `sd2opp`:
 ```
 chmod +x CalcOPP pdf2opp_2d pdf2opp_3d sd2opp

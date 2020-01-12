@@ -10,10 +10,10 @@ that are used for documentation purposes in CalcOPP-GUI.
 """
 
 __author__ = 'Dennis Wiedemann'
-__copyright__ = 'Copyright 2019, Dr. Dennis Wiedemann'
+__copyright__ = 'Copyright 2020, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.1'
+__version__ = '2.0.2'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Production'

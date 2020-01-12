@@ -19,12 +19,13 @@ import traceback as tb
 import PySimpleGUI as sg
 import annotations as an
 import sd2opp
+from pkg_resources import py2_warn  # Quirk to enable freezing with buggy PyInstaller 3.6
 
 __author__ = 'Dennis Wiedemann'
-__copyright__ = 'Copyright 2019, Dr. Dennis Wiedemann'
+__copyright__ = 'Copyright 2020, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.1'
+__version__ = '2.0.2'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Production'
@@ -103,6 +104,7 @@ def doc_handler():
 
 
 # ===== Menu Definition ===== #
+sg.theme('Dark Grey 4')
 menu_def = [['&File', 'E&xit'], ['&Help', ['&Readme', '&Changelog', '---', '&About …']]]
 
 # ===== Left Column Definition ===== #
@@ -217,12 +219,11 @@ while True:
     if event == 'data_source':
         window.Element('manual').Update(disabled=False)
         if values['data_source'] == '2D PDF':
-            window.Element('manual').Update(value=an.MANUAL_PDF2D)
+            window.Element('manual').Update(value=an.MANUAL_PDF2D, disabled=True)
         elif values['data_source'] == '3D PDF':
-            window.Element('manual').Update(value=an.MANUAL_PDF3D)
+            window.Element('manual').Update(value=an.MANUAL_PDF3D, disabled=True)
         else:
-            window.Element('manual').Update(value=an.MANUAL_SD)
-        window.Element('manual').Update(disabled=True)
+            window.Element('manual').Update(value=an.MANUAL_SD, disabled=True)
 
     # ----- Toggle Custom Temperature/Extremum Fields ----- #
     elif '_source_' in event:

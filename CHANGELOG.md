@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file; its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/). This project adheres to [*Semantic Versioning*](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2020-01-13
+### Changed
+- `calcopp-gui`: New dark color scheme.
+- Bumped all version and date strings.
+- `calcopp-gui` and `sd2opp`: Added quirk to enable freezing with PyInstaller 3.6.
+- `pdf2opp_2d` and `pdf2opp_3d`: Changed source-code file extensions to `*.f90`, the standard for free-form Fortran.
+
+### Fixed
+- `calcopp-gui`: Broken color theme (new version of PySimpleGUI).
+- `calcopp-gui`: Broken displaying in the field “Information and Manual” (new version of PySimpleGUI).
+- `pdf2opp_2d` and `pdf2opp_3d`: Correctly assigned dialect as Fortran 2018 (non-constant error stop codes).
+
+### Removed
+- `calcopp-gui`: Workaround opening underlying command window in Windows version.
+- `calcopp-gui`: UPX compression for Windows version (causing error in Windows 10).
+- 32 bit builds.
+
 ## [2.0.1] - 2019-07-16
 ### Changed
 - Defined Boltzmann constant as ratio of two exact values (CODATA 2018).
@@ -96,6 +113,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 ### Added
 - First production version with basic functionality.
 
+[2.0.2]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.2
 [2.0.1]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.1
 [2.0.0]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.0
 [2.0.0-rc.1]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.0-rc.1

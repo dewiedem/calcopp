@@ -1,8 +1,8 @@
 program pdf2opp_3d
 
-!   CalcOPP 2.0.1 - Calculation of Effective One-Particle Potentials
+!   CalcOPP 2.0.2 - Calculation of Effective One-Particle Potentials
 !   PDF2OPP_3D - Subroutines for Calculation from 3D PDF Data (JANA2006 XSF Format)
-!   Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)
+!   Copyright (c) 2020  Dr. Dennis Wiedemann (MIT License, see LICENSE file)
 
 use, intrinsic                     :: ieee_arithmetic
 
@@ -304,7 +304,7 @@ subroutine print_greeting(sep, ver)
     character(len = *), intent(in) :: ver  ! Program version
 
     write(*, *) 'PDF2OPP_3D ' // ver // ' - Calculation of 3D OPP from PDF Data (JANA2006 XSF Format)'
-    write(*, *) 'Copyright (c) 2019  Dr. Dennis Wiedemann (MIT License, see LICENSE file)'
+    write(*, *) 'Copyright (c) 2020  Dr. Dennis Wiedemann (MIT License, see LICENSE file)'
     write(*, fmt = '(/, A, /)') sep
 
 end subroutine print_greeting

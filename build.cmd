@@ -8,11 +8,11 @@ rem   in the system PATH and WinRAR residing in its standard path.
 rem   Compile the Fortran modules "pdf2opp_2d" and "pdf2opp_3d"
 if not exist dist\ mkdir dist
 
-gfortran pdf2opp_2d.f08 ^
+gfortran pdf2opp_2d.f90 ^
     -o pdf2opp_2d.exe ^
-    -std=f2008 ^
+    -std=f2018 ^
     -fall-intrinsics ^
-	-ffpe-summary=none ^
+    -ffpe-summary=none ^
     -pedantic ^
     -Wall ^
     -Wextra ^
@@ -21,11 +21,11 @@ gfortran pdf2opp_2d.f08 ^
     -static ^
     -s
 
-gfortran pdf2opp_3d.f08 ^
+gfortran pdf2opp_3d.f90 ^
     -o pdf2opp_3d.exe ^
-    -std=f2008 ^
+    -std=f2018 ^
     -fall-intrinsics ^
-	-ffpe-summary=none ^
+    -ffpe-summary=none ^
     -pedantic ^
     -Wall ^
     -Wextra ^
@@ -65,6 +65,7 @@ python -O -m PyInstaller sd2opp.py ^
    --onedir ^
    --log-level=WARN ^
    --nowindowed ^
+   --noupx ^
    --icon=data\CalcOPP.ico ^
    --version-file=sd2opp_info.txt
 
@@ -88,11 +89,9 @@ python -O -m PyInstaller calcopp-gui.py ^
    --add-data="pdf2opp_2d.exe;." ^
    --add-data="pdf2opp_3d.exe;." ^
    --icon=data\CalcOPP.ico ^
-   --version-file=calcopp_info.txt
-rem   --noconsole
-rem   Opening an underlying console window as a workaround for a crash on
-rem   exit via the X button, which is caused by some bad interplay between
-rem   PyInstaller, NumPy, and PySimpleGUI.
+   --version-file=calcopp_info.txt ^
+   --noupx ^
+   --noconsole
 
 
 rem   Pack the data for distribution

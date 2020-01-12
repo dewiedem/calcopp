@@ -11,9 +11,9 @@ if [ ! -d "dist" ]; then
     mkdir dist
 fi
 
-gfortran-8 pdf2opp_2d.f08 \
+gfortran-8 pdf2opp_2d.f90 \
     -o pdf2opp_2d \
-    -std=f2008 \
+    -std=f2018 \
     -fall-intrinsics \
     -ffpe-summary=none \
     -pedantic \
@@ -25,9 +25,9 @@ gfortran-8 pdf2opp_2d.f08 \
     -s \
     -m64
 
-gfortran-8 pdf2opp_3d.f08 \
+gfortran-8 pdf2opp_3d.f90 \
     -o pdf2opp_3d \
-    -std=f2008 \
+    -std=f2018 \
     -fall-intrinsics \
     -ffpe-summary=none \
     -pedantic \

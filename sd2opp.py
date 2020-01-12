@@ -12,10 +12,10 @@ SD2OPP uses the module NumPy by the NumPy developers distributed under the BSD L
 """
 
 __author__ = 'Dennis Wiedemann'
-__copyright__ = 'Copyright 2019, Dr. Dennis Wiedemann'
+__copyright__ = 'Copyright 2020, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.1'
+__version__ = '2.0.2'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Production'
@@ -24,6 +24,7 @@ import argparse as ap
 import os
 import sys
 import numpy as np
+from pkg_resources import py2_warn  # Quirk to enable freezing with buggy PyInstaller 3.6
 
 K_B = 1.380649e-23 / 1.602176634e-19  # Boltzmann constant in eV/K (according to CODATA 2018)
 
