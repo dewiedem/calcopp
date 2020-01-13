@@ -19,7 +19,6 @@ import traceback as tb
 import PySimpleGUI as sg
 import annotations as an
 import sd2opp
-from pkg_resources import py2_warn  # Quirk to enable freezing with buggy PyInstaller 3.6
 
 __author__ = 'Dennis Wiedemann'
 __copyright__ = 'Copyright 2020, Dr. Dennis Wiedemann'

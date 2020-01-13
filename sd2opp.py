@@ -24,7 +24,6 @@ import argparse as ap
 import os
 import sys
 import numpy as np
-from pkg_resources import py2_warn  # Quirk to enable freezing with buggy PyInstaller 3.6
 
 K_B = 1.380649e-23 / 1.602176634e-19  # Boltzmann constant in eV/K (according to CODATA 2018)
 

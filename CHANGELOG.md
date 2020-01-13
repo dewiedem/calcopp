@@ -5,7 +5,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 ### Changed
 - `calcopp-gui`: New dark color scheme.
 - Bumped all version and date strings.
-- `calcopp-gui` and `sd2opp`: Added quirk to enable freezing with PyInstaller 3.6.
+- Added quirk to enable freezing with PyInstaller 3.6.
 - `pdf2opp_2d` and `pdf2opp_3d`: Changed source-code file extensions to `*.f90`, the standard for free-form Fortran.
 
 ### Fixed
