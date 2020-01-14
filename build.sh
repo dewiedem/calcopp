@@ -11,7 +11,7 @@ if [ ! -d "dist" ]; then
     mkdir dist
 fi
 
-gfortran-8 pdf2opp_2d.f90 \
+gfortran-9 pdf2opp_2d.f90 \
     -o pdf2opp_2d \
     -std=f2018 \
     -fall-intrinsics \
@@ -25,7 +25,7 @@ gfortran-8 pdf2opp_2d.f90 \
     -s \
     -m64
 
-gfortran-8 pdf2opp_3d.f90 \
+gfortran-9 pdf2opp_3d.f90 \
     -o pdf2opp_3d \
     -std=f2018 \
     -fall-intrinsics \
@@ -65,13 +65,15 @@ cd ..
 
 
 # Freeze the Python modules "sd2opp" and "calcopp-gui"
+# (Hidden imports work around a problem with PyInstaller 3.6.)
 python3.7 -O -m PyInstaller sd2opp.py \
    --noconfirm \
    --clean \
    --onedir \
    --log-level=WARN \
    --strip \
-   --upx-dir="/usr/bin/"
+   --upx-dir="/usr/bin/" \
+   --hidden-import="pkg_resources.py2_warn"
 
 python3.7 -O -m PyInstaller calcopp-gui.py \
    --name=CalcOPP \
@@ -92,7 +94,8 @@ python3.7 -O -m PyInstaller calcopp-gui.py \
    --add-data="pdf2opp_2d:." \
    --add-data="pdf2opp_3d:." \
    --strip \
-   --upx-dir="/usr/bin/"
+   --upx-dir="/usr/bin/" \
+   --hidden-import="pkg_resources.py2_warn"
 
 chmod +x dist/CalcOPP/CalcOPP dist/CalcOPP/sd2opp
 

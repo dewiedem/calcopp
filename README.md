@@ -47,12 +47,12 @@ As CalcOPP is unaware of the covariance of maximal and local probability density
 
 ## Compiling
 ### Modules *calcopp-gui* and *sd2opp*
-The source code adheres to the specifications of Python 3.7 and heeds [*PEP 8 – Style Guide for Python Code*](https://www.python.org/dev/peps/pep-0008/). It has been compiled against Python 3.7.6/3.7.3 (Windows/Linux) and frozen using [PyInstaller](https://www.pyinstaller.org/) 3.6 with assert statements and any code conditional on the value of `__debug__` removed. The modules *calcopp-gui* and *sd2opp* were frozen including [PySimpleGUI](https://pypi.org/project/PySimpleGUI/) 4.15.1 and [NumPy](https://www.numpy.org/) 1.18.1, respectively.
+The source code adheres to the specifications of Python 3.7 and heeds [*PEP 8 – Style Guide for Python Code*](https://www.python.org/dev/peps/pep-0008/). It has been compiled against Python 3.7.6/3.7.5 (Windows/Linux) and frozen using [PyInstaller](https://www.pyinstaller.org/) 3.6 with assert statements and any code conditional on the value of `__debug__` removed. The modules *calcopp-gui* and *sd2opp* were frozen including [PySimpleGUI](https://pypi.org/project/PySimpleGUI/) 4.15.1 and [NumPy](https://www.numpy.org/) 1.18.1, respectively.
 
 Options are detailed in the build scripts `build.cmd` (Windows) and `build.sh` (Linux) shipped with the source code.
 
 ### Modules *pdf2opp_2d* and *pdf2opp_3d*
-The source code adheres the specifications of Fortran 2018 with GNU-specific extensions. It has been compiled using GFortran 9.2.0/8.3.0 (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”.
+The source code adheres the specifications of Fortran 2018 with GNU-specific extensions. It has been compiled using GFortran 9.2.0/9.2.1 (Windows/Linux) with static linking, all symbol table and relocation information removed, and optimization level set to “O3”.
 
 Options are detailed in the build scripts `build.cmd` (Windows) and `build.sh` (Linux) shipped with the source code.
 
