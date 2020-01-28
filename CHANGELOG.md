@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file; its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/). This project adheres to [*Semantic Versioning*](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Fixed
+- `pdf2opp_2d` and `pdf2opp_3d`: Displayed version numbers.
+
 ## [2.0.2] - 2020-01-13
 ### Changed
 - `calcopp-gui`: New dark color scheme.

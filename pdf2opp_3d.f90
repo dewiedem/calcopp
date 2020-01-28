@@ -26,7 +26,7 @@ logical                            :: exists_input_xsf, exists_input_m90    ! Fl
 logical                            :: is_dnd                                ! Flag for drag and drop
 
 character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 50)    ! Visual separator for standard output
-character(len = *), parameter      :: VERSION = '2.0.1'                     ! Program version
+character(len = *), parameter      :: VERSION = '2.0.2'                     ! Program version
 real,               parameter      :: K_B = 1.380649E-23 / 1.602176634E-19  ! Boltzmann constant in eV/K (according to CODATA 2018)
 
 ! INITIALIZE

@@ -13,7 +13,7 @@ character(len = 256)               :: temp_string                               
 integer                            :: i, j                                                  ! Counters
 integer                            :: in_unit, out_unit, err_unit, m90_unit, opp_unit, &
                                       pdferr_unit                                           ! Unit numbers for file access
-integer                            :: io_status                                             ! Status of the file I/O                             !
+integer                            :: io_status                                             ! Status of the file I/O
 integer, dimension(2)              :: pos_0                                                 ! Position of maximum PDF
 integer, dimension(2)              :: data_num, err_data_num                                ! Number of data points in x/y direction
                                                                                             !   in input/error file
@@ -29,7 +29,7 @@ logical                            :: output_pdf, output_pdferr, output_opp, out
 logical                            :: is_dnd                                                ! Flag for drag and drop
 
 character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 50)                    ! Visual separator for standard output
-character(len = *), parameter      :: VERSION = '2.0.1'                                     ! Program version
+character(len = *), parameter      :: VERSION = '2.0.2'                                     ! Program version
 real, parameter                    :: K_B = 1.380649E-23 / 1.602176634E-19                  ! Boltzmann constant in eV/K (according
                                                                                             !   to CODATA 2018)
 real, parameter                    :: INFINITE_OPP = 1.0E6                                  ! Pseudo-infinite OPP in eV
