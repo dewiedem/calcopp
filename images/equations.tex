@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{document}
+
+% Equation 1
+\begin{equation}
+	V(\boldsymbol{u}) = -k_{\text{B}} T \ln \frac{ p(\boldsymbol{u}) }
+		{ \max\limits_{\boldsymbol{u}\in\mathbb{V}} p(\boldsymbol{u}) }
+\end{equation}
+
+% Equation 2
+\begin{eqnarray}
+	& V(\boldsymbol{u}) = -k_{\text{B}} T \ln \frac{ \varrho(\boldsymbol{u}) }{ \varrho_0 } \\[1.25ex]
+	& \varrho_0 = \min\limits_{\boldsymbol{u}\in\mathbb{V}} \varrho(\boldsymbol{u})  \quad\lor\quad
+		\varrho_0 = \max\limits_{\boldsymbol{u}\in\mathbb{V}} \varrho(\boldsymbol{u})  \quad\lor\quad
+		\varrho_0 = \varrho_{\text{loc}} \nonumber
+\end{eqnarray}
+
+% Equation 3
+\begin{equation}
+	\Delta_{\pm}V(\boldsymbol{u}) = -k_{\text{B}} T \ln
+		\frac{ 1\mp \left| \frac{ \Delta p(\boldsymbol{u}) }{ p(\boldsymbol{u}) }\right| }{ 1 \pm \left|
+		\frac{ \Delta p \left( \argmax\limits_{\boldsymbol{u}\in\mathbb{V}} p(\boldsymbol{u}) \right) }
+		{p \left( \argmax\limits_{\boldsymbol{u}\in\mathbb{V}} p(\boldsymbol{u}) \right) } \right| }
+\end{equation}
+
+\end{document}
