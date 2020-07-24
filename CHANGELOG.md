@@ -13,6 +13,8 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 - `calcopp-gui`: Error when using file paths containing blanks with `pdf2opp_2d` and `pdf2opp_3d`.
 - `build.cmd`: No longer using Python's `-O` flag when freezing with PyInstaller because of packaging errors.
 - `build.cmd`: Re-enabled UPX for debugged version 3.96.
+- `build.cmd` and `build.sh`: Hidden imports for PyInstaller no longer needed.
+- `build.sh`: Not using PyInstaller's `--strip` flag because of incompatbility with NumPy 1.19.1.
 
 ## [2.0.2] - 2020-01-13
 ### Changed
