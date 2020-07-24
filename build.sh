@@ -43,26 +43,28 @@ chmod +x pdf2opp_2d pdf2opp_3d
 
 
 # Create the documentation HTML files
-cd pandoc
+if [ -d "pandoc" ]; then
+    (
+    cd pandoc || exit
+    pandoc ../README.md \
+        --from gfm \
+        --to html5 \
+        --output ../docs/README.html \
+        --standalone \
+        --metadata-file=metadata.yaml \
+        --resource-path=.:.. \
+        --self-contained
 
-pandoc ../README.md \
-    --from gfm \
-    --to html5 \
-    --output ../docs/README.html \
-    --standalone \
-    --metadata-file=metadata.yaml \
-    --resource-path=.:.. \
-    --self-contained
-
-pandoc ../CHANGELOG.md \
-    --from gfm \
-    --to html5 \
-    --output ../docs/CHANGELOG.html \
-    --standalone \
-    --metadata-file=metadata.yaml \
-    --self-contained
-
-cd ..
+    pandoc ../CHANGELOG.md \
+        --from gfm \
+        --to html5 \
+        --output ../docs/CHANGELOG.html \
+        --standalone \
+        --metadata-file=metadata.yaml \
+        --self-contained
+    cd ..
+    )
+fi
 
 
 # Freeze the Python modules "sd2opp" and "calcopp-gui"
@@ -98,8 +100,6 @@ chmod +x dist/CalcOPP/CalcOPP dist/CalcOPP/sd2opp
 
 
 # Pack the data for distribution
-cd dist
-
+cd dist || { echo "Subdirectory \"dist\" has been deleted. Exiting."; exit 1; }
 zip -r9 CalcOPP.zip CalcOPP
-
 cd ..

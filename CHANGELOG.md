@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file; its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/). This project adheres to [*Semantic Versioning*](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- `build.cmd` and `build.sh`: Check for existence before changing directories.
+
 ## [2.0.3] - 2020-07-24
 ### Changed
 - Description part in README to be more precise with respect to the calculation.

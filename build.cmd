@@ -36,26 +36,26 @@ gfortran pdf2opp_3d.f90 ^
 
 
 rem   Create the documentation HTML files
-cd pandoc
+if exist pandoc\ (
+    cd pandoc
+    pandoc ..\README.md ^
+        --from gfm ^
+        --to html5 ^
+        --output ..\docs\README.html ^
+        --standalone ^
+        --metadata-file=metadata.yaml ^
+        --resource-path=.;.. ^
+        --self-contained
 
-pandoc ..\README.md ^
-    --from gfm ^
-    --to html5 ^
-    --output ..\docs\README.html ^
-    --standalone ^
-    --metadata-file=metadata.yaml ^
-    --resource-path=.;.. ^
-    --self-contained
-
-pandoc ..\CHANGELOG.md ^
-    --from gfm ^
-    --to html5 ^
-    --output ..\docs\CHANGELOG.html ^
-    --standalone ^
-    --metadata-file=metadata.yaml ^
-    --self-contained
-
-cd ..
+    pandoc ..\CHANGELOG.md ^
+        --from gfm ^
+        --to html5 ^
+        --output ..\docs\CHANGELOG.html ^
+        --standalone ^
+        --metadata-file=metadata.yaml ^
+        --self-contained
+    cd ..
+)
 
 
 rem   Freeze the Python modules "sd2opp" and "calcopp-gui"
@@ -92,8 +92,8 @@ python -m PyInstaller calcopp-gui.py ^
    --version-file=calcopp_info.txt
 
 rem   Pack the data for distribution
-cd dist
-
-"C:\Program Files\WinRAR\WinRAR.exe" a -m5zip CalcOPP.zip CalcOPP
-
-cd ..
+if exist dist\ (
+    cd dist
+    "C:\Program Files\WinRAR\WinRAR.exe" a -m5zip CalcOPP.zip CalcOPP
+    cd ..
+)
