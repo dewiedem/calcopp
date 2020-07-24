@@ -13,7 +13,6 @@ CalcOPP-GUI uses the module PySimpleGUI by MikeTheWatchGuy distributed under the
 """
 
 import os
-import shlex
 import subprocess as sp
 import traceback as tb
 import PySimpleGUI as sg
@@ -24,7 +23,7 @@ __author__ = 'Dennis Wiedemann'
 __copyright__ = 'Copyright 2020, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.2'
+__version__ = '2.0.3'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Production'
@@ -102,13 +101,17 @@ def doc_handler():
     return 'explorer.exe' if hasattr(sp, 'STARTUPINFO') else 'xdg-open'
 
 
-# ===== Menu Definition ===== #
+# ===== Global GUI Parameters ===== #
 sg.theme('Dark Grey 4')
+sg.set_global_icon(os.path.join('data', 'CalcOPP.ico'))
+
+# ===== Menu Definition ===== #
 menu_def = [['&File', 'E&xit'], ['&Help', ['&Readme', '&Changelog', '---', '&About …']]]
 
 # ===== Left Column Definition ===== #
 column_left = [
-    [sg.Frame('Information and Manual', [[sg.Multiline(size=(61, 25), font=('Courier', 9), key='manual')]])],
+    [sg.Frame('Information and Manual', [[sg.Multiline(write_only=True, auto_refresh=True, size=(61, 25), font=('Courier', 9),
+                                                       key='manual')]])],
     [sg.Frame('Citation', [
         [sg.Text('If you publish data calculated with CalcOPP, please use the following citation:')],
         [sg.Text(an.CITATION, font=(None, 10, 'italic'))]])]
@@ -120,6 +123,7 @@ tab_pdf2d = [
     [sg.Frame('Files', [
         [sg.Text('Input PDF file', size=(14, 1)),
          sg.InputText(key='2d_file_in'),
+
          sg.FileBrowse(file_types=(("Structured File", "*.stf"),))
          ],
         [sg.Text('Input error file', size=(14, 1)),
@@ -128,7 +132,7 @@ tab_pdf2d = [
          ],
         [sg.Text('Output file', size=(14, 1)),
          sg.InputText(key='2d_file_out'),
-         sg.FileSaveAs(file_types=(("ASCII Text", "*_opp.asc"),))
+         sg.SaveAs(file_types=(("ASCII Text", "*_opp.asc"),))
          ]
     ])],
     [sg.Frame('Temperature', [[
@@ -143,7 +147,7 @@ tab_pdf2d = [
         sg.Checkbox('OPP', default=True, key='2d_output_opp'),
         sg.Checkbox('OPP error', change_submits=True, key='2d_output_opp_err')
     ]])],
-    [sg.ReadButton('Make it so!', key='2d_okay'), sg.ReadButton('Reset', key='2d_reset')]
+    [sg.Submit('Make it so!', key='2d_okay'), sg.Submit('Reset', key='2d_reset')]
 ]
 
 # ----- Tab for 3D PDF Data Sources ----- #
@@ -155,7 +159,7 @@ tab_pdf3d = [
          ],
         [sg.Text('Output file', size=(14, 1)),
          sg.InputText(key='3d_file_out'),
-         sg.FileSaveAs(file_types=(("XCrySDen Structure", "*_opp.xsf"),))
+         sg.SaveAs(file_types=(("XCrySDen Structure", "*_opp.xsf"),))
          ]
     ])],
     [sg.Frame('Temperature', [[
@@ -164,7 +168,7 @@ tab_pdf3d = [
         sg.InputText(size=(8, 1), disabled=True, key='3d_temp'),
         sg.Text('K')
     ]])],
-    [sg.ReadButton('Engage!', key='3d_okay'), sg.ReadButton('Reset', key='3d_reset')]
+    [sg.Submit('Engage!', key='3d_okay'), sg.Submit('Reset', key='3d_reset')]
 ]
 
 # ----- Tab for Scatterer-Density Data Source ----- #
@@ -176,7 +180,7 @@ tab_sd = [
          ],
         [sg.Text('Output density file', size=(14, 1)),
          sg.InputText(key='sd_file_out'),
-         sg.FileSaveAs(file_types=(("Periodic Grid", "*_opp.pgrid"),))
+         sg.SaveAs(file_types=(("Periodic Grid", "*_opp.pgrid"),))
          ]
     ])],
     [sg.Frame('Temperature', [[
@@ -190,7 +194,7 @@ tab_sd = [
         sg.InputText(size=(8, 1), disabled=True, key='sd_extremum'),
         sg.Text('(fm) Å⁻³')
     ]])],
-    [sg.ReadButton('Go already!', key='sd_okay'), sg.ReadButton('Reset', key='sd_reset')]
+    [sg.Submit('Go already!', key='sd_okay'), sg.Submit('Reset', key='sd_reset')]
 ]
 
 # ----- Assembly of Right Column ----- #
@@ -206,17 +210,17 @@ column_right = [
 # ===== Window Invocation ===== #
 layout_main = [[sg.Menu(menu_def), sg.Column(column_left), sg.Column(column_right)]]
 window = sg.Window('CalcOPP – Calculation of One-Particle Potentials', default_element_size=(40, 1),
-                   icon=os.path.join('data', 'CalcOPP.ico'), layout=layout_main)
+                   layout=layout_main)
 
 # ===== Event Loop for Persistent Window (Main Program) ===== #
 while True:
     event, values = window.Read()
-    if event is None or event == 'Exit':
+    if event in (sg.WIN_CLOSED, 'Exit'):
+        window.close()
         break
 
     # ----- Toggle Explanations According to Tab ----- #
     if event == 'data_source':
-        window.Element('manual').Update(disabled=False)
         if values['data_source'] == '2D PDF':
             window.Element('manual').Update(value=an.MANUAL_PDF2D, disabled=True)
         elif values['data_source'] == '3D PDF':
@@ -303,17 +307,18 @@ while True:
             [sg.Text('Export Citation:'),
              sg.Radio('RIS format', "FORMAT", default=True, key='format_ris'),
              sg.Radio('BibTeX format', "FORMAT", key='format_bib'),
-             sg.ReadButton('Export', key='citation_export')],
+             sg.Submit('Export', key='citation_export')],
             [sg.Text('\n' + an.LICENSE)],
-            [sg.CloseButton('Done')]
+            [sg.Exit('Done')]
         ]
         window.Hide()
-        window_about = sg.Window('About …', icon=os.path.join('data', 'CalcOPP.ico'), layout=layout_about)
+        window_about = sg.Window('About …', layout=layout_about)
 
         # ····· Handle Citation Exports ····· #
         while True:
             event_about, values_about = window_about.Read()
-            if event_about is None or event_about == 'Exit':
+            if event_about in (sg.WIN_CLOSED, 'Done'):
+                window_about.close()
                 window.UnHide()
                 break
             elif event_about == 'citation_export':
@@ -385,7 +390,7 @@ while True:
 
         if error_message != '':
             # ····· Display Error Message ····· #
-            sg.PopupError(error_message[1:] + '\n', title='Error', icon=os.path.join('data', 'CalcOPP.ico'))
+            sg.PopupError(error_message[1:] + '\n', title='Error')
 
         else:
 
@@ -393,22 +398,27 @@ while True:
             if event == '2d_okay':
 
                 #       Assemble Command Line       #
-                command_line = './pdf2opp_2d'
-                command_line += ' -i ' + values['2d_file_in']
-                command_line += ' -o ' + values['2d_file_out']
+                command_line = [os.path.join('.', 'pdf2opp_2d')]
+                command_line.extend(['-i', values['2d_file_in']])
+                command_line.extend(['-o', values['2d_file_out']])
                 if values['2d_output_opp_err'] or values['2d_output_pdf_err']:
-                    command_line += ' -e ' + values['2d_file_err']
-                command_line += ' -t ' + values['2d_temp'] if values['2d_temp_source_custom'] else ''
-                command_line += ' -pdf' if values['2d_output_pdf'] else ''
-                command_line += ' -pdferr' if values['2d_output_pdf_err'] else ''
-                command_line += ' -opp' if values['2d_output_opp'] else ''
-                command_line += ' -opperr' if values['2d_output_opp_err'] else ''
+                    command_line.extend(['-e', values['2d_file_err']])
+                if values['2d_temp_source_custom']:
+                    command_line.extend(['-t', values['2d_temp']])
+                if values['2d_output_pdf']:
+                    command_line.append('-pdf')
+                if values['2d_output_pdf_err']:
+                    command_line.append('-pdferr')
+                if values['2d_output_opp']:
+                    command_line.append('-opp')
+                if values['2d_output_opp_err']:
+                    command_line.append('-opperr')
 
                 window.Element('2d_okay').Update(disabled=True)
 
                 try:
                     #       Execute Command       #
-                    pdf2opp = sp.Popen(shlex.split(command_line), text=True, **sp_args())
+                    pdf2opp = sp.Popen(command_line, text=True, **sp_args())
                     for line in pdf2opp.stdout:
                         print(line.rstrip())
                         window.Refresh()
@@ -419,11 +429,11 @@ while True:
                     if error_message != '':
                         error_message = error_message[11:] if error_message.startswith('ERROR STOP ') else error_message
                         error_message = (an.ERROR_INTRO % 'PDF2OPP_2D') + error_message
-                        sg.PopupError(error_message, title='Subroutine Error', icon=os.path.join('data', 'CalcOPP.ico'))
+                        sg.PopupError(error_message, title='Subroutine Error')
 
                 except FileNotFoundError:
                     error_message = 'PDF2OPP_2D executable not found in program directory.'
-                    sg.PopupError(error_message, title='Program Error', icon=os.path.join('data', 'CalcOPP.ico'))
+                    sg.PopupError(error_message, title='Program Error')
 
                 window.Element('2d_okay').Update(disabled=False)
 
@@ -431,16 +441,17 @@ while True:
             elif event == '3d_okay':
 
                 #       Assemble Command Line       #
-                command_line = './pdf2opp_3d'
-                command_line += ' -i ' + values['3d_file_in']
-                command_line += ' -o ' + values['3d_file_out']
-                command_line += ' -t ' + values['3d_temp'] if values['3d_temp_source_custom'] else ''
+                command_line = [os.path.join('.', 'pdf2opp_3d')]
+                command_line.extend(['-i', values['3d_file_in']])
+                command_line.extend(['-o', values['3d_file_out']])
+                if values['3d_temp_source_custom']:
+                    command_line.extend(['-t', values['3d_temp']])
 
                 window.Element('3d_okay').Update(disabled=True)
 
                 try:
                     #       Execute Command       #
-                    pdf3opp = sp.Popen(shlex.split(command_line), text=True, **sp_args())
+                    pdf3opp = sp.Popen(command_line, text=True, **sp_args())
                     for line in pdf3opp.stdout:
                         print(line.rstrip())
                         window.Refresh()
@@ -451,11 +462,11 @@ while True:
                     if error_message != '':
                         error_message = error_message[11:] if error_message.startswith('ERROR STOP ') else error_message
                         error_message = (an.ERROR_INTRO % 'PDF2OPP_3D') + error_message
-                        sg.PopupError(error_message, title='Subroutine Error', icon=os.path.join('data', 'CalcOPP.ico'))
+                        sg.PopupError(error_message, title='Subroutine Error')
 
                 except FileNotFoundError:
                     error_message = 'PDF2OPP_3D executable not found in program directory.'
-                    sg.PopupError(error_message, title='Program Error', icon=os.path.join('data', 'CalcOPP.ico'))
+                    sg.PopupError(error_message, title='Program Error')
 
                 window.Element('3d_okay').Update(disabled=False)
 
@@ -479,6 +490,6 @@ while True:
                 except Exception:
                     #       Show Popup on Error       #
                     error_message = (an.ERROR_INTRO % 'SD2OPP') + tb.format_exc()
-                    sg.PopupError(error_message, title='Subroutine Error', icon=os.path.join('data', 'CalcOPP.ico'))
+                    sg.PopupError(error_message, title='Subroutine Error')
 
                 window.Element('sd_okay').Update(disabled=False)

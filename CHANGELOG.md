@@ -1,12 +1,18 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file; its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/). This project adheres to [*Semantic Versioning*](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.3] - 2020-07-24
 ### Changed
 - Description part in README to be more precise with respect to the calculation.
+- Bounced all version strings.
+- `calcopp-gui`: Some entity names to match new ones in PySimpleGUI.
+- `calcopp-gui`: Text refreshing in manual window to comply with new PySimpleGUI mechanism.
 
 ### Fixed
 - `pdf2opp_2d` and `pdf2opp_3d`: Displayed version numbers.
+- `calcopp-gui`: Error when using file paths containing blanks with `pdf2opp_2d` and `pdf2opp_3d`.
+- `build.cmd`: No longer using Python's `-O` flag when freezing with PyInstaller because of packaging errors.
+- `build.cmd`: Re-enabled UPX for debugged version 3.96.
 
 ## [2.0.2] - 2020-01-13
 ### Changed
@@ -120,6 +126,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 ### Added
 - First production version with basic functionality.
 
+[2.0.3]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.3
 [2.0.2]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.2
 [2.0.1]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.1
 [2.0.0]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.0

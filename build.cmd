@@ -59,20 +59,16 @@ cd ..
 
 
 rem   Freeze the Python modules "sd2opp" and "calcopp-gui"
-rem   (Hidden imports work around a problem with PyInstaller 3.6.
-rem   UPX 3.95 is incompatible with Windows 10 for some executables.)
-python -O -m PyInstaller sd2opp.py ^
+python -m PyInstaller sd2opp.py ^
    --noconfirm ^
    --clean ^
    --onedir ^
    --log-level=WARN ^
    --nowindowed ^
-   --noupx ^
    --icon=data\CalcOPP.ico ^
-   --version-file=sd2opp_info.txt ^
-   --hidden-import="pkg_resources.py2_warn"
+   --version-file=sd2opp_info.txt
 
-python -O -m PyInstaller calcopp-gui.py ^
+python -m PyInstaller calcopp-gui.py ^
    --name=CalcOPP ^
    --noconfirm ^
    --clean ^
@@ -91,12 +87,9 @@ python -O -m PyInstaller calcopp-gui.py ^
    --add-data="dist\sd2opp\sd2opp.exe.manifest;." ^
    --add-data="pdf2opp_2d.exe;." ^
    --add-data="pdf2opp_3d.exe;." ^
-   --icon=data\CalcOPP.ico ^
-   --version-file=calcopp_info.txt ^
-   --noupx ^
    --noconsole ^
-   --hidden-import="pkg_resources.py2_warn"
-
+   --icon=data\CalcOPP.ico ^
+   --version-file=calcopp_info.txt
 
 rem   Pack the data for distribution
 cd dist
