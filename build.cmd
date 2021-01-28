@@ -91,6 +91,7 @@ python -m PyInstaller calcopp-gui.py ^
    --icon=data\CalcOPP.ico ^
    --version-file=calcopp_info.txt
 
+
 rem   Pack the data for distribution
 if exist dist\ (
     cd dist

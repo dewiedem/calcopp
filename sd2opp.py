@@ -12,10 +12,10 @@ SD2OPP uses the module NumPy by the NumPy developers distributed under the BSD L
 """
 
 __author__ = 'Dennis Wiedemann'
-__copyright__ = 'Copyright 2020, Dr. Dennis Wiedemann'
+__copyright__ = 'Copyright 2021, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.3'
+__version__ = '2.0.4'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Production'

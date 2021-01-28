@@ -10,17 +10,17 @@ that are used for documentation purposes in CalcOPP-GUI.
 """
 
 __author__ = 'Dennis Wiedemann'
-__copyright__ = 'Copyright 2020, Dr. Dennis Wiedemann'
+__copyright__ = 'Copyright 2021, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.3'
+__version__ = '2.0.4'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Production'
 
 
 CITATION = 'D. Wiedemann, CalcOPP, Calculation of One-Particle Potentials, Technische \n' \
-           'Universität Berlin, Berlin (Germany), 2019, doi:10.5281/zenodo.2530345.'
+           'Universität Berlin, Berlin (Germany), 2021, doi:10.5281/zenodo.2530345.'
 
 LICENSE = 'CalcOPP is distributed under the %s license (see LICENSE file). It uses the modules\n' \
           'PySimpleGUI by MikeTheWatchGuy distributed under the GNU General Public License\n' \
