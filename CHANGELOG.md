@@ -3,12 +3,18 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 
 ## [Unreleased]
 ### Changed
+- Bumped all version and date strings.
 - `build.cmd` and `build.sh`: Check for existence before changing directories.
+- `calcopp-gui`: Font definition to comply with values expected by PySimpleGUI.
+
+### Fixed
+- Re-frozen with PyInstaller (Windows version did not work).
+
 
 ## [2.0.3] - 2020-07-24
 ### Changed
 - Description part in README to be more precise with respect to the calculation.
-- Bounced all version strings.
+- Bumped all version strings.
 - `calcopp-gui`: Some entity names to match new ones in PySimpleGUI.
 - `calcopp-gui`: Text refreshing in manual window to comply with new PySimpleGUI mechanism.
 
@@ -18,7 +24,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 - `build.cmd`: No longer using Python's `-O` flag when freezing with PyInstaller because of packaging errors.
 - `build.cmd`: Re-enabled UPX for debugged version 3.96.
 - `build.cmd` and `build.sh`: Hidden imports for PyInstaller no longer needed.
-- `build.sh`: Not using PyInstaller's `--strip` flag because of incompatbility with NumPy 1.19.1.
+- `build.sh`: Not using PyInstaller's `--strip` flag because of incompatibility with NumPy 1.19.1.
 
 ## [2.0.2] - 2020-01-13
 ### Changed

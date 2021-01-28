@@ -20,10 +20,10 @@ import annotations as an
 import sd2opp
 
 __author__ = 'Dennis Wiedemann'
-__copyright__ = 'Copyright 2020, Dr. Dennis Wiedemann'
+__copyright__ = 'Copyright 2021, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.3'
+__version__ = '2.0.4'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Production'
@@ -110,8 +110,8 @@ menu_def = [['&File', 'E&xit'], ['&Help', ['&Readme', '&Changelog', '---', '&Abo
 
 # ===== Left Column Definition ===== #
 column_left = [
-    [sg.Frame('Information and Manual', [[sg.Multiline(write_only=True, auto_refresh=True, size=(61, 25), font=('Courier', 9),
-                                                       key='manual')]])],
+    [sg.Frame('Information and Manual', [[sg.Multiline(write_only=True, auto_refresh=True, size=(61, 25),
+                                                       font=('Courier', 9), key='manual')]])],
     [sg.Frame('Citation', [
         [sg.Text('If you publish data calculated with CalcOPP, please use the following citation:')],
         [sg.Text(an.CITATION, font=(None, 10, 'italic'))]])]
@@ -301,8 +301,8 @@ while True:
         # ····· "About" Window Definition ····· #  (keep in the same control structure as call to not retain state)
         layout_about = [
             [sg.Image(filename=os.path.join('data', 'logo.png'))],
-            [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=(None, 18))],
-            [sg.Text('Version %s\n' % __version__, font=(None, 14))],
+            [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=('', 18))],
+            [sg.Text('Version %s\n' % __version__, font=('', 14))],
             [sg.Text(an.CITATION)],
             [sg.Text('Export Citation:'),
              sg.Radio('RIS format', "FORMAT", default=True, key='format_ris'),
