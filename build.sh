@@ -68,7 +68,6 @@ fi
 
 
 # Freeze the Python modules "sd2opp" and "calcopp-gui"
-# ("--strip" flag incompatible with NumPy 1.19.1)
 python3.7 -O -m PyInstaller sd2opp.py \
    --noconfirm \
    --clean \
