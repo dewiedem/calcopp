@@ -1,10 +1,13 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file; its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/). This project adheres to [*Semantic Versioning*](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.4] - 2021-02-22
+### Added
+- `build.cmd` and `build.sh`: Check for existence before changing directories.
+- `build.cmd`: Workaround for MSYS linking bug with ASLR enabled.
+
 ### Changed
 - Bumped all version and date strings.
-- `build.cmd` and `build.sh`: Check for existence before changing directories.
 - `calcopp-gui`: Font definition to comply with values expected by PySimpleGUI.
 
 ### Fixed
@@ -138,6 +141,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 ### Added
 - First production version with basic functionality.
 
+[2.0.4]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.4
 [2.0.3]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.3
 [2.0.2]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.2
 [2.0.1]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.1

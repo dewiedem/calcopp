@@ -6,6 +6,7 @@ rem   in the system PATH and WinRAR residing in its standard path.
 
 
 rem   Compile the Fortran modules "pdf2opp_2d" and "pdf2opp_3d"
+rem   WORKAROUND: Last option to mitigate MSYS linking bug with ASLR enabled
 if not exist dist\ mkdir dist
 
 gfortran pdf2opp_2d.f90 ^
@@ -19,7 +20,8 @@ gfortran pdf2opp_2d.f90 ^
     -O3 ^
     -fno-backtrace ^
     -static ^
-    -s
+    -s ^
+    -Wl,--default-image-base-low
 
 gfortran pdf2opp_3d.f90 ^
     -o pdf2opp_3d.exe ^
@@ -32,7 +34,8 @@ gfortran pdf2opp_3d.f90 ^
     -O3 ^
     -fno-backtrace ^
     -static ^
-    -s
+    -s ^
+    -Wl,--default-image-base-low
 
 
 rem   Create the documentation HTML files
@@ -66,7 +69,8 @@ python -m PyInstaller sd2opp.py ^
    --log-level=WARN ^
    --nowindowed ^
    --icon=data\CalcOPP.ico ^
-   --version-file=sd2opp_info.txt
+   --version-file=sd2opp_info.txt ^
+   --upx-dir=C:\upx
 
 python -m PyInstaller calcopp-gui.py ^
    --name=CalcOPP ^
@@ -89,7 +93,8 @@ python -m PyInstaller calcopp-gui.py ^
    --add-data="pdf2opp_3d.exe;." ^
    --noconsole ^
    --icon=data\CalcOPP.ico ^
-   --version-file=calcopp_info.txt
+   --version-file=calcopp_info.txt ^
+   --upx-dir=C:\upx
 
 
 rem   Pack the data for distribution
