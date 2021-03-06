@@ -14,7 +14,10 @@ CalcOPP-GUI uses the module PySimpleGUI by MikeTheWatchGuy distributed under the
 
 import os
 import subprocess as sp
-import traceback as tb
+from tkinter import Tk
+from traceback import format_exc
+from urllib.parse import quote, urlencode
+from webbrowser import open as web_open
 import PySimpleGUI as sg
 import annotations as an
 import sd2opp
@@ -23,7 +26,7 @@ __author__ = 'Dennis Wiedemann'
 __copyright__ = 'Copyright 2021, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.4'
+__version__ = '2.0.5'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Production'
@@ -32,9 +35,9 @@ __status__ = 'Production'
 def file_exists(file):
     """Check if a file exists.
 
-    :param file: name of the file to check for
+    :param file: The file name to check
     :type file: str
-    :return: existence of file
+    :return: `True` if file exists, `False` if it does not
     :rtype: bool
     """
     return os.path.isfile(file)
@@ -43,9 +46,9 @@ def file_exists(file):
 def is_float(string):
     """Check if a string can be converted to a non-zero float.
 
-    :param string: string to check for convertibility
+    :param string: The string to check for convertibility
     :type string: str
-    :return: convertibility of string
+    :return: `True` if string can be converted, `False` if it cannot
     :rtype: bool
     """
     try:
@@ -57,9 +60,9 @@ def is_float(string):
 def is_pos_float(string):
     """Check if a string can be converted to a positive float.
 
-    :param string: string to check for convertibility
+    :param string: The string to check for convertibility
     :type string: str
-    :return: convertibility of string
+    :return: `True` if string can be converted, `False` if it cannot
     :rtype: bool
     """
     try:
@@ -71,8 +74,8 @@ def is_pos_float(string):
 def sp_args():
     """Apply quirks for ``subprocess.Popen`` to have standard behavior in PyInstaller-frozen windows binary.
 
-    :return: additional arguments for ``subprocess`` calls
-    :rtype: kwargs
+    :return: The additional arguments for ``subprocess`` calls
+    :rtype: dict[str, str or bool]
     """
     if hasattr(sp, 'STARTUPINFO'):  # True only on Windows
 
@@ -95,10 +98,57 @@ def sp_args():
 def doc_handler():
     """Return the command for opening document files with the standard application for its type (on Windows and Linux).
 
-    :return: filename of handler for opening documents
-    :rtype: string
+    :return: The handler file name for opening documents
+    :rtype: str
     """
     return 'explorer.exe' if hasattr(sp, 'STARTUPINFO') else 'xdg-open'
+
+
+def subroutine_error_popup(subroutine, error, message):
+    """Display a popup for errors in subroutines.
+
+    :param subroutine: The name of the subroutine causing the error
+    :type subroutine: str
+    :param error: The error caused by the subroutine
+    :type error: Exception or str
+    :param message: The additional error message to be displayed
+    :type message: str
+    """
+    # ===== Error Window Definition ===== #
+    error_layout = [
+        [sg.Text(an.ERROR_INTRO.format(subroutine))],
+        [sg.Text(message)],
+        [sg.Text(an.ERROR_OUTRO, text_color='red')],
+        [sg.Text('(Error message copied to clipboard.)', font=('', 10, 'italic'), text_color='red',
+                 key='copy_done', visible=False)],
+        [sg.Button('Copy to clipboard', key='clipboard'),
+         sg.Button('Send as e-mail', key='email', bind_return_key=True, focus=True),
+         sg.Exit('Close', key='close')]
+    ]
+    error_window = sg.Window('Subroutine Error', error_layout, modal=True)
+
+    # ===== Handle Button Actions ===== #
+    while True:
+        event_error, values_error = error_window.Read()
+        if event_error in [sg.WIN_CLOSED, 'close']:
+            error_window.close()
+            break
+
+        # Copy trace to clipboard
+        elif event_error == 'clipboard':
+            temp_widget = Tk()
+            temp_widget.withdraw()
+            temp_widget.clipboard_clear()
+            temp_widget.clipboard_append('Version: {}\n\n{}\n\n{}'.format(__version__, str(error), message))
+            temp_widget.update()
+            temp_widget.destroy()
+            error_window['copy_done'](visible=True)
+
+        # Compose bug report as e-mail
+        elif event_error == 'email':
+            query = {'subject': f'Error in {subroutine}',
+                     'body': 'Version:\n{}\n\nMessage:\n{}\n\nComment:\n'.format(__version__, message)}
+            web_open(f'mailto:{__email__}?{urlencode(query, quote_via=quote)}', new=1)
 
 
 # ===== Global GUI Parameters ===== #
@@ -122,23 +172,22 @@ column_left = [
 tab_pdf2d = [
     [sg.Frame('Files', [
         [sg.Text('Input PDF file', size=(14, 1)),
-         sg.InputText(key='2d_file_in'),
-
-         sg.FileBrowse(file_types=(("Structured File", "*.stf"),))
+         sg.Input(key='2d_file_in'),
+         sg.FileBrowse(file_types=(('Structured File', '*.stf'),))
          ],
         [sg.Text('Input error file', size=(14, 1)),
-         sg.InputText(disabled=True, key='2d_file_err'),
-         sg.FileBrowse(disabled=True, key='2d_file_err_button', file_types=(("Structured File", "*.stf"),))
+         sg.Input(disabled=True, key='2d_file_err'),
+         sg.FileBrowse(disabled=True, key='2d_file_err_button', file_types=(('Structured File', '*.stf'),))
          ],
         [sg.Text('Output file', size=(14, 1)),
-         sg.InputText(key='2d_file_out'),
-         sg.SaveAs(file_types=(("ASCII Text", "*_opp.asc"),))
+         sg.Input(key='2d_file_out'),
+         sg.SaveAs(file_types=(('ASCII Text', '*_opp.asc'),))
          ]
     ])],
     [sg.Frame('Temperature', [[
-        sg.Radio('From JANA2006’s *.m90 file', "TEMP2D", change_submits=True, default=True, key='2d_temp_source_m90'),
-        sg.Radio('Custom value:', "TEMP2D", change_submits=True, key='2d_temp_source_custom'),
-        sg.InputText(size=(8, 1), disabled=True, key='2d_temp'),
+        sg.Radio('From JANA2006’s *.m90 file', 'TEMP2D', change_submits=True, default=True, key='2d_temp_source_m90'),
+        sg.Radio('Custom value:', 'TEMP2D', change_submits=True, key='2d_temp_source_custom'),
+        sg.Input(size=(8, 1), disabled=True, key='2d_temp'),
         sg.Text('K')
     ]])],
     [sg.Frame('Include in Output', [[
@@ -147,54 +196,54 @@ tab_pdf2d = [
         sg.Checkbox('OPP', default=True, key='2d_output_opp'),
         sg.Checkbox('OPP error', change_submits=True, key='2d_output_opp_err')
     ]])],
-    [sg.Submit('Make it so!', key='2d_okay'), sg.Submit('Reset', key='2d_reset')]
+    [sg.OK('Make it so!', key='2d_okay'), sg.OK('Reset', key='2d_reset')]
 ]
 
 # ----- Tab for 3D PDF Data Sources ----- #
 tab_pdf3d = [
     [sg.Frame('Files', [
         [sg.Text('Input PDF file', size=(14, 1)),
-         sg.InputText(key='3d_file_in'),
-         sg.FileBrowse(file_types=(("XCrySDen Structure", "*_tmp.xsf"),))
+         sg.Input(key='3d_file_in'),
+         sg.FileBrowse(file_types=(('XCrySDen Structure', '*_tmp.xsf'),))
          ],
         [sg.Text('Output file', size=(14, 1)),
-         sg.InputText(key='3d_file_out'),
-         sg.SaveAs(file_types=(("XCrySDen Structure", "*_opp.xsf"),))
+         sg.Input(key='3d_file_out'),
+         sg.SaveAs(file_types=(('XCrySDen Structure', '*_opp.xsf'),))
          ]
     ])],
     [sg.Frame('Temperature', [[
-        sg.Radio('From JANA2006’s *.m90 file', "TEMP3D", change_submits=True, default=True, key='3d_temp_source_m90'),
-        sg.Radio('Custom value:', "TEMP3D", change_submits=True, key='3d_temp_source_custom'),
-        sg.InputText(size=(8, 1), disabled=True, key='3d_temp'),
+        sg.Radio('From JANA2006’s *.m90 file', 'TEMP3D', change_submits=True, default=True, key='3d_temp_source_m90'),
+        sg.Radio('Custom value:', 'TEMP3D', change_submits=True, key='3d_temp_source_custom'),
+        sg.Input(size=(8, 1), disabled=True, key='3d_temp'),
         sg.Text('K')
     ]])],
-    [sg.Submit('Engage!', key='3d_okay'), sg.Submit('Reset', key='3d_reset')]
+    [sg.OK('Engage!', key='3d_okay'), sg.OK('Reset', key='3d_reset')]
 ]
 
 # ----- Tab for Scatterer-Density Data Source ----- #
 tab_sd = [
     [sg.Frame('Files', [
         [sg.Text('Input density file', size=(14, 1)),
-         sg.InputText(key='sd_file_in'),
-         sg.FileBrowse(file_types=(("Periodic Grid", "*.pgrid"),))
+         sg.Input(key='sd_file_in'),
+         sg.FileBrowse(file_types=(('Periodic Grid', '*.pgrid'),))
          ],
         [sg.Text('Output density file', size=(14, 1)),
-         sg.InputText(key='sd_file_out'),
-         sg.SaveAs(file_types=(("Periodic Grid", "*_opp.pgrid"),))
+         sg.Input(key='sd_file_out'),
+         sg.SaveAs(file_types=(('Periodic Grid', '*_opp.pgrid'),))
          ]
     ])],
     [sg.Frame('Temperature', [[
-        sg.InputText(size=(8, 1), key='sd_temp'),
+        sg.Input(size=(8, 1), key='sd_temp'),
         sg.Text('K')
     ]])],
     [sg.Frame('Extremal Value', [[
-        sg.Radio('Negative minimum', "EXTREMUM", default=True, change_submits=True, key='sd_extremum_source_minimum'),
-        sg.Radio('Positive maximum', "EXTREMUM", change_submits=True, key='sd_extremum_source_maximum'),
-        sg.Radio('Custom value:', "EXTREMUM", change_submits=True, key='sd_extremum_source_custom'),
-        sg.InputText(size=(8, 1), disabled=True, key='sd_extremum'),
+        sg.Radio('Negative minimum', 'EXTREMUM', default=True, change_submits=True, key='sd_extremum_source_minimum'),
+        sg.Radio('Positive maximum', 'EXTREMUM', change_submits=True, key='sd_extremum_source_maximum'),
+        sg.Radio('Custom value:', 'EXTREMUM', change_submits=True, key='sd_extremum_source_custom'),
+        sg.Input(size=(8, 1), disabled=True, key='sd_extremum'),
         sg.Text('(fm) Å⁻³')
     ]])],
-    [sg.Submit('Go already!', key='sd_okay'), sg.Submit('Reset', key='sd_reset')]
+    [sg.OK('Go already!', key='sd_okay'), sg.OK('Reset', key='sd_reset')]
 ]
 
 # ----- Assembly of Right Column ----- #
@@ -209,117 +258,115 @@ column_right = [
 
 # ===== Window Invocation ===== #
 layout_main = [[sg.Menu(menu_def), sg.Column(column_left), sg.Column(column_right)]]
-window = sg.Window('CalcOPP – Calculation of One-Particle Potentials', default_element_size=(40, 1),
-                   layout=layout_main)
+window_main = sg.Window('CalcOPP – Calculation of One-Particle Potentials', layout_main, default_element_size=(40, 1))
 
 # ===== Event Loop for Persistent Window (Main Program) ===== #
 while True:
-    event, values = window.Read()
-    if event in (sg.WIN_CLOSED, 'Exit'):
-        window.close()
+    event_main, values_main = window_main.read()
+    if event_main in [sg.WIN_CLOSED, 'Exit']:
+        window_main.close()
         break
 
     # ----- Toggle Explanations According to Tab ----- #
-    if event == 'data_source':
-        if values['data_source'] == '2D PDF':
-            window.Element('manual').Update(value=an.MANUAL_PDF2D, disabled=True)
-        elif values['data_source'] == '3D PDF':
-            window.Element('manual').Update(value=an.MANUAL_PDF3D, disabled=True)
+    if event_main == 'data_source':
+        if values_main['data_source'] == '2D PDF':
+            window_main['manual'](an.MANUAL_PDF2D, disabled=True)
+        elif values_main['data_source'] == '3D PDF':
+            window_main['manual'](an.MANUAL_PDF3D, disabled=True)
         else:
-            window.Element('manual').Update(value=an.MANUAL_SD, disabled=True)
+            window_main['manual'](an.MANUAL_SD, disabled=True)
 
     # ----- Toggle Custom Temperature/Extremum Fields ----- #
-    elif '_source_' in event:
+    elif '_source_' in event_main:
 
-        if values['2d_temp_source_custom']:
-            window.Element('2d_temp').Update(disabled=False)
+        if values_main['2d_temp_source_custom']:
+            window_main['2d_temp'](disabled=False)
         else:
-            window.Element('2d_temp').Update(disabled=True)
+            window_main['2d_temp'](disabled=True)
 
-        if values['3d_temp_source_custom']:
-            window.Element('3d_temp').Update(disabled=False)
+        if values_main['3d_temp_source_custom']:
+            window_main['3d_temp'](disabled=False)
         else:
-            window.Element('3d_temp').Update(disabled=True)
+            window_main['3d_temp'](disabled=True)
 
-        if values['sd_extremum_source_custom']:
-            window.Element('sd_extremum').Update(disabled=False)
+        if values_main['sd_extremum_source_custom']:
+            window_main['sd_extremum'](disabled=False)
         else:
-            window.Element('sd_extremum').Update(disabled=True)
+            window_main['sd_extremum'](disabled=True)
 
     # ----- Toggle Error Processing for 2D PDF ----- #
-    elif event.startswith('2d_output'):
-        if values['2d_output_opp_err'] or values['2d_output_pdf_err']:
-            window.Element('2d_file_err').Update(disabled=False)
-            window.Element('2d_file_err_button').Update(disabled=False)
+    elif event_main.startswith('2d_output'):
+        if values_main['2d_output_opp_err'] or values_main['2d_output_pdf_err']:
+            window_main['2d_file_err'](disabled=False)
+            window_main['2d_file_err_button'](disabled=False)
         else:
-            window.Element('2d_file_err').Update(disabled=True)
-            window.Element('2d_file_err_button').Update(disabled=True)
+            window_main['2d_file_err'](disabled=True)
+            window_main['2d_file_err_button'](disabled=True)
 
     # ----- Empty Tab on Reset Button ----- #
-    elif event.endswith('reset'):
+    elif event_main.endswith('reset'):
 
         # ····· Empty 2D PDF Tab on Reset Button ····· #
-        if event == '2d_reset':
-            window.Element('2d_file_in').Update('')
-            window.Element('2d_file_err').Update('')
-            window.Element('2d_file_out').Update('')
-            window.Element('2d_temp_source_m90').Update(value=True)
-            window.Element('2d_temp').Update('', disabled=True)
-            window.Element('2d_output_pdf').Update(value=False)
-            window.Element('2d_output_pdf_err').Update(value=False)
-            window.Element('2d_output_opp').Update(value=True)
-            window.Element('2d_output_opp_err').Update(value=False)
-            window.Element('manual').Update(value=an.MANUAL_PDF2D)
-            window.Element('output').Update('')
+        if event_main == '2d_reset':
+            window_main['2d_file_in']('')
+            window_main['2d_file_err']('')
+            window_main['2d_file_out']('')
+            window_main['2d_temp_source_m90'](True)
+            window_main['2d_temp']('', disabled=True)
+            window_main['2d_output_pdf'](False)
+            window_main['2d_output_pdf_err'](False)
+            window_main['2d_output_opp'](True)
+            window_main['2d_output_opp_err'](False)
+            window_main['manual'](an.MANUAL_PDF2D)
+            window_main['output']('')
 
         # ····· Empty 3D PDF Tab on Reset Button ····· #
-        elif event == '3d_reset':
-            window.Element('3d_file_in').Update('')
-            window.Element('3d_file_out').Update('')
-            window.Element('3d_temp_source_m90').Update(value=True)
-            window.Element('3d_temp').Update('', disabled=True)
-            window.Element('manual').Update(value=an.MANUAL_PDF3D)
-            window.Element('output').Update('')
+        elif event_main == '3d_reset':
+            window_main['3d_file_in']('')
+            window_main['3d_file_out']('')
+            window_main['3d_temp_source_m90'](True)
+            window_main['3d_temp']('', disabled=True)
+            window_main['manual'](an.MANUAL_PDF3D)
+            window_main['output']('')
 
         # ····· Empty Scatterer Density Tab on Reset Button ····· #
         else:
-            window.Element('sd_file_in').Update('')
-            window.Element('sd_file_out').Update('')
-            window.Element('sd_temp').Update('')
-            window.Element('sd_extremum_source_minimum').Update(value=True)
-            window.Element('sd_extremum').Update('', disabled=True)
-            window.Element('manual').Update(value=an.MANUAL_SD)
-            window.Element('output').Update('')
+            window_main['sd_file_in']('')
+            window_main['sd_file_out']('')
+            window_main['sd_temp']('')
+            window_main['sd_extremum_source_minimum'](True)
+            window_main['sd_extremum']('', disabled=True)
+            window_main['manual'](an.MANUAL_SD)
+            window_main['output']('')
 
     # ----- Open README or CHANGELOG ----- #
-    elif event in ['Readme', 'Changelog']:
-        sp.run([doc_handler(), os.path.join('docs', '%s.html' % event.upper())], **sp_args())
+    elif event_main in ['Readme', 'Changelog']:
+        sp.run([doc_handler(), os.path.join('docs', f'{event_main.upper()}.html')], **sp_args())
 
     # ----- Open "About" Window ----- #
-    elif event == 'About …':
+    elif event_main == 'About …':
 
         # ····· "About" Window Definition ····· #  (keep in the same control structure as call to not retain state)
         layout_about = [
-            [sg.Image(filename=os.path.join('data', 'logo.png'))],
+            [sg.Image(os.path.join('data', 'logo.png'))],
             [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=('', 18))],
-            [sg.Text('Version %s\n' % __version__, font=('', 14))],
+            [sg.Text('Version {}\n'.format(__version__), font=('', 14))],
             [sg.Text(an.CITATION)],
             [sg.Text('Export Citation:'),
-             sg.Radio('RIS format', "FORMAT", default=True, key='format_ris'),
-             sg.Radio('BibTeX format', "FORMAT", key='format_bib'),
-             sg.Submit('Export', key='citation_export')],
+             sg.Radio('RIS format', 'FORMAT', default=True, key='format_ris'),
+             sg.Radio('BibTeX format', 'FORMAT', key='format_bib'),
+             sg.OK('Export', key='citation_export')],
             [sg.Text('\n' + an.LICENSE)],
             [sg.Exit('Done')]
         ]
-        window.Hide()
-        window_about = sg.Window('About …', layout=layout_about)
+
+        window_about = sg.Window('About …', layout_about, modal=True)
 
         # ····· Handle Citation Exports ····· #
         while True:
-            event_about, values_about = window_about.Read()
-            if event_about in (sg.WIN_CLOSED, 'Done'):
+            event_about, values_about = window_about.read()
+            if event_about in [sg.WIN_CLOSED, 'Done']:
                 window_about.close()
-                window.UnHide()
                 break
             elif event_about == 'citation_export':
                 if values_about['format_ris']:
@@ -332,164 +379,163 @@ while True:
 
         # ····· Check 2D PDF Input Values for Errors ····· #
         error_message = ''
-        if event == '2d_okay':
-            if values['2d_file_in'] == '':
+        if event_main == '2d_okay':
+            if not values_main['2d_file_in']:
                 error_message += '\nNo input file is given.'
-            elif not file_exists(values['2d_file_in']):
+            elif not file_exists(values_main['2d_file_in']):
                 error_message += '\nInput file does not exist.'
-            if values['2d_output_opp_err'] or values['2d_output_pdf_err']:
-                if values['2d_file_err'] == '':
+            if values_main['2d_output_opp_err'] or values_main['2d_output_pdf_err']:
+                if not values_main['2d_file_err']:
                     error_message += '\nNo error file is given.'
-                elif not file_exists(values['2d_file_err']):
+                elif not file_exists(values_main['2d_file_err']):
                     error_message += '\nError file does not exist.'
-                if values['2d_file_err'] == values['2d_file_in'] and values['2d_file_in'] != '':
+                if values_main['2d_file_err'] == values_main['2d_file_in'] and values_main['2d_file_in']:
                     error_message += '\nInput and error file are the same.'
-                if values['2d_file_out'] == values['2d_file_err'] and values['2d_file_out'] != '':
+                if values_main['2d_file_out'] == values_main['2d_file_err'] and values_main['2d_file_out']:
                     error_message += '\nError and output file are the same.'
-            if values['2d_file_out'] == '':
+            if not values_main['2d_file_out']:
                 error_message += '\nNo output file is given.'
-            elif values['2d_file_out'] == values['2d_file_in']:
+            elif values_main['2d_file_out'] == values_main['2d_file_in']:
                 error_message += '\nInput and output file are the same.'
-            if values['2d_temp_source_m90'] and not file_exists(values['2d_file_in'][:-4] + '.m90'):
+            if values_main['2d_temp_source_m90'] and not file_exists(values_main['2d_file_in'][:-4] + '.m90'):
                 error_message += '\nFile *.m90 does not exist in the same directory.'
-            if values['2d_temp_source_custom'] and not is_pos_float(values['2d_temp']):
-                error_message += '\nTemperature has to be a positive decimal.'
-            if not (values['2d_output_opp'] or values['2d_output_pdf']
-                    or values['2d_output_opp_err'] or values['2d_output_pdf_err']):
+            if values_main['2d_temp_source_custom'] and not is_pos_float(values_main['2d_temp']):
+                error_message += '\nTemperature must be a positive decimal.'
+            if not (values_main['2d_output_opp'] or values_main['2d_output_pdf']
+                    or values_main['2d_output_opp_err'] or values_main['2d_output_pdf_err']):
                 error_message += '\nNo data to include in output selected.'
 
         # ····· Check 3D PDF Input Values for Errors ····· #
-        elif event == '3d_okay':
-            if values['3d_file_in'] == '':
+        elif event_main == '3d_okay':
+            if not values_main['3d_file_in']:
                 error_message += '\nNo input file is given.'
-            elif not file_exists(values['3d_file_in']):
+            elif not file_exists(values_main['3d_file_in']):
                 error_message += '\nInput file does not exist.'
-            if values['3d_file_out'] == '':
+            if not values_main['3d_file_out']:
                 error_message += '\nNo output file is given.'
-            elif values['3d_file_out'] == values['3d_file_in']:
+            elif values_main['3d_file_out'] == values_main['3d_file_in']:
                 error_message += '\nInput and output file are the same.'
-            if values['3d_temp_source_m90'] and not file_exists(values['3d_file_in'][:-8] + '.m90'):
+            if values_main['3d_temp_source_m90'] and not file_exists(values_main['3d_file_in'][:-8] + '.m90'):
                 error_message += '\nFile *.m90 does not exist in the same directory.'
-            if values['3d_temp_source_custom'] and not is_pos_float(values['3d_temp']):
-                error_message += '\nTemperature has to be a positive decimal.'
+            if values_main['3d_temp_source_custom'] and not is_pos_float(values_main['3d_temp']):
+                error_message += '\nTemperature must be a positive decimal.'
 
         # ····· Check Scatterer Density Input Values for Errors ····· #
-        elif event == 'sd_okay':
-            if values['sd_file_in'] == '':
+        elif event_main == 'sd_okay':
+            if not values_main['sd_file_in']:
                 error_message += '\nNo input file is given.'
-            elif not file_exists(values['sd_file_in']):
+            elif not file_exists(values_main['sd_file_in']):
                 error_message += '\nInput file does not exist.'
-            if values['sd_file_out'] == '':
+            if not values_main['sd_file_out']:
                 error_message += '\nNo output file is given.'
-            elif values['sd_file_out'] == values['sd_file_in']:
+            elif values_main['sd_file_out'] == values_main['sd_file_in']:
                 error_message += '\nInput and output file are the same.'
-            if not is_pos_float(values['sd_temp']):
-                error_message += '\nTemperature has to be a positive decimal.'
-            if values['sd_extremum_source_custom'] and not is_float(values['sd_extremum']):
-                error_message += '\nExtremal value has to be a decimal.'
+            if not is_pos_float(values_main['sd_temp']):
+                error_message += '\nTemperature must be a positive decimal.'
+            if values_main['sd_extremum_source_custom'] and not is_float(values_main['sd_extremum']):
+                error_message += '\nExtremal value must be a decimal.'
 
-        if error_message != '':
+        if error_message:
             # ····· Display Error Message ····· #
-            sg.PopupError(error_message[1:] + '\n', title='Error')
+            sg.popup_error(error_message[1:] + '\n', title='Error')
 
         else:
 
             # ····· Spawn 2D OPP Calculation Routine ····· #
-            if event == '2d_okay':
+            if event_main == '2d_okay':
 
                 #       Assemble Command Line       #
                 command_line = [os.path.join('.', 'pdf2opp_2d')]
-                command_line.extend(['-i', values['2d_file_in']])
-                command_line.extend(['-o', values['2d_file_out']])
-                if values['2d_output_opp_err'] or values['2d_output_pdf_err']:
-                    command_line.extend(['-e', values['2d_file_err']])
-                if values['2d_temp_source_custom']:
-                    command_line.extend(['-t', values['2d_temp']])
-                if values['2d_output_pdf']:
+                command_line.extend(['-i', values_main['2d_file_in']])
+                command_line.extend(['-o', values_main['2d_file_out']])
+                if values_main['2d_output_opp_err'] or values_main['2d_output_pdf_err']:
+                    command_line.extend(['-e', values_main['2d_file_err']])
+                if values_main['2d_temp_source_custom']:
+                    command_line.extend(['-t', values_main['2d_temp']])
+                if values_main['2d_output_pdf']:
                     command_line.append('-pdf')
-                if values['2d_output_pdf_err']:
+                if values_main['2d_output_pdf_err']:
                     command_line.append('-pdferr')
-                if values['2d_output_opp']:
+                if values_main['2d_output_opp']:
                     command_line.append('-opp')
-                if values['2d_output_opp_err']:
+                if values_main['2d_output_opp_err']:
                     command_line.append('-opperr')
 
-                window.Element('2d_okay').Update(disabled=True)
+                window_main['2d_okay'](disabled=True)
 
                 try:
                     #       Execute Command       #
                     pdf2opp = sp.Popen(command_line, text=True, **sp_args())
                     for line in pdf2opp.stdout:
                         print(line.rstrip())
-                        window.Refresh()
+                        window_main.refresh()
 
                     #       Show Popup on Error       #
                     _, error_message = pdf2opp.communicate()
                     print(error_message)
-                    if error_message != '':
-                        error_message = error_message[11:] if error_message.startswith('ERROR STOP ') else error_message
-                        error_message = (an.ERROR_INTRO % 'PDF2OPP_2D') + error_message
-                        sg.PopupError(error_message, title='Subroutine Error')
+                    if error_message.startswith('ERROR STOP '):
+                        subroutine_error_popup('PDF2OPP_2D', 'ERROR STOP', error_message[11:])
+                    elif error_message:
+                        subroutine_error_popup('PDF2OPP_2D', 'Unknown error', error_message)
 
                 except FileNotFoundError:
                     error_message = 'PDF2OPP_2D executable not found in program directory.'
-                    sg.PopupError(error_message, title='Program Error')
+                    sg.popup_error(error_message, title='Program Error')
 
-                window.Element('2d_okay').Update(disabled=False)
+                window_main['2d_okay'](disabled=False)
 
             # ····· Spawn 3D OPP Calculation Routine ····· #
-            elif event == '3d_okay':
+            elif event_main == '3d_okay':
 
                 #       Assemble Command Line       #
                 command_line = [os.path.join('.', 'pdf2opp_3d')]
-                command_line.extend(['-i', values['3d_file_in']])
-                command_line.extend(['-o', values['3d_file_out']])
-                if values['3d_temp_source_custom']:
-                    command_line.extend(['-t', values['3d_temp']])
+                command_line.extend(['-i', values_main['3d_file_in']])
+                command_line.extend(['-o', values_main['3d_file_out']])
+                if values_main['3d_temp_source_custom']:
+                    command_line.extend(['-t', values_main['3d_temp']])
 
-                window.Element('3d_okay').Update(disabled=True)
+                window_main['3d_okay'](disabled=True)
 
                 try:
                     #       Execute Command       #
                     pdf3opp = sp.Popen(command_line, text=True, **sp_args())
                     for line in pdf3opp.stdout:
                         print(line.rstrip())
-                        window.Refresh()
+                        window_main.refresh()
 
                     #       Show Popup on Error       #
                     _, error_message = pdf3opp.communicate()
                     print(error_message)
-                    if error_message != '':
-                        error_message = error_message[11:] if error_message.startswith('ERROR STOP ') else error_message
-                        error_message = (an.ERROR_INTRO % 'PDF2OPP_3D') + error_message
-                        sg.PopupError(error_message, title='Subroutine Error')
+                    if error_message.startswith('ERROR STOP '):
+                        subroutine_error_popup('PDF2OPP_3D', 'ERROR STOP', error_message[11:])
+                    elif error_message:
+                        subroutine_error_popup('PDF2OPP_3D', 'Unknown error', error_message)
 
                 except FileNotFoundError:
                     error_message = 'PDF2OPP_3D executable not found in program directory.'
-                    sg.PopupError(error_message, title='Program Error')
+                    sg.popup_error(error_message, title='Program Error')
 
-                window.Element('3d_okay').Update(disabled=False)
+                window_main['3d_okay'](disabled=False)
 
             # ····· Call OPP Calculation from Scatterer Density ····· #
-            elif event == 'sd_okay':
+            elif event_main == 'sd_okay':
 
-                window.Element('sd_okay').Update(disabled=True)
+                window_main['sd_okay'](disabled=True)
 
                 #       Construct String for Extremum Source       #
-                if values['sd_extremum_source_minimum']:
+                if values_main['sd_extremum_source_minimum']:
                     source = 'min'
-                elif values['sd_extremum_source_maximum']:
+                elif values_main['sd_extremum_source_maximum']:
                     source = 'max'
                 else:
                     source = 'custom'
 
                 try:
                     #       Call Calculation Routine       #
-                    sd2opp.calc_opp(values['sd_file_in'], values['sd_file_out'], float(values['sd_temp']),
-                                    source, float(values['sd_extremum']) if source == 'custom' else None)
-                except Exception:
-                    #       Show Popup on Error       #
-                    error_message = (an.ERROR_INTRO % 'SD2OPP') + tb.format_exc()
-                    sg.PopupError(error_message, title='Subroutine Error')
+                    sd2opp.calc_opp(values_main['sd_file_in'], values_main['sd_file_out'],
+                                    float(values_main['sd_temp']), source,
+                                    float(values_main['sd_extremum']) if source == 'custom' else None)
+                except Exception as exc:
+                    subroutine_error_popup('SD2OPP', exc, format_exc())
 
-                window.Element('sd_okay').Update(disabled=False)
+                window_main['sd_okay'](disabled=False)

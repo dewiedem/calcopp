@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file; its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/). This project adheres to [*Semantic Versioning*](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Added
+- `calcopp-gui`: Possibility to copy error messages to clipboard and automatically put them into an e-mail message.
+
+### Changed
+- `calcopp-gui`: PySimpleGUI calls now in more concise notation.
+- `calcopp-gui`: Using modal `About …` window instead of hiding main window.
+- `calcopp-gui`: Unified error popups.
+- `calcopp-gui`: Call for popups PEP-8 compliant.
+- `calcopp-gui`: Clean-up, correction, and unification of docstrings.
+- Unified use of quotation marks with Python.
+- `calcopp-gui`: Use implicit booleans.
+- Use modern Python string formatting (f-strings and `format` method).
+
 ## [2.0.4] - 2021-02-22
 ### Added
 - `build.cmd` and `build.sh`: Check for existence before changing directories.

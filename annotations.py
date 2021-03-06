@@ -13,7 +13,7 @@ __author__ = 'Dennis Wiedemann'
 __copyright__ = 'Copyright 2021, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.4'
+__version__ = '2.0.5'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Production'
@@ -22,10 +22,10 @@ __status__ = 'Production'
 CITATION = 'D. Wiedemann, CalcOPP, Calculation of One-Particle Potentials, Technische \n' \
            'Universität Berlin, Berlin (Germany), 2021, doi:10.5281/zenodo.2530345.'
 
-LICENSE = 'CalcOPP is distributed under the %s license (see LICENSE file). It uses the modules\n' \
+LICENSE = 'CalcOPP is distributed under the {} license (see LICENSE file). It uses the modules\n' \
           'PySimpleGUI by MikeTheWatchGuy distributed under the GNU General Public License\n' \
           'v3.0 (see LGPL-3.0.txt) and NumPy by the NumPy developers distributed under the BSD\n' \
-          'License 2.0 (see BSD-2.0.txt).\n' % __license__
+          'License 2.0 (see BSD-2.0.txt).\n'.format(__license__)
 
 INTRODUCTION = 'Choose the source-data type by selecting a tab on the right. “2D PDF” and “3D PDF” can be generated ' \
                'after refinement with JANA2006, “Scatterer Density” is the result of MEM reconstruction with ' \
@@ -36,9 +36,10 @@ INTRODUCTION = 'Choose the source-data type by selecting a tab on the right. “
                'D. Wiedemann et al., Z. Phys. Chem. 2017, 231, 1279–1302; doi:10.1515/zpch-2016-0918.\n' \
                '\n'
 
-ERROR_INTRO = 'An error occurred in the subroutine %s.\n\nIf your input files are valid, please report this error to ' \
-              'the developer including a screenshot and the input file(s).\n\nCalcOPP Version: %s\n\n' % \
-              ('%s', __version__)
+ERROR_INTRO = 'An error occurred in the subroutine {}.\nCalcOPP Version: {}\n'.format('{}', __version__)
+
+ERROR_OUTRO = 'If your input files are valid, please report this error to the developer ({}) including the input ' \
+              'file(s).'.format(__email__)
 
 ENDING = '\n' \
          'Any file with the same name as the selected output file will be overwritten! Be sure to save intermediate ' \

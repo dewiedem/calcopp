@@ -31,15 +31,16 @@ K_B = 1.380649e-23 / 1.602176634e-19  # Boltzmann constant in eV/K (according to
 def non_zero_float(string):
     """Define non-zero floats for `argparse`.
 
-    :param string: string to check for convertibility
+    :param string: The string to check for convertibility
     :type string: str
-    :return: converted non-zero float
+    :return: The converted non-zero float
     :rtype: float
+    :raises :class:`argparse.ArgumentTypeError`: if string does not represent a non-zero float
     """
     try:
         value = float(string)
     except ValueError:
-        raise ap.ArgumentTypeError('"%s" is not a decimal.' % string)
+        raise ap.ArgumentTypeError(f'"{string}" is not a decimal.')
     if value == 0.:
         raise ap.ArgumentTypeError('Argument is zero.')
     return value
@@ -48,17 +49,18 @@ def non_zero_float(string):
 def pos_float(string):
     """Define positive floats for `argparse`.
 
-    :param string: string to check for convertibility
+    :param string: The string to check for convertibility
     :type string: str
-    :return: converted positive float
+    :return: The converted positive float
     :rtype: float
+    :raises :class:`argparse.ArgumentTypeError`: if string does not represent a positive float
     """
     try:
         value = float(string)
     except ValueError:
-        raise ap.ArgumentTypeError('"%s" is not a decimal.' % string)
+        raise ap.ArgumentTypeError(f'"{string}" is not a decimal.')
     if value <= 0.:
-        message = '"%r" is not positive.' % value
+        message = f'"{value!r}" is not positive.'
         raise ap.ArgumentTypeError(message)
     return value
 
@@ -66,51 +68,29 @@ def pos_float(string):
 def mbyte_truncate(string, byte_length, encoding='utf-8'):
     """Truncate a multi-byte encoded string to a given maximal byte size.
 
-    :param string: string to truncate
+    :param string: The string to truncate
     :type string: str
-    :param byte_length: length in byte to truncate to
+    :param byte_length: The length in bytes to truncate to
     :type byte_length: int
-    :param encoding: encoding of the string (default: 'utf-8')
+    :param encoding: The encoding of the string  # TODO: optional
     :type encoding: str
-    :return: truncated string
+    :return: The truncated string
     :rtype: str
     """
     encoded = string.encode(encoding)[:byte_length]
     return encoded.decode(encoding, 'ignore')
 
 
-def parse_arguments():
-    """Parse and check the command-line arguments.
-
-    :return: object holding the command-line arguments
-    :rtype: argparse.namespace
-    """
-    parser = ap.ArgumentParser(
-        description='Calculate 3D OPP from MEM-reconstructed electron/scattering-length density',
-        epilog='SD2OPP uses the module NumPy by the NumPy developers distributed under the BSD License 2.0 '
-               '(see BSD-2.0.txt).')
-    parser.add_argument('input', type=ap.FileType('rb'), help='specifies the PGRID input file')
-    parser.add_argument('output', type=ap.FileType('wb'), help='specifies the PGRID output file')
-    parser.add_argument('temperature', type=pos_float, help='specifies the temperature in K')
-    extremum_group = parser.add_mutually_exclusive_group(required=True)
-    extremum_group.add_argument('-min', '--minimum', action='store_true',
-                                help='set extremal value to minimal negative input density')
-    extremum_group.add_argument('-max', '--maximum', action='store_true',
-                                help='set extremal value to maximal positive input density')
-    extremum_group.add_argument('-ext', '--extremum', type=non_zero_float, help=u'set a custom extremal value in (fm) '
-                                                                                u'Å⁻³')
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    return parser.parse_args()
-
-
 def hello():
-    """Print greeting message."""
-    print('SD2OPP %s - Calculation of 3D OPP from Scatterer Density' % __version__)
-    print('%s (%s License, see LICENSE file)\n' % (__copyright__, __license__))
+    """Print a greeting message.
+    """
+    print(f'SD2OPP {__version__} - Calculation of 3D OPP from Scatterer Density')
+    print('{} ({} License, see LICENSE file)\n'.format(__copyright__, __license__))
 
 
 def goodbye():
-    """Print farewell message."""
+    """Print a farewell message.
+    """
     print('All calculations finished. Have a nice day!')
     print('“Don’t be scared. […] It really doesn’t help.” – The Doctor\n\n')
 
@@ -118,7 +98,7 @@ def goodbye():
 def read_grid(file):
     u"""Read the binary input grid-file depending on its header.
 
-    :param file: path and name of the input file
+    :param file: The path and name of the input file
     :type file: str
     :return: dictionary of header values, 1D array of indices, 1D array of data points
              - ``'version'``: quadripartite version number of input file
@@ -138,6 +118,7 @@ def read_grid(file):
              - ``'symop'``: symmetry operators as 3 × 4 matrices (3 × 3 rotation matrices followed by translation
                             vector)
              - ``'subposp'``: centering vector
+
     :rtype: tuple[
                 dict(
                     - ``'version'``: numpy.ndarray[numpy.int32 * 4]
@@ -301,43 +282,45 @@ def write_grid(file, header, indices, data):
 
 
 def create_vesta(output_file, title, isovalue, record_type):
-    """Create a *.vesta file to display grid in VESTA.
+    """Create a *.vesta file for displaying grid in VESTA.
 
-    :param output_file: path and name of the output grid-file
+    :param output_file: The path and name of the output grid-file
     :type output_file: str
-    :param title: title of the grid file
+    :param title: The title of the grid file
     :type title: str
-    :param isovalue: isosurface value to display (will be rounded)
+    :param isovalue: The isosurface value to display (will be rounded)
     :type isovalue: float
-    :param record_type: type of record in the grid file (`header['nval']` · `header['ftype']`)
+    :param record_type: The type of record in the grid file (`header['nval']` · `header['ftype']`)
     :type record_type: int
     """
     with open(os.path.splitext(output_file)[0] + '.vesta', 'w') as file:
         file.write('#VESTA_FORMAT_VERSION 3.3.0\n\n\n')
         file.write('CRYSTAL\n\n')
-        file.write('TITLE\n%s\n\n' % title)
-        file.write('IMPORT_DENSITY 1\n+1.000000 %s\n\n' % os.path.split(output_file)[1])
+        file.write('TITLE\n{}\n\n'.format(title))
+        file.write('IMPORT_DENSITY 1\n+1.000000 {}\n\n'.format(os.path.split(output_file)[1]))
         file.write('STYLE\n')
         file.write('SECTS  96  0\n')
         file.write('ISURF\n')
-        file.write('  1 %3d        %.2f 255 255   0 127 255\n' % (record_type, isovalue))
+        file.write('  1 {:3d}        {:.2f} 255 255   0 127 255\n'.format(record_type, isovalue))
         file.write('  0   0   0   0\n')
 
 
 def calc_opp(input_file, output_file, temp, source, extr=None):
     """Start main routine for calculating the OPP from scatterer density.
 
-    :param input_file:  path and name of the input file
+    :param input_file: The path and name of the input file
     :type input_file: str
-    :param output_file:  path and name of the output file
+    :param output_file: The path and name of the output file
     :type output_file: str
-    :param temp: temperature in Kelvin
+    :param temp: The absolute temperature in Kelvin
     :type temp: float
-    :param source: identifier for the source of the extremal value ('min': negative minimum, 'max': positive maximum,
-                   'custom': user-provided value in parameter extr)
+    :param source: An identifier for the source of the extremal value ('min': negative minimum, 'max': positive maximum,
+                   'custom': user-provided value in parameter extr)  # TODO: alternative parameter list
     :type source: str
-    :param extr: user-provided extremal value
+    :param extr: A user-provided extremal value  # TODO: optional
     :type extr: float
+
+    .. notes:: ('min': negative minimum, 'max': positive maximum, 'custom': user-provided value in parameter extr)  # TODO
     """
     hello()
 
@@ -345,19 +328,21 @@ def calc_opp(input_file, output_file, temp, source, extr=None):
     print('Opening input file and reading data ... ', end='')
     header, indices, input_data = read_grid(input_file)
     print('Done.')
-    print('Number of voxels: %d × %d × %d' % tuple(header['ngrid']))
-    print('Unit cell dimensions: a = %f Å, b = %f Å, c = %f Å,\n   α = %f°, β = %f°, γ = %f°' % tuple(header['cell']))
-    print('%symmetry information recorded.' % ('S' if header['ftype'] == 1 else 'No s'))
+    print(header['ngrid'])
+    print('Number of voxels: {} × {} × {}'.format(*header['ngrid']))
+    print('Unit cell dimensions: a = {:f} Å, b = {:f} Å, c = {:f} Å,\n'
+          '   α = {:f}°, β = {:f}°, γ = {:f}°'.format(*header['cell']))
+    print(f"{'S' if header['ftype'] == 1 else 'No s'}ymmetry information recorded.")
 
     # ----- Find extremal density ----- #
     if source == 'custom':
-        print('Extremal density given: %f (fm) Å⁻³\n' % extr)
+        print('Extremal density given: {:f} (fm) Å⁻³\n'.format(extr))
     elif source == 'min':
         extr = input_data.min()
-        print('Minimum density found: %f (fm) Å⁻³\n' % extr)
+        print('Minimum density found: {:f} (fm) Å⁻³\n'.format(extr))
     else:
         extr = input_data.max()
-        print('Maximum density found: %f (fm) Å⁻³\n' % extr)
+        print('Maximum density found: {:f} (fm) Å⁻³\n'.format(extr))
 
     # ----- The real magic happens here ----- #
     print('Calculating OPP ... ', end='')
@@ -367,7 +352,7 @@ def calc_opp(input_file, output_file, temp, source, extr=None):
     max_opp = np.nanmax(output_data)
     output_data[np.logical_not(np.isfinite(output_data))] = max_opp  # Set NaN/-inf to highest OPP
     print('Done.')
-    print('Maximal finite OPP: %f eV\n' % max_opp)
+    print('Maximal finite OPP: {:f} eV\n'.format(max_opp))
 
     # ----- Write out data ----- #
     print('Opening output file and writing data ... ', end='')
@@ -386,7 +371,26 @@ def calc_opp(input_file, output_file, temp, source, extr=None):
 # ===== Routine for Running as Standalone Program ===== #
 if __name__ == '__main__':
 
-    cmd_args = parse_arguments()
+    # ----- Parse command-line arguments ----- #
+    parser = ap.ArgumentParser(
+        description='Calculate 3D OPP from MEM-reconstructed electron/scattering-length density',
+        epilog='SD2OPP uses the module NumPy by the NumPy developers distributed under the BSD License 2.0 '
+               '(see BSD-2.0.txt).')
+
+    parser.add_argument('input', type=ap.FileType('rb'), help='specifies the PGRID input file')
+    parser.add_argument('output', type=ap.FileType('wb'), help='specifies the PGRID output file')
+    parser.add_argument('temperature', type=pos_float, help='specifies the temperature in K')
+    extremum_group = parser.add_mutually_exclusive_group(required=True)
+    extremum_group.add_argument('-min', '--minimum', action='store_true',
+                                help='set extremal value to minimal negative input density')
+    extremum_group.add_argument('-max', '--maximum', action='store_true',
+                                help='set extremal value to maximal positive input density')
+    extremum_group.add_argument('-ext', '--extremum', type=non_zero_float,
+                                help=u'set a custom extremal value in (fm) '
+                                     u'Å⁻³')
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+
+    cmd_args = parser.parse_args()
 
     # ----- Set Parameters for Extremum Choice ----- #
     if cmd_args.minimum:
