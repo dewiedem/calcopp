@@ -1,4 +1,4 @@
-#!/usr/bin/env Python3
+#!/usr/bin/python3.7
 # -*- coding: utf-8 -*-
 """A graphical user interface for the calculation of effective one-particle potentials (OPPs).
 
@@ -35,10 +35,15 @@ __status__ = 'Production'
 def file_exists(file):
     """Check if a file exists.
 
-    :param file: The file name to check
-    :type file: str
-    :return: `True` if file exists, `False` if it does not
-    :rtype: bool
+    Parameters
+    ----------
+    file : str
+        The file name to check.
+
+    Returns
+    -------
+    bool
+        True if the file exists, False if it does not.
     """
     return os.path.isfile(file)
 
@@ -46,10 +51,15 @@ def file_exists(file):
 def is_float(string):
     """Check if a string can be converted to a non-zero float.
 
-    :param string: The string to check for convertibility
-    :type string: str
-    :return: `True` if string can be converted, `False` if it cannot
-    :rtype: bool
+    Parameters
+    ----------
+    string : str
+        The string to check for convertibility.
+
+    Returns
+    -------
+    bool
+        True if the string can be converted, False if it cannot.
     """
     try:
         return True if float(string) != 0 else False
@@ -60,10 +70,15 @@ def is_float(string):
 def is_pos_float(string):
     """Check if a string can be converted to a positive float.
 
-    :param string: The string to check for convertibility
-    :type string: str
-    :return: `True` if string can be converted, `False` if it cannot
-    :rtype: bool
+    Parameters
+    ----------
+    string : str
+        The string to check for convertibility.
+
+    Returns
+    -------
+    bool
+        True if the string can be converted, False if it cannot.
     """
     try:
         return True if float(string) > 0 else False
@@ -72,10 +87,12 @@ def is_pos_float(string):
 
 
 def sp_args():
-    """Apply quirks for ``subprocess.Popen`` to have standard behavior in PyInstaller-frozen windows binary.
+    """Apply quirks for `subprocess.Popen` to have standard behavior in PyInstaller-frozen windows binary.
 
-    :return: The additional arguments for ``subprocess`` calls
-    :rtype: dict[str, str or bool]
+    Returns
+    -------
+    dict[str, str or bool or None]
+        The additional arguments for `subprocess` calls.
     """
     if hasattr(sp, 'STARTUPINFO'):  # True only on Windows
 
@@ -98,8 +115,10 @@ def sp_args():
 def doc_handler():
     """Return the command for opening document files with the standard application for its type (on Windows and Linux).
 
-    :return: The handler file name for opening documents
-    :rtype: str
+    Returns
+    -------
+    str
+        The handler file name for opening documents.
     """
     return 'explorer.exe' if hasattr(sp, 'STARTUPINFO') else 'xdg-open'
 
@@ -107,12 +126,14 @@ def doc_handler():
 def subroutine_error_popup(subroutine, error, message):
     """Display a popup for errors in subroutines.
 
-    :param subroutine: The name of the subroutine causing the error
-    :type subroutine: str
-    :param error: The error caused by the subroutine
-    :type error: Exception or str
-    :param message: The additional error message to be displayed
-    :type message: str
+    Parameters
+    ----------
+    subroutine : str
+        The name of the subroutine causing the error.
+    error : Exception or str
+        The error caused by the subroutine.
+    message : str
+        The additional error message to be displayed.
     """
     # ===== Error Window Definition ===== #
     error_layout = [

@@ -1,4 +1,4 @@
-#!/usr/bin/env Python3
+#!/usr/bin/python3.7
 # -*- coding: utf-8 -*-
 """A program for the calculation of effective one-particle potentials (OPPs) from scatterer densities.
 
@@ -15,7 +15,7 @@ __author__ = 'Dennis Wiedemann'
 __copyright__ = 'Copyright 2021, Dr. Dennis Wiedemann'
 __credits__ = ['Dennis Wiedemann']
 __license__ = 'MIT'
-__version__ = '2.0.4'
+__version__ = '2.0.5'
 __maintainer__ = 'Dennis Wiedemann'
 __email__ = 'dennis.wiedemann@chem.tu-berlin.de'
 __status__ = 'Production'
@@ -31,11 +31,20 @@ K_B = 1.380649e-23 / 1.602176634e-19  # Boltzmann constant in eV/K (according to
 def non_zero_float(string):
     """Define non-zero floats for `argparse`.
 
-    :param string: The string to check for convertibility
-    :type string: str
-    :return: The converted non-zero float
-    :rtype: float
-    :raises :class:`argparse.ArgumentTypeError`: if string does not represent a non-zero float
+    Parameters
+    ----------
+    string : str
+        The string to check for convertibility.
+
+    Returns
+    -------
+    float
+        The converted non-zero float.
+
+    Raises
+    ------
+    argparse.ArgumentTypeError
+        If string does not represent a non-zero float.
     """
     try:
         value = float(string)
@@ -49,11 +58,20 @@ def non_zero_float(string):
 def pos_float(string):
     """Define positive floats for `argparse`.
 
-    :param string: The string to check for convertibility
-    :type string: str
-    :return: The converted positive float
-    :rtype: float
-    :raises :class:`argparse.ArgumentTypeError`: if string does not represent a positive float
+        Parameters
+        ----------
+        string : str
+            The string to check for convertibility.
+
+        Returns
+        -------
+        float
+            The converted positive float.
+
+        Raises
+        ------
+        argparse.ArgumentTypeError
+            If string does not represent a positive float.
     """
     try:
         value = float(string)
@@ -68,14 +86,19 @@ def pos_float(string):
 def mbyte_truncate(string, byte_length, encoding='utf-8'):
     """Truncate a multi-byte encoded string to a given maximal byte size.
 
-    :param string: The string to truncate
-    :type string: str
-    :param byte_length: The length in bytes to truncate to
-    :type byte_length: int
-    :param encoding: The encoding of the string  # TODO: optional
-    :type encoding: str
-    :return: The truncated string
-    :rtype: str
+    Parameters
+    ----------
+    string : str
+        The string to truncate.
+    byte_length : int
+        The length in bytes to truncate to.
+    encoding : str, optional
+        The encoding of the string.
+
+    Returns
+    -------
+    str
+        The truncated string.
     """
     encoded = string.encode(encoding)[:byte_length]
     return encoded.decode(encoding, 'ignore')
@@ -98,47 +121,54 @@ def goodbye():
 def read_grid(file):
     u"""Read the binary input grid-file depending on its header.
 
-    :param file: The path and name of the input file
-    :type file: str
-    :return: dictionary of header values, 1D array of indices, 1D array of data points
-             - ``'version'``: quadripartite version number of input file
-             - ``'title'``: title of the data set. Maximum of 79 characters
-             - ``'gtype'``: grid type. `0` for general grid (*.ggrid), `1` for periodic grid (*.pgrid)
-             - ``'ftype'``: file record type. `0` for raw data (values only), `1` for records with index and value(s)
-             - ``'nval'``: number of values per record. `1` for records with either positive or negative data, `2` for
-                           records with both positive and negative value
-             - ``'ndim'``: dimension of unit cell. Has to be `3` currently
-             - ``'ngrid'``: number of voxels/records along principal axes
-             - ``'nasym'``: total number of records/voxels
-             - ``'cell'``: unit cell parameters. Order: a/Å, b/Å, c/Å, α/°, β/°, γ/°
-             - ``'npos'``: number of considered equivalent positions/symmetry operators
-             - ``'ncen'``: indicator for consideration of centrosymmetry. `0` for non-centrosymmetric data, `1` for
-                           centrosymmetric data
-             - ``'nsub'``: number of considered lattice centering operations
-             - ``'symop'``: symmetry operators as 3 × 4 matrices (3 × 3 rotation matrices followed by translation
-                            vector)
-             - ``'subposp'``: centering vector
+    Parameters
+    ----------
+    file : str
+        The path and name of the input file.
 
-    :rtype: tuple[
-                dict(
-                    - ``'version'``: numpy.ndarray[numpy.int32 * 4]
-                    - ``'title'``: str
-                    - ``'gtype'``: numpy.int32
-                    - ``'ftype'``: numpy.int32
-                    - ``'nval'``: numpy.int32
-                    - ``'ndim'``: numpy.int32
-                    - ``'ngrid'``: numpy.ndarray[numpy.int32 * 3]
-                    - ``'nasym'``: numpy.int32
-                    - ``'cell'``: numpy.ndarray[numpy.float32 * 6]
-                    - ``'npos'``: numpy.int32
-                    - ``'ncen'``: numpy.int32
-                    - ``'nsub'``: numpy.int32
-                    - ``'symop'``: numpy.ndarray[numpy.ndarray[numpy.int32 * 12]]
-                    - ``'subposp'``: numpy.ndarray[numpy.int32 * 3]
-                    ),
-                numpy.ndarray(numpy.int32),
-                numpy.ndarray(numpy.float32)
-                ]
+    Returns
+    -------
+    header : dict[str, str or numpy.int32 or numpy.ndarray]
+        The file-header values (see `Notes`_ for details on keys, value types, and their meaning).
+    indices : numpy.ndarray of numpy.int32
+        The indices of the data points.
+    data : numpy.ndarray of numpy.float32
+        The data at each point.
+
+    Notes
+    -----
+    The dictionary `header` will contain the following keys with values of the type given:
+
+    - header['version'] : numpy.ndarray[4] of numpy.int32
+          The quadripartite version number of input file.
+    - header['title'] : str
+          The title of the data set (maximum of 79 characters).
+    - header['gtype'] : numpy.int32
+          The grid type (0 for general grid, *.ggrid, 1 for periodic grid, *.pgrid).
+    - header['ftype'] : numpy.int32
+          The file record type (0 for raw data containing values only, 1 for records containing index and value[s]).
+    - header['nval'] : numpy.int32
+          The number of values per record (1 for records with either positive or negative data, 2 for records with both
+          positive and negative values).
+    - header['ndim'] : numpy.int32
+          The dimension of the unit cell (has to be 3, currently).
+    - header['ngrid'] : numpy.ndarray[3] of numpy.int32
+          The number of voxels/records along each principal axes.
+    - header['nasym'] : numpy.int32
+          The total number of records/voxels.
+    - header['cell'] : numpy.ndarray[6] of numpy.float32
+          The unit cell parameters (order: *a*/Å, *b*/Å, *c*/Å, *α*/°, *β*/°, *γ*/°).
+    - header['npos'] : numpy.int32
+          The number of considered equivalent positions/symmetry operators.
+    - header['ncen'] : numpy.int32
+          An indicator for consideration of centrosymmetry (0 for non-centrosymmetric data, 1 for centrosymmetric data).
+    - header['nsub'] : numpy.int32
+          The number of considered lattice centering operations.
+    - header['symop'] : numpy.ndarray of numpy.ndarray[12] of numpy.int32
+          The symmetry operators as 3 × 4 matrices (each as 3 × 3 rotation matrix followed by translation vector).
+    - header['subposp'] : numpy.ndarray[3] of numpy.int32
+          The centering vector.
+
     """
     with open(file, 'rb') as read_file:
 
@@ -210,45 +240,29 @@ def read_grid(file):
     return header, indices, data
 
 
-def write_grid(file, header, indices, data):
-    u"""Write the binary output grid-file depending on its header.
+def write_grid(file, header, data, indices=None):
+    """Write the binary output grid-file depending on its header.
 
-    :param file: path and name of the output file
-    :type file: str
-    :param header: dictionary of header values
-                   - ``'version'``: quadripartite version number of input file
-                   - ``'title'``: title of the data set. Maximum of 79 characters
-                   - ``'gtype'``: grid type. `0` for general grid (*.ggrid), `1` for periodic grid (*.pgrid)
-                   - ``'ftype'``: file record type. `0` for raw data (values only), `1` for records with index and
-                                  value(s)
-                   - ``'ndim'``: dimension of unit cell. Has to be `3` currently
-                   - ``'ngrid'``: number of voxels/records along principal axes
-                   - ``'cell'``: unit cell parameters. Order: a/Å, b/Å, c/Å, α/°, β/°, γ/°
-                   - ``'npos'``: number of considered equivalent positions/symmetry operators
-                   - ``'ncen'``: indicator for consideration of centrosymmetry. `0` for non-centrosymmetric data, `1`
-                                 for centrosymmetric data
-                   - ``'nsub'``: number of considered lattice centering operations
-                   - ``'symop'``: symmetry operators as 3 × 4 matrices (3 × 3 rotation matrices followed by translation
-                                  vector)
-                   - ``'subposp'``: centering vector
-    :type header: dict(
-                       - ``'version'``: numpy.ndarray[numpy.int32 * 4]
-                       - ``'title'``: str
-                       - ``'gtype'``: numpy.int32
-                       - ``'ftype'``: numpy.int32
-                       - ``'ndim'``: numpy.int32
-                       - ``'ngrid'``: numpy.ndarray[numpy.int32 * 3]
-                       - ``'cell'``: numpy.ndarray[numpy.float32 * 6]
-                       - ``'npos'``: numpy.int32
-                       - ``'ncen'``: numpy.int32
-                       - ``'nsub'``: numpy.int32
-                       - ``'symop'``: numpy.ndarray[numpy.ndarray[numpy.int32 * 12]]
-                       - ``'subposp'``: numpy.ndarray[numpy.int32 * 3]
-                       )
-    :param indices: indices of the data points. Must have same size as `data`
-    :type indices: numpy.ndarray(numpy.int32)
-    :param data: OPP data points.
-    :type data: numpy.ndarray(numpy.float32)
+    Parameters
+    ----------
+    file : str
+        The path and name of the output file.
+    header : dict [str, str or numpy.int32 or numpy.ndarray]
+        The file-header values (see `Notes`_ for details on keys, value types, and their meaning).
+    data : numpy.ndarray of numpy.float32
+        The OPP data points to put out.
+    indices : numpy.ndarray of numpy.int32, optional
+        The indices of the data points (array must have same size as `data`).
+
+    Notes
+    -----
+    The dictionary `header` must contain the following keys with valid values associated: 'version', 'title', 'gtype',
+    'ftype', 'ndim', 'ngrid', 'cell', 'npos', 'ncen', 'nsub', 'symop', and 'subposp'. Refer to `read_grid` for full
+    documentation.
+
+    See Also
+    --------
+    read_grid : description of the meaning and type of the values in the dictionary `header`
     """
     header['nval'] = np.int32(1)   # OPP is a single value
     header['nasym'] = np.int32(data.size)  # Set total number of data points (in case the input header was wrong)
@@ -278,20 +292,22 @@ def write_grid(file, header, indices, data):
         else:
 
             # ----- Write data for raw (symmetry-independent) file ----- #
-            write_file.write(data)
+            write_file.write(data.tobytes())
 
 
 def create_vesta(output_file, title, isovalue, record_type):
     """Create a *.vesta file for displaying grid in VESTA.
 
-    :param output_file: The path and name of the output grid-file
-    :type output_file: str
-    :param title: The title of the grid file
-    :type title: str
-    :param isovalue: The isosurface value to display (will be rounded)
-    :type isovalue: float
-    :param record_type: The type of record in the grid file (`header['nval']` · `header['ftype']`)
-    :type record_type: int
+    Parameters
+    ----------
+    output_file : str
+        The path and name of the output grid-file.
+    title : str
+        The title of the grid file.
+    isovalue : float
+        The isosurface value to display (will be rounded).
+    record_type : int
+        The type of record in the grid file (`header['nval']` * `header['ftype']`).
     """
     with open(os.path.splitext(output_file)[0] + '.vesta', 'w') as file:
         file.write('#VESTA_FORMAT_VERSION 3.3.0\n\n\n')
@@ -308,19 +324,19 @@ def create_vesta(output_file, title, isovalue, record_type):
 def calc_opp(input_file, output_file, temp, source, extr=None):
     """Start main routine for calculating the OPP from scatterer density.
 
-    :param input_file: The path and name of the input file
-    :type input_file: str
-    :param output_file: The path and name of the output file
-    :type output_file: str
-    :param temp: The absolute temperature in Kelvin
-    :type temp: float
-    :param source: An identifier for the source of the extremal value ('min': negative minimum, 'max': positive maximum,
-                   'custom': user-provided value in parameter extr)  # TODO: alternative parameter list
-    :type source: str
-    :param extr: A user-provided extremal value  # TODO: optional
-    :type extr: float
-
-    .. notes:: ('min': negative minimum, 'max': positive maximum, 'custom': user-provided value in parameter extr)  # TODO
+    Parameters
+    ----------
+    input_file : str
+        The path and name of the input file.
+    output_file : str
+        The path and name of the output file.
+    temp : float
+        The absolute temperature in Kelvin.
+    source : {'min', 'max', 'custom'}
+        An identifier for the source of the extremal value ('min': negative minimum, 'max': positive maximum, 'custom':
+        user-provided value in parameter `extr`).
+    extr : float, optional
+        A user-provided extremal value.
     """
     hello()
 
@@ -338,10 +354,10 @@ def calc_opp(input_file, output_file, temp, source, extr=None):
     if source == 'custom':
         print('Extremal density given: {:f} (fm) Å⁻³\n'.format(extr))
     elif source == 'min':
-        extr = input_data.min()
+        extr = input_data.min(initial=np.finfo(input_data.dtype).max)
         print('Minimum density found: {:f} (fm) Å⁻³\n'.format(extr))
     else:
-        extr = input_data.max()
+        extr = input_data.max(initial=np.finfo(input_data.dtype).min)
         print('Maximum density found: {:f} (fm) Å⁻³\n'.format(extr))
 
     # ----- The real magic happens here ----- #
@@ -357,7 +373,7 @@ def calc_opp(input_file, output_file, temp, source, extr=None):
     # ----- Write out data ----- #
     print('Opening output file and writing data ... ', end='')
     header['title'] = mbyte_truncate('OPP from ' + header['title'], 79, 'utf-8')  # Crop title to 79 bytes
-    write_grid(output_file, header, indices, output_data)
+    write_grid(output_file, header, output_data, indices)
     print('Done.')
 
     # ----- Build VESTA file for easy visualization ----- #

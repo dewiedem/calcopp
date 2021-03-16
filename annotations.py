@@ -1,4 +1,4 @@
-#!/usr/bin/env Python3
+#!/usr/bin/python3.7
 # -*- coding: utf-8 -*-
 """Larger string constants for CalcOPP-GUI.
 

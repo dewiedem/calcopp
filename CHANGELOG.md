@@ -10,10 +10,11 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 - `calcopp-gui`: Using modal `About …` window instead of hiding main window.
 - `calcopp-gui`: Unified error popups.
 - `calcopp-gui`: Call for popups PEP-8 compliant.
-- `calcopp-gui`: Clean-up, correction, and unification of docstrings.
+- Docstrings in NumPy style including clean-up, correction, and unification.
 - Unified use of quotation marks with Python.
 - `calcopp-gui`: Use implicit booleans.
 - Use modern Python string formatting (f-strings and `format` method).
+- More specific shebang interpreter directives.
 
 ## [2.0.4] - 2021-02-22
 ### Added
