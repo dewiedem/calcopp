@@ -1,4 +1,4 @@
-#!/usr/bin/python3.7
+#!/usr/bin/python3.9
 # -*- coding: utf-8 -*-
 """A program for the calculation of effective one-particle potentials (OPPs) from scatterer densities.
 

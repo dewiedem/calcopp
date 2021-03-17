@@ -1,6 +1,6 @@
 program pdf2opp_2d
 
-!   CalcOPP 2.0.4 - Calculation of Effective One-Particle Potentials
+!   CalcOPP 2.0.5 - Calculation of Effective One-Particle Potentials
 !   PDF2OPP_2D - Subroutines for Calculation from 2D PDF Data (JANA2006 STF Format)
 !   Copyright (c) 2021  Dr. Dennis Wiedemann (MIT License, see LICENSE file)
 
@@ -29,7 +29,7 @@ logical                            :: output_pdf, output_pdferr, output_opp, out
 logical                            :: is_dnd                                                ! Flag for drag and drop
 
 character(len = *), parameter      :: SEPARATOR = ' ' // repeat('=', 50)                    ! Visual separator for standard output
-character(len = *), parameter      :: VERSION = '2.0.4'                                     ! Program version
+character(len = *), parameter      :: VERSION = '2.0.5'                                     ! Program version
 real, parameter                    :: K_B = 1.380649E-23 / 1.602176634E-19                  ! Boltzmann constant in eV/K (according
                                                                                             !   to CODATA 2018)
 real, parameter                    :: INFINITE_OPP = 1.0E6                                  ! Pseudo-infinite OPP in eV

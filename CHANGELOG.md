@@ -4,9 +4,11 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 ## Unreleased
 ### Added
 - `calcopp-gui`: Possibility to copy error messages to clipboard and automatically put them into an e-mail message.
+- `calcopp-gui`: Padding of GUI elements for a cleaner look.
+- `calcopp-gui`: Links in `About …` window.
 
 ### Changed
-- `calcopp-gui`: Padding of GUI elements for a cleaner look.
+- Bumped all version strings.
 - `calcopp-gui`: PySimpleGUI calls now in more concise notation.
 - `calcopp-gui`: Using modal `About …` window instead of hiding main window.
 - `calcopp-gui`: Unified error popups.

@@ -1,4 +1,4 @@
-#!/usr/bin/python3.7
+#!/usr/bin/python3.9
 # -*- coding: utf-8 -*-
 """A graphical user interface for the calculation of effective one-particle potentials (OPPs).
 
@@ -21,6 +21,7 @@ from webbrowser import open as web_open
 import PySimpleGUI as sg
 import annotations as an
 import sd2opp
+
 
 __author__ = 'Dennis Wiedemann'
 __copyright__ = 'Copyright 2021, Dr. Dennis Wiedemann'
@@ -140,8 +141,7 @@ def subroutine_error_popup(subroutine, error, message):
         [sg.Text(an.ERROR_INTRO.format(subroutine))],
         [sg.Text(message)],
         [sg.Text(an.ERROR_OUTRO, text_color='red')],
-        [sg.Text('(Error message copied to clipboard.)', font=('', 10, 'italic'), text_color='red',
-                 key='copy_done', visible=False)],
+        [sg.Text('', font=('', 10, 'italic'), key='copy_done', size=(40, 1))],
         [sg.Button('Copy to clipboard', key='clipboard'),
          sg.Button('Send as e-mail', key='email', bind_return_key=True, focus=True),
          sg.Exit('Close', key='close')]
@@ -163,7 +163,7 @@ def subroutine_error_popup(subroutine, error, message):
             temp_widget.clipboard_append('Version: {}\n\n{}\n\n{}'.format(__version__, str(error), message))
             temp_widget.update()
             temp_widget.destroy()
-            error_window['copy_done'](visible=True)
+            error_window['copy_done']('(Error message copied to clipboard.)')
 
         # Compose bug report as e-mail
         elif event_error == 'email':
@@ -374,13 +374,16 @@ while True:
              sg.Radio('RIS format', 'FORMAT', default=True, key='format_ris'),
              sg.Radio('BibTeX format', 'FORMAT', key='format_bib'),
              sg.OK('Export', key='citation_export')],
+            [sg.Text(' ')],
+            *[[sg.Text(link, font=('', 10, 'underline'), key=f'link_{an.LINKS.index(link)}', enable_events=True)]
+              for link in an.LINKS],
             [sg.Text('\n' + an.LICENSE)],
             [sg.Exit('Done')]
         ]
 
         window_about = sg.Window('About …', layout_about, modal=True)
 
-        # ····· Handle Citation Exports ····· #
+        # ····· Handle Citation Exports and Link Clicks ····· #
         while True:
             event_about, values_about = window_about.read()
             if event_about in [sg.WIN_CLOSED, 'Done']:
@@ -391,6 +394,8 @@ while True:
                     sp.run([doc_handler(), os.path.join('data', 'citation.ris')], **sp_args())
                 else:
                     sp.run([doc_handler(), os.path.join('data', 'citation.bib')], **sp_args())
+            elif event_about.startswith('link_'):
+                web_open(an.LINKS[int(event_about.removeprefix('link_'))], new=1)
 
     # ----- Start Calculations ----- #
     else:
