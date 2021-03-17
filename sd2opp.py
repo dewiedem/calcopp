@@ -83,7 +83,7 @@ def pos_float(string):
     return value
 
 
-def mbyte_truncate(string, byte_length, encoding='utf-8'):
+def multibyte_truncate(string, byte_length, encoding='utf-8'):
     """Truncate a multi-byte encoded string to a given maximal byte size.
 
     Parameters
@@ -372,7 +372,7 @@ def calc_opp(input_file, output_file, temp, source, extr=None):
 
     # ----- Write out data ----- #
     print('Opening output file and writing data ... ', end='')
-    header['title'] = mbyte_truncate('OPP from ' + header['title'], 79, 'utf-8')  # Crop title to 79 bytes
+    header['title'] = multibyte_truncate('OPP from ' + header['title'], 79, 'utf-8')  # Crop title to 79 bytes
     write_grid(output_file, header, output_data, indices)
     print('Done.')
 

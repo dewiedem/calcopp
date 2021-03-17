@@ -182,7 +182,7 @@ menu_def = [['&File', 'E&xit'], ['&Help', ['&Readme', '&Changelog', '---', '&Abo
 # ===== Left Column Definition ===== #
 column_left = [
     [sg.Frame('Information and Manual', [[sg.Multiline(write_only=True, auto_refresh=True, size=(61, 25),
-                                                       font=('Courier', 9), key='manual')]])],
+                                                       font=('Courier', 9), key='manual', pad=((7, 11), 6))]])],
     [sg.Frame('Citation', [
         [sg.Text('If you publish data calculated with CalcOPP, please use the following citation:')],
         [sg.Text(an.CITATION, font=(None, 10, 'italic'))]])]
@@ -194,7 +194,7 @@ tab_pdf2d = [
     [sg.Frame('Files', [
         [sg.Text('Input PDF file', size=(14, 1)),
          sg.Input(key='2d_file_in'),
-         sg.FileBrowse(file_types=(('Structured File', '*.stf'),))
+         sg.FileBrowse(file_types=(('Structured File', '*.stf'),), pad=((5, 81), 3))
          ],
         [sg.Text('Input error file', size=(14, 1)),
          sg.Input(disabled=True, key='2d_file_err'),
@@ -206,16 +206,16 @@ tab_pdf2d = [
          ]
     ])],
     [sg.Frame('Temperature', [[
-        sg.Radio('From JANA2006’s *.m90 file', 'TEMP2D', change_submits=True, default=True, key='2d_temp_source_m90'),
-        sg.Radio('Custom value:', 'TEMP2D', change_submits=True, key='2d_temp_source_custom'),
+        sg.Radio('From JANA2006’s *.m90 file', 'TEMP2D', enable_events=True, default=True, key='2d_temp_source_m90'),
+        sg.Radio('Custom value:', 'TEMP2D', enable_events=True, key='2d_temp_source_custom'),
         sg.Input(size=(8, 1), disabled=True, key='2d_temp'),
-        sg.Text('K')
+        sg.Text('K', pad=((5, 152), 3))
     ]])],
     [sg.Frame('Include in Output', [[
         sg.Checkbox('PDF (source)', key='2d_output_pdf'),
-        sg.Checkbox('PDF error (source)', change_submits=True, key='2d_output_pdf_err'),
+        sg.Checkbox('PDF error (source)', enable_events=True, key='2d_output_pdf_err'),
         sg.Checkbox('OPP', default=True, key='2d_output_opp'),
-        sg.Checkbox('OPP error', change_submits=True, key='2d_output_opp_err')
+        sg.Checkbox('OPP error', enable_events=True, key='2d_output_opp_err', pad=((5, 146), 3)),
     ]])],
     [sg.OK('Make it so!', key='2d_okay'), sg.OK('Reset', key='2d_reset')]
 ]
@@ -225,7 +225,7 @@ tab_pdf3d = [
     [sg.Frame('Files', [
         [sg.Text('Input PDF file', size=(14, 1)),
          sg.Input(key='3d_file_in'),
-         sg.FileBrowse(file_types=(('XCrySDen Structure', '*_tmp.xsf'),))
+         sg.FileBrowse(file_types=(('XCrySDen Structure', '*_tmp.xsf'),), pad=((5, 81), 3))
          ],
         [sg.Text('Output file', size=(14, 1)),
          sg.Input(key='3d_file_out'),
@@ -233,10 +233,10 @@ tab_pdf3d = [
          ]
     ])],
     [sg.Frame('Temperature', [[
-        sg.Radio('From JANA2006’s *.m90 file', 'TEMP3D', change_submits=True, default=True, key='3d_temp_source_m90'),
-        sg.Radio('Custom value:', 'TEMP3D', change_submits=True, key='3d_temp_source_custom'),
+        sg.Radio('From JANA2006’s *.m90 file', 'TEMP3D', enable_events=True, default=True, key='3d_temp_source_m90'),
+        sg.Radio('Custom value:', 'TEMP3D', enable_events=True, key='3d_temp_source_custom'),
         sg.Input(size=(8, 1), disabled=True, key='3d_temp'),
-        sg.Text('K')
+        sg.Text('K', pad=((5, 152), 3))
     ]])],
     [sg.OK('Engage!', key='3d_okay'), sg.OK('Reset', key='3d_reset')]
 ]
@@ -246,7 +246,7 @@ tab_sd = [
     [sg.Frame('Files', [
         [sg.Text('Input density file', size=(14, 1)),
          sg.Input(key='sd_file_in'),
-         sg.FileBrowse(file_types=(('Periodic Grid', '*.pgrid'),))
+         sg.FileBrowse(file_types=(('Periodic Grid', '*.pgrid'),), pad=((5, 81), 3))
          ],
         [sg.Text('Output density file', size=(14, 1)),
          sg.Input(key='sd_file_out'),
@@ -255,25 +255,22 @@ tab_sd = [
     ])],
     [sg.Frame('Temperature', [[
         sg.Input(size=(8, 1), key='sd_temp'),
-        sg.Text('K')
+        sg.Text('K', pad=((5, 471), (3, 7)))
     ]])],
     [sg.Frame('Extremal Value', [[
-        sg.Radio('Negative minimum', 'EXTREMUM', default=True, change_submits=True, key='sd_extremum_source_minimum'),
-        sg.Radio('Positive maximum', 'EXTREMUM', change_submits=True, key='sd_extremum_source_maximum'),
-        sg.Radio('Custom value:', 'EXTREMUM', change_submits=True, key='sd_extremum_source_custom'),
+        sg.Radio('Negative minimum', 'EXTREMUM', default=True, enable_events=True, key='sd_extremum_source_minimum'),
+        sg.Radio('Positive maximum', 'EXTREMUM', enable_events=True, key='sd_extremum_source_maximum'),
+        sg.Radio('Custom value:', 'EXTREMUM', enable_events=True, key='sd_extremum_source_custom'),
         sg.Input(size=(8, 1), disabled=True, key='sd_extremum'),
-        sg.Text('(fm) Å⁻³')
+        sg.Text('(fm) Å⁻³', pad=((5, 29), 3))
     ]])],
     [sg.OK('Go already!', key='sd_okay'), sg.OK('Reset', key='sd_reset')]
 ]
 
 # ----- Assembly of Right Column ----- #
 column_right = [
-    [sg.TabGroup([[
-        sg.Tab('2D PDF', tab_pdf2d),
-        sg.Tab('3D PDF', tab_pdf3d),
-        sg.Tab('Scatterer Density', tab_sd)]],
-        change_submits=True, key='data_source')],
+    [sg.TabGroup([[sg.Tab('2D PDF', tab_pdf2d), sg.Tab('3D PDF', tab_pdf3d), sg.Tab('Scatterer Density', tab_sd)]],
+                 enable_events=True, key='data_source')],
     [sg.Frame('Output', [[sg.Output(size=(77, 12), font=('Courier', 9), key='output')]])]
 ]
 
