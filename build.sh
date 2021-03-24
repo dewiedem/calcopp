@@ -90,9 +90,9 @@ python3.7 -O -m PyInstaller calcopp-gui.py \
    --add-data="LICENSE:docs" \
    --add-data="docs/BSD-2.0.txt:docs" \
    --add-data="docs/LGPL-3.0.txt:docs" \
-   --add-data="dist/sd2opp/sd2opp:." \
-   --add-data="pdf2opp_2d:." \
-   --add-data="pdf2opp_3d:." \
+   --add-binary="dist/sd2opp/sd2opp:." \
+   --add-binary="pdf2opp_2d:." \
+   --add-binary="pdf2opp_3d:." \
    --upx-dir="/usr/bin/"
 
 chmod +x dist/CalcOPP/CalcOPP dist/CalcOPP/sd2opp

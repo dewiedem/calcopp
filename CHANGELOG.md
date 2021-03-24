@@ -1,13 +1,15 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file; its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/). This project adheres to [*Semantic Versioning*](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [2.0.5] - Unreleased
 ### Added
 - `calcopp-gui`: Possibility to copy error messages to clipboard and automatically put them into an e-mail message.
 - `calcopp-gui`: Padding of GUI elements for a cleaner look.
 - `calcopp-gui`: Links in `About …` window.
+- `calcopp-gui`: Handler for opening external files under macOS and exception for unknown operating systems. 
 
 ### Changed
+- Switched to Python version 3.9.
 - Bumped all version strings.
 - `calcopp-gui`: PySimpleGUI calls now in more concise notation.
 - `calcopp-gui`: Using modal `About …` window instead of hiding main window.
@@ -18,6 +20,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 - `calcopp-gui`: Use implicit booleans.
 - Use modern Python string formatting (f-strings and `format` method).
 - More specific shebang interpreter directives.
+- `sd2opp`: Cleaner way the grid writing routine is invoked (explicit arguments instead of unchecked dictionary).  
 
 ## [2.0.4] - 2021-02-22
 ### Added
@@ -159,6 +162,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 ### Added
 - First production version with basic functionality.
 
+[2.0.5]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.5
 [2.0.4]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.4
 [2.0.3]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.3
 [2.0.2]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.2

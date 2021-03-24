@@ -128,46 +128,17 @@ def read_grid(file):
 
     Returns
     -------
-    header : dict[str, str or numpy.int32 or numpy.ndarray]
-        The file-header values (see `Notes`_ for details on keys, value types, and their meaning).
-    indices : numpy.ndarray of numpy.int32
+    header : dict[str, str or int or numpy.ndarray]
+        The file-header values (see parameters of :func:`write_grid` for details on keys, value types, and their
+        meaning).
+    indices : numpy.ndarray[int]
         The indices of the data points.
-    data : numpy.ndarray of numpy.float32
+    data : numpy.ndarray[int]
         The data at each point.
 
-    Notes
-    -----
-    The dictionary `header` will contain the following keys with values of the type given:
-
-    - header['version'] : numpy.ndarray[4] of numpy.int32
-          The quadripartite version number of input file.
-    - header['title'] : str
-          The title of the data set (maximum of 79 characters).
-    - header['gtype'] : numpy.int32
-          The grid type (0 for general grid, *.ggrid, 1 for periodic grid, *.pgrid).
-    - header['ftype'] : numpy.int32
-          The file record type (0 for raw data containing values only, 1 for records containing index and value[s]).
-    - header['nval'] : numpy.int32
-          The number of values per record (1 for records with either positive or negative data, 2 for records with both
-          positive and negative values).
-    - header['ndim'] : numpy.int32
-          The dimension of the unit cell (has to be 3, currently).
-    - header['ngrid'] : numpy.ndarray[3] of numpy.int32
-          The number of voxels/records along each principal axes.
-    - header['nasym'] : numpy.int32
-          The total number of records/voxels.
-    - header['cell'] : numpy.ndarray[6] of numpy.float32
-          The unit cell parameters (order: *a*/Å, *b*/Å, *c*/Å, *α*/°, *β*/°, *γ*/°).
-    - header['npos'] : numpy.int32
-          The number of considered equivalent positions/symmetry operators.
-    - header['ncen'] : numpy.int32
-          An indicator for consideration of centrosymmetry (0 for non-centrosymmetric data, 1 for centrosymmetric data).
-    - header['nsub'] : numpy.int32
-          The number of considered lattice centering operations.
-    - header['symop'] : numpy.ndarray of numpy.ndarray[12] of numpy.int32
-          The symmetry operators as 3 × 4 matrices (each as 3 × 3 rotation matrix followed by translation vector).
-    - header['subposp'] : numpy.ndarray[3] of numpy.int32
-          The centering vector.
+    See Also
+    --------
+    write_grid : Write binary grid-files.
 
     """
     with open(file, 'rb') as read_file:
@@ -240,59 +211,97 @@ def read_grid(file):
     return header, indices, data
 
 
-def write_grid(file, header, data, indices=None):
+def write_grid(file, data, indices=None, *, version=None, title, gtype, ftype, nval=None, ndim=None, ngrid, nasym=None,
+               cell, npos, ncen, nsub, symop, subposp):
     """Write the binary output grid-file depending on its header.
 
     Parameters
     ----------
     file : str
         The path and name of the output file.
-    header : dict [str, str or numpy.int32 or numpy.ndarray]
-        The file-header values (see `Notes`_ for details on keys, value types, and their meaning).
-    data : numpy.ndarray of numpy.float32
+    data : numpy.ndarray[numpy.float32]
         The OPP data points to put out.
-    indices : numpy.ndarray of numpy.int32, optional
+    indices : numpy.ndarray[numpy.int32], optional
         The indices of the data points (array must have same size as `data`).
+    version : numpy.ndarray[numpy.int32]
+        The quadripartite version number of input file, size: 4. This is a bogus argument that will not be respected by
+        the function.
+    title : str
+        The title of the data set (maximum of 79 bytes).
+    gtype : {numpy.int32(0), numpy.int32(1)}
+        The grid type (0 for general grid, *.ggrid, 1 for periodic grid, *.pgrid).
+    ftype : {numpy.int32(0), numpy.int32(1)}
+        The file record type (0 for raw data without symmetry information containing values only, 1 for records with
+        symmetry information containing index and value[s]).
+    nval : {numpy.int32(1), numpy.int32(2)}, optional
+        The number of values per record (1 for records with either positive or negative data, 2 for records with both
+        positive and negative values). This is a bogus argument that will not be respected by the function.
+    ndim : numpy.int32, optional
+        The dimension of the unit cell. This is a bogus argument that will not be respected by the function.
+    ngrid : numpy.ndarray[numpy.int32]
+        The number of voxels/records along each principal axes, size: 3.
+    nasym : numpy.int32, optional
+        The total number of records/voxels. This is a bogus argument that will not be respected by the function.
+    cell : numpy.ndarray[numpy.float32]
+        The unit cell parameters (order: *a*/Å, *b*/Å, *c*/Å, *α*/°, *β*/°, *γ*/°), size: 6.
+    npos : numpy.int32
+        The number of considered equivalent positions/symmetry operators.
+    ncen : {numpy.int32(0), numpy.int32(1)}
+        An indicator for consideration of centrosymmetry (0 for non-centrosymmetric data, 1 for centrosymmetric data).
+    nsub : numpy.int32
+        The number of considered lattice centering operations.
+    symop : numpy.ndarray[numpy.ndarray[numpy.int32]]
+        The symmetry operators as 3 × 4 matrices (each as 3 × 3 rotation matrix followed by translation vector,
+        size: 12).
+    subposp : numpy.ndarray[numpy.int32]
+        The centering vector, size: 3.
 
-    Notes
-    -----
-    The dictionary `header` must contain the following keys with valid values associated: 'version', 'title', 'gtype',
-    'ftype', 'ndim', 'ngrid', 'cell', 'npos', 'ncen', 'nsub', 'symop', and 'subposp'. Refer to `read_grid` for full
-    documentation.
-
-    See Also
-    --------
-    read_grid : description of the meaning and type of the values in the dictionary `header`
     """
-    header['nval'] = np.int32(1)   # OPP is a single value
-    header['nasym'] = np.int32(data.size)  # Set total number of data points (in case the input header was wrong)
+    # ----- Perform basic argument checks and alert user if need be ----- #
+    if (version is not None) and (version != [3, 0, 0, 0]).any():
+        print('WARNING: Data assigned the unsupported format version {}.{}.{}.{} - overwriting  ... '.format(*version),
+              end='')
+    version = np.array([3, 0, 0, 0])  # Version written by this routine
+    if nval and (nval != 1):
+        print(f'WARNING: Data points marked as {nval}-tuples instead of single values - correcting ... ', end='')
+    nval = np.int32(1)  # OPP is a single value
+    if ndim and (ndim != 3):
+        print(f'WARNING: Unit cell marked as {ndim}- instead of 3-dimensional - correcting ... ', end='')
+    ndim = np.int32(3)  # Must be 3 for current versions of VESTA
+    if nasym and (nasym != np.int32(data.size)):
+        print(f'WARNING: Number of records given as {nasym} but found {data.size} instead - correcting ... ', end='')
+    nasym = np.int32(data.size)  # Set number of records to actual number of data points
+    if (ftype == 1) and (indices is None or indices.size == 0):
+        print('WARNING: Symmetry information indicated but no record indices given - falling back to asymmetric'
+              ' data ... ', end='')
+
     with open(file, 'wb') as write_file:
 
         # ----- Write header ----- #
-        write_file.write(header['version'])
-        write_file.write(header['title'].encode('utf-8').ljust(80, b'\x00'))  # Pad title field with b'\x00'
-        write_file.write(header['gtype'])
-        write_file.write(header['ftype'])
-        write_file.write(header['nval'])
-        write_file.write(header['ndim'])
-        write_file.write(header['ngrid'])
-        write_file.write(header['nasym'])
-        write_file.write(header['cell'])
+        write_file.write(version)
+        write_file.write(title.encode('utf-8').ljust(80, b'\x00'))  # Pad title field with b'\x00'
+        write_file.write(gtype)
+        write_file.write(ftype)
+        write_file.write(nval)
+        write_file.write(ndim)
+        write_file.write(ngrid)
+        write_file.write(nasym)
+        write_file.write(cell)
 
-        if header['ftype'] == 1:
+        if ftype == 1:
 
             # ----- Write remaining header values and data for indexed (symmetry-dependent) file ----- #
-            write_file.write(header['npos'])
-            write_file.write(header['ncen'])
-            write_file.write(header['nsub'])
-            write_file.write(header['symop'])
-            write_file.write(header['subposp'])
+            write_file.write(npos)
+            write_file.write(ncen)
+            write_file.write(nsub)
+            write_file.write(symop)
+            write_file.write(subposp)
             write_file.write(np.fromiter(zip(indices, data), dtype=[('index', indices.dtype), ('value', data.dtype)]))
 
         else:
 
             # ----- Write data for raw (symmetry-independent) file ----- #
-            write_file.write(data.tobytes())
+            write_file.write(data)
 
 
 def create_vesta(output_file, title, isovalue, record_type):
@@ -344,7 +353,6 @@ def calc_opp(input_file, output_file, temp, source, extr=None):
     print('Opening input file and reading data ... ', end='')
     header, indices, input_data = read_grid(input_file)
     print('Done.')
-    print(header['ngrid'])
     print('Number of voxels: {} × {} × {}'.format(*header['ngrid']))
     print('Unit cell dimensions: a = {:f} Å, b = {:f} Å, c = {:f} Å,\n'
           '   α = {:f}°, β = {:f}°, γ = {:f}°'.format(*header['cell']))
@@ -373,7 +381,8 @@ def calc_opp(input_file, output_file, temp, source, extr=None):
     # ----- Write out data ----- #
     print('Opening output file and writing data ... ', end='')
     header['title'] = multibyte_truncate('OPP from ' + header['title'], 79, 'utf-8')  # Crop title to 79 bytes
-    write_grid(output_file, header, output_data, indices)
+    header['nval'] = np.int32(1)
+    write_grid(output_file, output_data, indices, **header)
     print('Done.')
 
     # ----- Build VESTA file for easy visualization ----- #

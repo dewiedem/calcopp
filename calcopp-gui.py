@@ -17,6 +17,7 @@ import subprocess as sp
 from tkinter import Tk
 from traceback import format_exc
 from urllib.parse import quote, urlencode
+import sys
 from webbrowser import open as web_open
 import PySimpleGUI as sg
 import annotations as an
@@ -94,8 +95,9 @@ def sp_args():
     -------
     dict[str, str or bool or None]
         The additional arguments for `subprocess` calls.
+
     """
-    if hasattr(sp, 'STARTUPINFO'):  # True only on Windows
+    if sys.platform.startswith('win32'):
 
         # Prevent Windows from popping up a command window on subprocess calls
         startup_info = sp.STARTUPINFO()
@@ -114,14 +116,28 @@ def sp_args():
 
 
 def doc_handler():
-    """Return the command for opening document files with the standard application for its type (on Windows and Linux).
+    """Return the command for opening document files with the standard application for its type (on Windows, Linux, and
+     macOS).
 
     Returns
     -------
     str
         The handler file name for opening documents.
+
+    Raises
+    ------
+    FileNotFoundError
+        If no handler is found due to an unknown operating system.
+
     """
-    return 'explorer.exe' if hasattr(sp, 'STARTUPINFO') else 'xdg-open'
+    if sys.platform.startswith('win32'):
+        return 'explorer.exe'
+    elif sys.platform.startswith('linux'):
+        return 'xdg-open'
+    elif sys.platform.startswith('darwin'):
+        return 'open'
+    else:
+        raise FileNotFoundError('Unknown operating system: File handler not found')
 
 
 def subroutine_error_popup(subroutine, error, message):
@@ -135,6 +151,7 @@ def subroutine_error_popup(subroutine, error, message):
         The error caused by the subroutine.
     message : str
         The additional error message to be displayed.
+
     """
     # ===== Error Window Definition ===== #
     error_layout = [
