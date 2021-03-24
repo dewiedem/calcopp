@@ -87,10 +87,10 @@ python -m PyInstaller calcopp-gui.py ^
    --add-data="LICENSE;docs" ^
    --add-data="docs\BSD-2.0.txt;docs" ^
    --add-data="docs\LGPL-3.0.txt;docs" ^
-   --add-data="dist\sd2opp\sd2opp.exe;." ^
+   --add-binary="dist\sd2opp\sd2opp.exe;." ^
    --add-data="dist\sd2opp\sd2opp.exe.manifest;." ^
-   --add-data="pdf2opp_2d.exe;." ^
-   --add-data="pdf2opp_3d.exe;." ^
+   --add-binary="pdf2opp_2d.exe;." ^
+   --add-binary="pdf2opp_3d.exe;." ^
    --noconsole ^
    --icon=data\CalcOPP.ico ^
    --version-file=calcopp_info.txt ^

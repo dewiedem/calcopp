@@ -2,7 +2,7 @@
 # `pip install -r requirements.txt` before you can run this.
 
 # Dependencies of calcopp-gui
-PySimpleGUI>=4.26.0
+PySimpleGUI>=4.37.0
 
 # Dependencies of sd2opp
 NumPy>=1.18.1
