@@ -68,14 +68,14 @@ fi
 
 
 # Freeze the Python modules "sd2opp" and "calcopp-gui"
-python3.7 -O -m PyInstaller sd2opp.py \
+python3.9 -O -m PyInstaller sd2opp.py \
    --noconfirm \
    --clean \
    --onedir \
    --log-level=WARN \
    --upx-dir="/usr/bin/"
 
-python3.7 -O -m PyInstaller calcopp-gui.py \
+python3.9 -O -m PyInstaller calcopp-gui.py \
    --name=CalcOPP \
    --noconfirm \
    --clean \

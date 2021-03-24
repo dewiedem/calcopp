@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file; its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/). This project adheres to [*Semantic Versioning*](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.5] - Unreleased
+## [2.0.5] - 2021-03-24
 ### Added
 - `calcopp-gui`: Possibility to copy error messages to clipboard and automatically put them into an e-mail message.
 - `calcopp-gui`: Padding of GUI elements for a cleaner look.
