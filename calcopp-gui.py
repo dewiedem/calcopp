@@ -14,7 +14,6 @@ CalcOPP-GUI uses the module PySimpleGUI by MikeTheWatchGuy distributed under the
 
 import os
 import subprocess as sp
-from tkinter import Tk
 from traceback import format_exc
 from urllib.parse import quote, urlencode
 import sys
@@ -158,9 +157,9 @@ def subroutine_error_popup(subroutine, error, message):
         [sg.Text(an.ERROR_INTRO.format(subroutine))],
         [sg.Text(message)],
         [sg.Text(an.ERROR_OUTRO, text_color='red')],
-        [sg.Text('', font=('', 10, 'italic'), key='copy_done', size=(40, 1))],
-        [sg.Button('Copy to clipboard', key='clipboard'),
-         sg.Button('Send as e-mail', key='email', bind_return_key=True, focus=True),
+        [sg.Text('', font='default 10 italic', key='-COPY_DONE-', size=(40, 1))],
+        [sg.Button('Copy to clipboard', key='-CLIPBOARD-'),
+         sg.Button('Send as e-mail', key='-EMAIL-', bind_return_key=True, focus=True),
          sg.Exit('Close', key='close')]
     ]
     error_window = sg.Window('Subroutine Error', error_layout, modal=True)
@@ -173,17 +172,12 @@ def subroutine_error_popup(subroutine, error, message):
             break
 
         # Copy trace to clipboard
-        elif event_error == 'clipboard':
-            temp_widget = Tk()
-            temp_widget.withdraw()
-            temp_widget.clipboard_clear()
-            temp_widget.clipboard_append('Version: {}\n\n{}\n\n{}'.format(__version__, str(error), message))
-            temp_widget.update()
-            temp_widget.destroy()
-            error_window['copy_done']('(Error message copied to clipboard.)')
+        elif event_error == '-CLIPBOARD-':
+            sg.clipboard_set('Version: {}\n\n{}\n\n{}'.format(__version__, str(error), message))
+            error_window['-COPY_DONE-']('(Error message copied to clipboard.)')
 
         # Compose bug report as e-mail
-        elif event_error == 'email':
+        elif event_error == '-EMAIL-':
             query = {'subject': f'Error in {subroutine}',
                      'body': 'Version:\n{}\n\nMessage:\n{}\n\nComment:\n'.format(__version__, message)}
             web_open(f'mailto:{__email__}?{urlencode(query, quote_via=quote)}', new=1)
@@ -194,15 +188,16 @@ sg.theme('Dark Grey 4')
 sg.set_global_icon(os.path.join('data', 'CalcOPP.ico'))
 
 # ===== Menu Definition ===== #
-menu_def = [['&File', 'E&xit'], ['&Help', ['&Readme', '&Changelog', '---', '&About …']]]
+menu_def = [['&File', 'E&xit'], ['&Help', ['&Readme', '&Changelog', sg.MENU_SEPARATOR_LINE, '&About …']]]
 
 # ===== Left Column Definition ===== #
 column_left = [
-    [sg.Frame('Information and Manual', [[sg.Multiline(write_only=True, auto_refresh=True, size=(61, 25),
-                                                       font=('Courier', 9), key='manual', pad=((7, 11), 6))]])],
+    [sg.Frame('Information and Manual', [[sg.Multiline(write_only=True, auto_refresh=True, size=(61, 25), key='manual',
+                                                       font='Courier 9', reroute_cprint=True, autoscroll=False,
+                                                       pad=((7, 11), 6))]])],
     [sg.Frame('Citation', [
         [sg.Text('If you publish data calculated with CalcOPP, please use the following citation:')],
-        [sg.Text(an.CITATION, font=(None, 10, 'italic'))]])]
+        [sg.Text(an.CITATION, font='default 10 italic')]])]
 ]
 
 # ===== Right Column Definition ===== #
@@ -219,7 +214,7 @@ tab_pdf2d = [
          ],
         [sg.Text('Output file', size=(14, 1)),
          sg.Input(key='2d_file_out'),
-         sg.SaveAs(file_types=(('ASCII Text', '*_opp.asc'),))
+         sg.SaveAs(file_types=(('ASCII Text', '*_opp.asc'),), default_extension='asc')
          ]
     ])],
     [sg.Frame('Temperature', [[
@@ -246,7 +241,7 @@ tab_pdf3d = [
          ],
         [sg.Text('Output file', size=(14, 1)),
          sg.Input(key='3d_file_out'),
-         sg.SaveAs(file_types=(('XCrySDen Structure', '*_opp.xsf'),))
+         sg.SaveAs(file_types=(('XCrySDen Structure', '*_opp.xsf'),), default_extension='xsf')
          ]
     ])],
     [sg.Frame('Temperature', [[
@@ -267,7 +262,7 @@ tab_sd = [
          ],
         [sg.Text('Output density file', size=(14, 1)),
          sg.Input(key='sd_file_out'),
-         sg.SaveAs(file_types=(('Periodic Grid', '*_opp.pgrid'),))
+         sg.SaveAs(file_types=(('Periodic Grid', '*_opp.pgrid'),), default_extension='pgrid')
          ]
     ])],
     [sg.Frame('Temperature', [[
@@ -288,7 +283,8 @@ tab_sd = [
 column_right = [
     [sg.TabGroup([[sg.Tab('2D PDF', tab_pdf2d), sg.Tab('3D PDF', tab_pdf3d), sg.Tab('Scatterer Density', tab_sd)]],
                  enable_events=True, key='data_source')],
-    [sg.Frame('Output', [[sg.Output(size=(77, 12), font=('Courier', 9), key='output')]])]
+    [sg.Frame('Output', [[sg.Multiline(size=(77, 12), font='Courier 9', key='output', autoscroll=True, write_only=True,
+                                       auto_refresh=True, reroute_stderr=True, reroute_stdout=True, disabled=True)]])]
 ]
 
 # ===== Window Invocation ===== #
@@ -305,11 +301,17 @@ while True:
     # ----- Toggle Explanations According to Tab ----- #
     if event_main == 'data_source':
         if values_main['data_source'] == '2D PDF':
-            window_main['manual'](an.MANUAL_PDF2D, disabled=True)
+            manual = an.MANUAL_PDF2D
         elif values_main['data_source'] == '3D PDF':
-            window_main['manual'](an.MANUAL_PDF3D, disabled=True)
+            manual = an.MANUAL_PDF3D
         else:
-            window_main['manual'](an.MANUAL_SD, disabled=True)
+            manual = an.MANUAL_SD
+        window_main['manual']('')
+        for section in manual:
+            kwargs = section.copy()
+            text = kwargs.pop('text')
+            sg.cprint(text, **kwargs, autoscroll=False)
+        window_main['manual'](disabled=True)
 
     # ----- Toggle Custom Temperature/Extremum Fields ----- #
     elif '_source_' in event_main:
@@ -384,15 +386,15 @@ while True:
         # ····· "About" Window Definition ····· #  (keep in the same control structure as call to not retain state)
         layout_about = [
             [sg.Image(os.path.join('data', 'logo.png'))],
-            [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font=('', 18))],
-            [sg.Text('Version {}\n'.format(__version__), font=('', 14))],
+            [sg.Text('\nCalcOPP – Calculation of One-Particle Potentials', font='default 18')],
+            [sg.Text('Version {}\n'.format(__version__), font='default 14')],
             [sg.Text(an.CITATION)],
             [sg.Text('Export Citation:'),
-             sg.Radio('RIS format', 'FORMAT', default=True, key='format_ris'),
-             sg.Radio('BibTeX format', 'FORMAT', key='format_bib'),
-             sg.OK('Export', key='citation_export')],
+             sg.Radio('RIS format', 'FORMAT', default=True, key='-FORMAT_RIS-'),
+             sg.Radio('BibTeX format', 'FORMAT', key='-FORMAT_BIB-'),
+             sg.OK('Export', key='-CITATION_EXPORT-')],
             [sg.Text(' ')],
-            *[[sg.Text(link, font=('', 10, 'underline'), key=f'link_{an.LINKS.index(link)}', enable_events=True)]
+            *[[sg.Text(link, font='default 10 underline', key=f'-LINK_{an.LINKS.index(link)}-', enable_events=True)]
               for link in an.LINKS],
             [sg.Text('\n' + an.LICENSE)],
             [sg.Exit('Done')]
@@ -406,13 +408,13 @@ while True:
             if event_about in [sg.WIN_CLOSED, 'Done']:
                 window_about.close()
                 break
-            elif event_about == 'citation_export':
-                if values_about['format_ris']:
+            elif event_about == '-CITATION_EXPORT-':
+                if values_about['-FORMAT_RIS-']:
                     sp.run([doc_handler(), os.path.join('data', 'citation.ris')], **sp_args())
                 else:
                     sp.run([doc_handler(), os.path.join('data', 'citation.bib')], **sp_args())
-            elif event_about.startswith('link_'):
-                web_open(an.LINKS[int(event_about.removeprefix('link_'))], new=1)
+            elif event_about.startswith('-LINK_'):
+                web_open(an.LINKS[int(event_about.removeprefix('-LINK_').removesuffix('-'))], new=1)
 
     # ----- Start Calculations ----- #
     else:

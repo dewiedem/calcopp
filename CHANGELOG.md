@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to CalcOPP will be documented in this file; its format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/). This project adheres to [*Semantic Versioning*](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- `calcopp-gui`: Default extensions for SaveAs dialogs.
+
+### Changed
+- `calcopp-gui`: Use PySimpleGUI's new Clipboard API to copy to clipboard.
+- `calcopp-gui`: Reformatted font definitions.
+- `calcopp-gui`: Substituted output element (more capabilities and read-only).
+- `calcopp-gui`: Slightly rephrased the manual.
+- `calcopp-gui`: Made the manual text more visually appealing.
+
+### Fixed
+- `calcopp-gui`: Wrong description in the “Caveat” section of the manual for scatterer density.
+
 ## [2.0.5] - 2021-03-24
 ### Added
 - `calcopp-gui`: Possibility to copy error messages to clipboard and automatically put them into an e-mail message.
@@ -162,6 +176,7 @@ All notable changes to CalcOPP will be documented in this file; its format is ba
 ### Added
 - First production version with basic functionality.
 
+[Unreleased]: https://github.com/dewiedem/calcopp/compare/v2.0.5...HEAD
 [2.0.5]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.5
 [2.0.4]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.4
 [2.0.3]: https://github.com/dewiedem/calcopp/releases/tag/v2.0.3
